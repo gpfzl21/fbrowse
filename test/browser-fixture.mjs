@@ -100,6 +100,43 @@ try {
     await writeFile(path.join(directory, 'nested', 'README.md'), '# Nested\n\n[동일 파일](../same.txt)\n\n![asset](../image.svg)\n');
     await writeFile(path.join(directory, 'image.svg'), '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"><rect width="10" height="10"/></svg>');
   }
+  const actionFixture = {};
+  if (process.env.FBROWSE_GIT_ACTIONS_FIXTURE === '1') {
+    const env = { ...Object.fromEntries(Object.entries(process.env).filter(([key]) => !key.startsWith('GIT_'))), GIT_CONFIG_NOSYSTEM: '1', GIT_CONFIG_GLOBAL: '/dev/null' };
+    const git = (root, ...args) => execFileAsync('git', ['-C', root, ...args], { env });
+    for (const root of [roots.project, roots.results]) {
+      await git(root, 'init', '-b', 'browser-actions');
+      await git(root, 'config', 'user.name', 'Temporary Browser Actions');
+      await git(root, 'config', 'user.email', 'browser-actions@example.invalid');
+      await writeFile(path.join(root, 'action.txt'), 'baseline action\n');
+      await writeFile(path.join(root, 'unrelated.txt'), 'baseline unrelated\n');
+      await writeFile(path.join(root, '.hidden-stage.txt'), 'baseline hidden\n');
+      await symlink('same.txt', path.join(root, 'file-link.txt'));
+      await git(root, 'add', '.');
+      await git(root, 'commit', '-qm', 'temporary actions baseline');
+    }
+    const remote = path.join(base, 'actions-remote.git');
+    await mkdir(remote);await git(remote, 'init', '--bare');
+    await git(roots.project, 'remote', 'add', 'origin', remote);
+    await git(roots.project, 'push', '-q', 'origin', 'browser-actions');
+    const baseline = (await git(roots.project, 'rev-parse', 'HEAD')).stdout.trim();
+    await git(remote, 'update-ref', 'refs/heads/protected-fixture', baseline);
+    const alternateRemote = path.join(base, 'alternate-remote.git');
+    await cp(remote, alternateRemote, { recursive: true });
+    for (let i = 1; i <= 62; i++) {
+      await writeFile(path.join(roots.project, 'timeline.txt'), 'history ' + i + '\n');
+      await git(roots.project, 'add', 'timeline.txt');
+      await git(roots.project, 'commit', '-qm', 'history entry ' + i);
+    }
+    for (let i = 0; i < 55; i++) await git(roots.project, 'branch', 'fixture-' + String(i).padStart(2, '0'));
+    await writeFile(path.join(roots.project, 'action.txt'), 'working action\n');
+    await writeFile(path.join(roots.project, 'unrelated.txt'), 'working unrelated\n');
+    await writeFile(path.join(roots.project, 'new <& 한글.txt'), 'new file\n');
+    await writeFile(path.join(roots.results, '.hidden-stage.txt'), 'hidden staged change\n');
+    await git(roots.results, 'add', '.hidden-stage.txt');
+    await writeFile(path.join(roots.results, 'action.txt'), 'results working action\n');
+    Object.assign(actionFixture, { remote, alternateRemote, subtree: path.join(roots.project, 'nested') });
+  }
   if (process.env.FBROWSE_GIT_FIXTURE === '1') {
     const git = (root, ...args) => execFileAsync('git', ['-C', root, ...args], { env: {
       ...Object.fromEntries(Object.entries(process.env).filter(([key]) => !key.startsWith('GIT_'))), GIT_CONFIG_NOSYSTEM: '1', GIT_CONFIG_GLOBAL: '/dev/null',
@@ -158,7 +195,7 @@ try {
     catch {}
   }
   instance = await startServer({ root: roots.project, host: '127.0.0.1', port: 0, pdfjs: cachedPdfjs });
-  console.log(JSON.stringify({ url: instance.url.endsWith('/') ? instance.url : instance.url + '/', ...roots, pdfjs: instance.info.pdfjs }));
+  console.log(JSON.stringify({ url: instance.url.endsWith('/') ? instance.url : instance.url + '/', ...roots, ...actionFixture, pdfjs: instance.info.pdfjs }));
 } catch (error) {
   console.error(error);
   await close();

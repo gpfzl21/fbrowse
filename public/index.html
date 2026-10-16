@@ -6,7 +6,7 @@
 :root{color-scheme:light dark;--bg:#f6f7f9;--panel:#fff;--text:#202937;--muted:#727c8c;--line:#e4e8ef;--hover:#f0f3f8;--accent:#315de5;--selected:#eaf0ff;--shadow:0 4px 20px #17233b08}
 @media(prefers-color-scheme:dark){:root{--bg:#13171f;--panel:#1a202b;--text:#e3e9f2;--muted:#98a5b8;--line:#2a3444;--hover:#242e3e;--accent:#91b1ff;--selected:#263754;--shadow:none}}
 *{box-sizing:border-box}body{margin:0;height:100dvh;display:flex;flex-direction:column;background:var(--bg);color:var(--text);font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
-button,input,select{font:inherit;color:inherit}button,a,input,select{outline-offset:3px}button{cursor:pointer}button:disabled{opacity:.45;cursor:default}button,a{touch-action:manipulation}
+button,input,select,textarea{font:inherit;color:inherit}button,a,input,select{outline-offset:3px}button{cursor:pointer}button:disabled{opacity:.45;cursor:default}button,a{touch-action:manipulation}
 main{display:flex;min-height:0;flex:1;gap:0;padding:8px}aside{width:330px;min-width:230px;max-width:55vw;flex-shrink:0;overflow:hidden;background:var(--panel);border:1px solid var(--line);border-radius:10px;display:flex;flex-direction:column}.side-controls{padding:12px 12px 8px;flex:none}.side-brand{display:flex;align-items:center;gap:5px;margin-bottom:10px}.root{flex:1;min-width:0;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.plain{display:grid;place-items:center;flex:none;width:28px;height:28px;border:0;background:none;color:var(--muted);border-radius:5px;font-size:18px}.plain:hover{background:var(--hover);color:var(--text)}
 .search{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:7px 10px}.search:focus-within{border-color:var(--accent)}.search input{width:100%;min-width:0;border:0;outline:none;background:none;font-size:13px}.toolbar{display:flex;align-items:center;gap:8px;margin-top:8px}.toolbar select{flex:1;min-width:0}.button,select{border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:5px 8px;text-decoration:none}.button:hover{background:var(--hover)}.actions{display:flex;gap:5px;flex:none}.actions .button{display:grid;place-items:center;width:30px;height:30px;padding:0;font-size:18px;line-height:1}.side-head{padding:2px 13px 7px;font-size:11px;color:var(--muted);border-bottom:1px solid var(--line)}#entries{flex:1;min-height:0;overflow:auto;padding:6px 5px}.row{width:100%;display:flex;align-items:center;gap:7px;text-align:left;border:0;border-radius:6px;background:none;padding:7px 9px;color:var(--text)}.row:hover{background:var(--hover)}.row.active{background:var(--selected);color:var(--accent)}.caret{width:11px;flex:none;font-size:10px;color:var(--muted)}.icon{width:28px;flex:none;font-size:10px;font-weight:700;color:var(--accent)}.filename{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}.size{color:var(--muted);font-size:10px;flex:none}.children{margin-left:13px;padding-left:5px;border-left:1px solid var(--line)}.search-result{display:block;padding:9px 10px}.result-name{display:flex;gap:9px;align-items:center}.result-path{display:block;margin:3px 0 0 37px;font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.note{padding:15px 12px;font-size:12px;color:var(--muted)}.side-foot{flex:none;padding:6px 12px;border-top:1px solid var(--line);color:var(--muted);font-size:11px}
 .viewer{position:relative;display:flex;flex-direction:column;flex:1;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}.preview{position:relative;flex:1;min-height:0;background:var(--bg)}iframe{display:block;border:0;width:100%;height:100%;background:white}.empty{height:100%;display:flex;align-items:center;justify-content:center;text-align:center;padding:30px}.empty .symbol{font-size:36px;color:var(--accent);margin-bottom:10px}.empty h1{font-size:20px;font-weight:600;margin:0 0 8px}.empty p{color:var(--muted);margin:0;max-width:420px;font-size:13px}[hidden]{display:none!important}.error{color:#c95252}
@@ -24,6 +24,7 @@ main{display:flex;min-height:0;flex:1;gap:0;padding:8px}aside{width:330px;min-wi
 [data-git-status="M"],[data-git-status="T"]{--git-color:var(--git-modified)}[data-git-status="A"]{--git-color:var(--git-added)}[data-git-status="U"]{--git-color:var(--git-untracked)}[data-git-status="D"]{--git-color:var(--git-deleted)}[data-git-status="R"],[data-git-status="C"]{--git-color:var(--git-renamed)}[data-git-status="!"]{--git-color:var(--git-conflict)}
 .row[data-git-status] .filename{color:var(--git-color)}.symlink{flex:none;font-weight:600;color:var(--muted)}.row:disabled:hover{background:none}.viewer-tabs{display:flex;gap:6px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--line);flex-wrap:wrap}.diff-path{flex:1;min-width:80px;overflow-wrap:anywhere;font-size:12px;color:var(--muted)}
 #diffViewer{position:absolute;inset:0;overflow:auto;background:var(--panel)}#diffContent{--diff-digits:4;margin:0;padding:12px 0;font:12px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;tab-size:4;min-width:100%;width:max-content}.diff-line,.diff-columns{display:flex;width:100%;min-height:1.65em;background:var(--panel)}.diff-gutter{position:sticky;left:0;z-index:1;display:flex;align-self:stretch;flex:none;background:inherit;color:var(--muted);user-select:none;border-right:1px solid var(--line)}.diff-number{display:block;flex:none;width:calc(var(--diff-digits)*1ch + 16px);padding:0 8px;text-align:right;white-space:pre}.diff-number+.diff-number{border-left:1px solid var(--line)}.diff-code{display:block;flex:1;white-space:pre;padding:0 14px;min-width:0}.diff-columns{color:var(--muted);font-size:11px;user-select:none}.diff-columns .diff-gutter{font-size:12px}.diff-columns .diff-number{text-align:center}#diffContent.wrap{width:100%}#diffContent.wrap .diff-code{white-space:pre-wrap;overflow-wrap:anywhere}.diff-add{background:var(--diff-add);color:var(--git-added)}.diff-delete{background:var(--diff-delete);color:var(--git-deleted)}.diff-hunk{color:var(--accent);background:var(--selected)}.diff-message{padding:14px 16px;color:var(--muted);font-size:12px;white-space:pre-wrap;overflow-wrap:anywhere}
+.git-nav{display:flex;gap:4px;padding:5px}.git-nav button{flex:1}.git-nav [aria-pressed="true"]{color:var(--accent);background:var(--selected)}.git-change{display:flex;align-items:center;gap:3px}.git-change>.row{min-width:0;flex:1}.git-action{flex:none;font-size:11px;padding:4px}.git-tools,.git-commit{display:grid;gap:7px;margin:10px 7px}.git-commit label{font-size:12px}.git-commit textarea{width:100%;resize:vertical;min-height:65px;background:var(--bg);border:1px solid var(--line);border-radius:5px;padding:7px}.git-result{white-space:pre-wrap;overflow-wrap:anywhere;padding:7px 10px;font-size:12px}.git-meta{padding:8px 10px;border-bottom:1px solid var(--line);font-size:12px;overflow-wrap:anywhere}.git-meta small{display:block;color:var(--muted)}.git-pages{display:flex;align-items:center;justify-content:space-between;gap:5px;padding:12px 7px}.git-review{display:grid;gap:10px}.git-review label{display:grid;gap:4px}.git-review dd{margin:0 0 10px;overflow-wrap:anywhere}.git-review dt{font-size:12px;color:var(--muted)}
 </style></head><body>
 <main><aside id="fileSidebar" aria-label="파일 탐색"><div class="side-controls">
 <div class="side-brand"><strong class="root" id="rootName">프로젝트 파일</strong><button class="plain" id="home" title="검색을 닫고 프로젝트 루트 보기" aria-label="처음으로">⌂</button><button class="plain" id="refresh" title="목록과 선택한 파일 새로고침" aria-label="새로고침">↻</button></div>
@@ -54,10 +55,13 @@ main{display:flex;min-height:0;flex:1;gap:0;padding:8px}aside{width:330px;min-wi
 <label class="folder-name">표시 이름<input id="folderLabel" maxlength="120" placeholder="선택한 폴더 이름"></label>
 <div class="folder-selection" id="folderSelection"></div><div class="folder-footer"><button class="button" id="cancelFolder">취소</button><button class="button primary" id="chooseFolder" disabled>이 폴더 연결</button></div>
 </section></dialog>
+<dialog id="pushDialog" aria-labelledby="pushTitle"><div class="dialog-head"><h2 id="pushTitle">푸시 내용 검토</h2><button type="button" class="button" id="cancelPush">취소</button></div>
+<form id="pushForm" class="git-review"><p>아래 브랜치와 원격 저장소를 확인한 뒤 푸시하세요.</p><dl><dt>현재 브랜치</dt><dd id="pushBranch"></dd><dt>검토한 HEAD</dt><dd id="pushHead"></dd><dt>대상 브랜치</dt><dd id="pushTarget"></dd></dl><label>설정된 원격 저장소<select id="pushRemote"></select></label><div id="pushURL" class="root-path"></div><label><span><input type="checkbox" id="pushUpstream"> 이 원격 브랜치를 업스트림으로 설정</span></label><p id="pushMessage" role="status"></p><button type="submit" class="button primary" id="confirmPush">확인한 내용으로 푸시</button></form></dialog>
 <script>
 'use strict';
 const $=id=>document.getElementById(id), entries=$('entries'), input=$('search'), type=$('type');
 const state={cache:new Map(),expanded:new Set(['']),selected:null,generation:0,timer:null,controller:null,pdfjs:false,previewExpanded:false,roots:[],root:'project',token:null,editRoot:null,sidebarMode:'files',git:null,gitRoot:null,gitController:null,gitGeneration:0,gitMarkers:new Map(),diff:null,diffController:null,diffGeneration:0,viewerMode:'file'};
+Object.assign(state,{gitView:'changes',gitContext:null,gitContextLoading:false,gitReadGeneration:0,gitContextRequest:0,gitReadController:null,gitPages:{},gitBusy:new Map(),gitResults:new Map(),gitDrafts:new Map(),pushReview:null});
 const initial=new URLSearchParams(location.search).get('path');
 const initialRoot=new URLSearchParams(location.search).get('root');
 const nodeKey=(root,path)=>JSON.stringify([root,path]);
@@ -156,6 +160,7 @@ function row(entry,result=false){
   decorateRow(button,entry);return button;
 }
 function clearGit(){
+  state.gitReadController?.abort();state.gitReadGeneration++;state.gitContext=null;state.gitContextLoading=false;state.gitPages={};state.gitView='changes';state.pushReview=null;if($('pushDialog').open)$('pushDialog').close();
   state.gitController?.abort();state.gitGeneration++;state.git=null;state.gitRoot=null;state.gitMarkers.clear();
   $('gitPanel').replaceChildren(make('div','note','Git 상태를 불러오는 중…'));repaintGitMarkers();
   state.diffController?.abort();state.diffGeneration++;state.diff=null;$('viewerTabs').hidden=true;$('diffViewer').hidden=true;
@@ -164,39 +169,99 @@ function setSidebarMode(mode){
   state.sidebarMode=mode;const git=mode==='git';
   $('gitTab').setAttribute('aria-pressed',String(git));$('filesTab').setAttribute('aria-pressed',String(!git));
   entries.hidden=git;$('gitPanel').hidden=!git;$('fileSearch').hidden=git;type.hidden=git;$('listLabel').hidden=git;
-  if(git){drawGit();ensureGit();}
+  if(git){drawGit();ensureGit();ensureGitContext();}
 }
 $('filesTab').onclick=()=>setSidebarMode('files');$('gitTab').onclick=()=>setSidebarMode('git');
+function gitButton(text,handler,disabled=false,className='button'){
+  const button=make('button',className,text);button.type='button';button.disabled=disabled;button.onclick=handler;return button;
+}
+function gitWritable(){return Boolean(state.gitContext?.canWrite&&!state.gitContextLoading&&state.git&&state.gitRoot===state.root&&state.roots.find(root=>root.id===state.root)?.connected&&!state.gitBusy.has(state.root));}
 function drawGit(){
   const panel=$('gitPanel');panel.replaceChildren();
+  const nav=make('div','git-nav');nav.setAttribute('aria-label','Git 보기');
+  for(const [view,label] of [['changes','변경사항'],['branches','브랜치'],['history','기록']]){
+    const button=gitButton(label,()=>{state.gitView=view;drawGit();if(view!=='changes'&&!state.gitPages[view])loadGitPage(view,0);});button.id='gitView-'+view;button.setAttribute('aria-pressed',String(state.gitView===view));nav.append(button);
+  }
+  panel.append(nav);
+  const result=state.gitResults.get(state.root),busy=state.gitBusy.has(state.root);
+  if(busy||result){const message=make('div','git-result'+(result?.error&&!busy?' error':''),busy?'Git 작업 중… 완료될 때까지 기다려 주세요.':result.text);message.id='gitActionResult';message.setAttribute('role','status');panel.append(message);}
   if(state.gitRoot!==state.root||!state.git){panel.append(make('div','note','Git 상태를 불러오는 중…'));return;}
   const data=state.git;
   if(!data.available){panel.append(make('div','note',({not_repository:'Git 저장소가 아닙니다. 파일을 계속 탐색할 수 있습니다.',git_unavailable:'Git을 사용할 수 없습니다. 파일을 계속 탐색할 수 있습니다.'})[data.reason]||data.message||'Git 상태를 가져올 수 없습니다.'));return;}
   panel.append(make('div','git-branch','⑂ '+(data.branch||(data.detached?'분리된 HEAD':'새 저장소'))));
   if(data.message)panel.append(make('div','note',data.message));
+  if(state.gitView!=='changes'){drawGitPage(panel,state.gitView);return;}
+  const context=state.gitContext;
+  if(!context)panel.append(make('div','note',state.gitContextLoading?'Git 작업 정보를 불러오는 중…':'Git 작업 정보를 가져올 수 없습니다. 새로고침하세요.'));
+  else{if(context.message)panel.append(make('div','note',context.message));if(!context.canWrite)panel.append(make('div','note',context.commitReason||'이 루트에서는 읽기만 가능합니다. 저장소 최상위 폴더를 연결하면 Git 작업을 사용할 수 있습니다.'));}
   const groups=[['staged','스테이징된 변경사항',e=>!e.untracked&&e.index&&e.index!==' '],['unstaged','스테이징되지 않은 변경사항',e=>!e.untracked&&e.worktree&&e.worktree!==' '],['untracked','추적되지 않은 파일',e=>e.untracked]];
   for(const [group,label,filter] of groups){
     const changes=(data.entries||[]).filter(filter),section=make('section','git-group');section.dataset.group=group;
     section.append(make('h2','',label+' · '+changes.length));
+    // Explicit visible files only: never send a directory-wide add or hidden paths.
+    const eligible=changes.filter(change=>!change.conflict&&!change.path.endsWith('/'));
+    const paths=[...new Set(eligible.flatMap(change=>change.original_path?[change.original_path,change.path]:[change.path]))];
+    const withinBounds=paths.length>0&&paths.length<=500&&new TextEncoder().encode(paths.join('\0')).length<=65536;
+    if(changes.length){const batch=gitButton('표시된 작업 가능 파일 '+eligible.length+'개 '+(group==='staged'?'스테이징 해제':'스테이징'),()=>runGitAction(group==='staged'?'unstage':'stage',{paths}),!gitWritable()||!withinBounds,'button git-action');batch.dataset.batch=group;section.append(batch);}
     for(const change of changes){
-      const button=make('button','row git-row');button.type='button';button.dataset.path=change.path;button.dataset.group=group;
+      const row=make('div','git-change'),button=make('button','row git-row');button.type='button';button.dataset.path=change.path;button.dataset.group=group;
       button.dataset.gitStatus=change.conflict?'!':group==='untracked'?'U':(group==='staged'?change.index:change.worktree);
       button.classList.toggle('active',state.diff?.root===state.root&&state.diff?.path===change.path&&state.diff?.group===group);
       button.title=rootLabel(state.root)+' · '+state.roots.find(r=>r.id===state.root)?.path+'/'+change.path+'\n'+(gitLabels[button.dataset.gitStatus]||'변경됨');
       button.append(make('span','git-badge',button.dataset.gitStatus),make('span','filename',change.original_path?change.original_path+' → '+change.path:change.path));
-      button.onclick=()=>selectDiff(change,group);section.append(button);
+      button.onclick=()=>selectDiff(change,group);row.append(button);
+      const action=group==='staged'?'unstage':'stage',actionPaths=change.original_path?[change.original_path,change.path]:[change.path];
+      const control=gitButton(group==='staged'?'해제':'스테이징',()=>runGitAction(action,{paths:actionPaths}),!gitWritable()||change.conflict||change.path.endsWith('/'),'button git-action');control.dataset.action=action;control.dataset.path=change.path;control.setAttribute('aria-label',change.path+(action==='stage'?' 스테이징':' 스테이징 해제'));row.append(control);section.append(row);
     }
     panel.append(section);
   }
   if(!(data.entries||[]).length)panel.append(make('div','note','변경사항이 없습니다.'));
-  if(data.truncated)panel.append(make('div','note','변경사항이 많아 일부만 표시합니다.'));
+  if(data.truncated)panel.append(make('div','note','변경사항이 많아 일부만 표시합니다. 일괄 작업은 표시된 파일에만 적용됩니다.'));
+  const staged=(data.entries||[]).filter(e=>!e.untracked&&e.index&&e.index!==' '),form=make('form','git-commit');form.id='gitCommitForm';
+  const scope=make('div','','커밋 범위: 스테이징된 파일 '+staged.length+'개'+(data.truncated?' (표시 범위)':''));scope.id='gitCommitScope';
+  const label=make('label','','커밋 메시지'),message=make('textarea');message.id='gitCommitMessage';message.maxLength=16000;message.value=state.gitDrafts.get(state.root)||'';label.htmlFor=message.id;
+  const submit=make('button','button primary','스테이징된 변경사항 커밋');submit.type='submit';submit.id='gitCommit';
+  const allowed=gitWritable()&&context?.commitAllowed&&!data.truncated;submit.disabled=!allowed||!message.value.trim();message.disabled=busy;
+  message.oninput=()=>{state.gitDrafts.set(state.root,message.value);submit.disabled=!allowed||!message.value.trim();};
+  form.onsubmit=event=>{event.preventDefault();if(!submit.disabled)runGitAction('commit',{message:message.value});};form.append(scope,label,message,submit);
+  if(data.truncated)form.append(make('div','note','전체 스테이징 범위를 표시할 수 없어 커밋할 수 없습니다. 터미널에서 전체 변경사항을 확인하세요.'));
+  if(context&&!context.commitAllowed)form.append(make('div','note',context.commitReason||'현재 상태에서는 커밋할 수 없습니다.'));panel.append(form);
+  const tools=make('div','git-tools'),push=gitButton('푸시 내용 검토…',openPushReview,!gitWritable()||!context?.pushAllowed);push.id='gitPush';tools.append(push);
+  if(context&&!context.pushAllowed)tools.append(make('div','note',context.pushReason||'현재 상태에서는 푸시할 수 없습니다.'));panel.append(tools);
+}
+async function ensureGitContext(refresh=false){
+  if(state.sidebarMode!=='git'||(!refresh&&(state.gitContext||state.gitContextLoading)))return;
+  const root=state.root,generation=state.gitReadGeneration,request=++state.gitContextRequest;state.gitContextLoading=true;drawGit();
+  try{const data=await api('/api/git/context?'+new URLSearchParams({root}));if(root!==state.root||generation!==state.gitReadGeneration||request!==state.gitContextRequest||data.root_id!==root)return;state.gitContext=data;}
+  catch(error){if(root!==state.root||generation!==state.gitReadGeneration||request!==state.gitContextRequest)return;state.gitContext=null;state.gitResults.set(root,{error:true,text:'Git 작업 정보: '+error.message});}
+  finally{if(root===state.root&&generation===state.gitReadGeneration&&request===state.gitContextRequest){state.gitContextLoading=false;drawGit();}}
+}
+async function loadGitPage(view,offset=0,refresh=false){
+  const existing=state.gitPages[view];if(!refresh&&existing?.offset===offset)return;
+  const controller=new AbortController(),root=state.root,generation=state.gitReadGeneration,limit=view==='branches'?50:30;
+  state.gitReadController=controller;const page={offset,loading:true,entries:[],more:false};state.gitPages[view]=page;drawGit();
+  try{const data=await api('/api/git/'+view+'?'+new URLSearchParams({root,offset,limit}),controller.signal);if(root!==state.root||generation!==state.gitReadGeneration||data.root_id!==root||state.gitPages[view]!==page)return;Object.assign(page,data,{loading:false});}
+  catch(error){if(error.name==='AbortError'||root!==state.root||generation!==state.gitReadGeneration||state.gitPages[view]!==page)return;page.loading=false;page.error=error.message;}
+  finally{if(root===state.root&&generation===state.gitReadGeneration)drawGit();}
+}
+function drawGitPage(panel,view){
+  const page=state.gitPages[view],limit=view==='branches'?50:30;
+  if(!page||page.loading){panel.append(make('div','note','불러오는 중…'));return;}
+  if(page.error){panel.append(make('div','note error',page.error),gitButton('다시 시도',()=>loadGitPage(view,page.offset,true)));return;}
+  for(const entry of page.entries||[]){const row=make('div','git-meta');row.dataset.hash=entry.hash||'';
+    if(view==='branches'){row.append(make('div','',(entry.current?'● ':'')+entry.name+(entry.remote?' · 원격':'')),make('small','',[entry.upstream,entry.hash?.slice(0,12),entry.subject].filter(Boolean).join(' · ')));}
+    else row.append(make('div','',entry.subject),make('small','',[entry.shortHash,entry.author,entry.date].filter(Boolean).join(' · ')));panel.append(row);
+  }
+  if(!page.entries?.length)panel.append(make('div','note',page.message||'표시할 항목이 없습니다.'));
+  const pages=make('div','git-pages');pages.append(gitButton('이전',()=>loadGitPage(view,Math.max(0,page.offset-limit)),page.offset===0),make('span','',String(page.offset+1)+'–'+String(page.offset+(page.entries?.length||0))),gitButton('다음',()=>loadGitPage(view,page.offset+limit),!page.more||page.offset+limit>10000));panel.append(pages);if(page.more&&page.offset+limit>10000)panel.append(make('div','note','조회 범위 제한에 도달했습니다.'));
 }
 function ensureGit(refresh=false){
   const root=state.root;
   if(!refresh&&state.gitRoot===root)return;
+  if(refresh){state.gitContextRequest++;state.gitContext=null;state.gitContextLoading=false;state.gitPages={};if(state.sidebarMode==='git'){ensureGitContext(true);if(state.gitView!=='changes')loadGitPage(state.gitView,0,true);}}
   state.gitController?.abort();const controller=new AbortController(),generation=++state.gitGeneration;
   state.gitController=controller;state.gitRoot=root;state.git=null;state.gitMarkers.clear();repaintGitMarkers();drawGit();$('gitPanel').setAttribute('aria-busy','true');
-  api('/api/git/status?'+new URLSearchParams({root,...(refresh?{refresh:'1'}:{})}),controller.signal).then(data=>{
+  return api('/api/git/status?'+new URLSearchParams({root,...(refresh?{refresh:'1'}:{})}),controller.signal).then(data=>{
     if(generation!==state.gitGeneration||root!==state.root||data.root_id!==root)return;
     state.git=data;buildGitMarkers(data);repaintGitMarkers();drawGit();
   }).catch(error=>{
@@ -204,6 +269,33 @@ function ensureGit(refresh=false){
     state.git={available:false,reason:'error',message:'Git 상태를 가져올 수 없습니다. 파일을 계속 탐색할 수 있습니다.'};drawGit();
   }).finally(()=>{if(generation===state.gitGeneration)$('gitPanel').setAttribute('aria-busy','false');});
 }
+async function runGitAction(action,input,review=null){
+  const root=review?.root||state.root,context=review?.context||state.gitContext;
+  if(state.gitBusy.has(root)||!context||root!==state.root||!context.canWrite||state.gitContextLoading||!state.roots.find(item=>item.id===root)?.connected)return;
+  const payload={root,...input,expectedHead:context.head,expectedBranch:context.branch,...(action==='push'?{expectedPushToken:context.pushToken}:{expectedIndex:context.indexToken})};
+  state.gitBusy.set(root,true);state.gitResults.delete(root);drawGit();if(action==='push'){$('pushDialog').close();state.pushReview=null;}
+  try{
+    const response=await fetch('/api/git/'+action,{method:'POST',headers:{'Content-Type':'application/json','X-Fbrowse-Token':state.token},body:JSON.stringify(payload)}),data=await response.json();
+    if(!response.ok)throw Error(data.error||'Git 작업에 실패했습니다.');if(data.root_id!==root)throw Error('응답 루트가 일치하지 않습니다. 새로고침하여 상태를 확인하세요.');
+    state.gitResults.set(root,{text:'완료: '+(data.message||'Git 작업을 마쳤습니다.')});if(action==='commit')state.gitDrafts.delete(root);
+  }catch(error){state.gitResults.set(root,{error:true,text:'Git 작업 실패: '+error.message+' 상태를 새로고침한 뒤 확인하세요.'});}
+  finally{
+    state.gitBusy.delete(root);
+    if(root===state.root){state.gitPages={};ensureGit(true);if(state.viewerMode==='diff'&&state.diff)selectDiff(state.diff.change,state.diff.group);else loadPreview();drawGit();}
+  }
+}
+function openPushReview(){
+  const context=state.gitContext;if(!gitWritable()||!context?.pushAllowed)return;
+  state.pushReview={root:state.root,generation:state.gitReadGeneration,context:structuredClone(context)};
+  $('pushBranch').textContent=context.branch;$('pushHead').textContent=context.head||'커밋 없음';$('pushTarget').textContent='refs/heads/'+context.branch;
+  $('pushRemote').replaceChildren(...context.remotes.map(remote=>{const option=make('option','',remote.name);option.value=remote.name;return option;}));
+  if(context.upstream?.remote&&context.remotes.some(remote=>remote.name===context.upstream.remote))$('pushRemote').value=context.upstream.remote;
+  $('pushUpstream').checked=!context.upstream;$('pushMessage').textContent='';$('confirmPush').disabled=false;updatePushURL();$('pushDialog').showModal();
+}
+function updatePushURL(){const review=state.pushReview;const remote=review?.context.remotes.find(remote=>remote.name===$('pushRemote').value);$('pushURL').textContent=remote?.url||'푸시 URL을 확인할 수 없습니다.';}
+$('pushRemote').onchange=updatePushURL;$('cancelPush').onclick=()=>$('pushDialog').close();
+$('pushDialog').addEventListener('close',()=>{state.pushReview=null;});
+$('pushForm').onsubmit=event=>{event.preventDefault();const review=state.pushReview;if(!review||review.root!==state.root||review.generation!==state.gitReadGeneration||state.gitBusy.has(review.root))return;$('confirmPush').disabled=true;runGitAction('push',{remote:$('pushRemote').value,branch:review.context.branch,confirmed:true,setUpstream:$('pushUpstream').checked},review);};
 function renderDiff(data){
   $('diffContent').replaceChildren();
   const messages={binary:'바이너리 파일의 변경사항입니다.',empty:'표시할 변경사항이 없습니다.',unavailable:'이 파일의 변경사항을 표시할 수 없습니다.'};
@@ -301,6 +393,7 @@ async function refreshRoots(signal){
   const info=await api('/api/info',signal);signal?.throwIfAborted();state.roots=info.roots;state.token=info.config_token;state.pdfjs=info.pdfjs;
   state.project=info.root;$('rootName').textContent=info.name;$('rootName').title=info.root;
   if(!state.roots.some(r=>r.id===state.root))state.root='project';
+  if(state.pushReview&&(!state.roots.find(root=>root.id===state.pushReview.root)?.connected||state.pushReview.root!==state.root))$('pushDialog').close();
   renderRoots();
 }
 function resetPreview(){state.diffController?.abort();state.diffGeneration++;state.diff=null;state.viewerMode='file';$('viewerTabs').hidden=true;$('diffViewer').hidden=true;$('open').hidden=false;state.selected=null;$('preview').src='about:blank';$('preview').hidden=true;$('empty').hidden=false;$('actions').hidden=true;}
@@ -395,7 +488,7 @@ async function update(refresh=false){
   try{
     await refreshRoots(controller.signal);
     if(generation!==state.generation)return;
-    ensureGit(refresh);
+    ensureGit(refresh);if(state.sidebarMode==='git')ensureGitContext();
     state.expanded.add(nodeKey(state.root,''));
     if(!state.roots.find(r=>r.id===state.root)?.connected){drawTree();return;}
     if(query){

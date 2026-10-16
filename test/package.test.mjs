@@ -48,7 +48,7 @@ test('packed npm app installs globally and runs without Python, Bash, tmux or fl
     assert.equal(await fs.readFile(collision, 'utf8'), 'unrelated command');
     await exec('npm', ['install', '--global', '--prefix', prefix, '--offline', '--ignore-scripts',
       '--no-audit', '--no-fund', '--cache', npmCache, archive], { cwd: temporary, timeout: 30_000 });
-    assert.match((await run('--version')).stdout, /0\.3\.1/);
+    assert.match((await run('--version')).stdout, /0\.4\.0/);
     await run('roots', 'add', 'external', external, '--name', '참고 자료');
     await run('--no-pdfjs');
     started = true;
@@ -62,6 +62,11 @@ test('packed npm app installs globally and runs without Python, Bash, tmux or fl
     const git = await (await fetch(new URL('api/git/status?root=project', url))).json();
     assert.equal(git.available, false, 'Git remains optional in a Node-only runtime');
     assert.equal(git.reason, 'git_unavailable');
+    for (const route of ['context', 'branches', 'history']) {
+      const metadata = await (await fetch(new URL('api/git/' + route + '?root=project', url))).json();
+      assert.equal(metadata.available, false, 'Git actions metadata stays optional: ' + route);
+      assert.equal(metadata.reason, 'git_unavailable');
+    }
     assert.equal((await fetch(new URL('_math_assets/katex.min.js', url))).status, 200);
     assert.equal((await fetch(new URL('_math_assets/fonts/KaTeX_Main-Regular.woff2', url))).status, 200);
     assert.equal((await fetch(new URL('_app_assets/markdown-math.js', url))).status, 200);
