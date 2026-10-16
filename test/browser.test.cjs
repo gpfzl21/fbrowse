@@ -17,11 +17,96 @@ const assert=require('node:assert/strict');
     browser=await chromium.launch({headless:true,args:['--no-sandbox']});
     const page=await browser.newPage({viewport:{width:1280,height:900}});
     const errors=[];page.on('pageerror',error=>errors.push(error.message));
+    const externalRequests=[];
+    await page.route('**/*',route=>{
+      if(new URL(route.request().url()).origin!==new URL(ready.url).origin){externalRequests.push(route.request().url());return route.abort();}
+      return route.continue();
+    });
     const originals=new Map(['sample.py','blank-tabs.py','same.txt'].map(file=>[file,fs.readFileSync(ready.project+'/'+file)]));
     const info=await (await page.request.get(ready.url+'api/info')).json();
     assert.equal(info.backend,'node');assert.equal(info.root,ready.project);
     await page.goto(ready.url);
     await page.locator('button.row[data-path="same.txt"]').waitFor();
+    // Exercise real temporary files through the tree, search and server picker.
+    const treeRow=path=>page.locator('#entries button.row').filter({has:page.locator('.filename')}).and(page.locator('[data-path='+JSON.stringify(path)+']'));
+    const iconSamples=[['code.py','code'],['document.PDF','pdf'],['page.htm','html'],['notes.markdown','markdown'],
+      ['plain.txt','text'],['unknown <& "한글".mystery','file'],['README','text'],['extensionless','file'],['picture.svg','media'],
+      ['a very long filename that must truncate inside the narrow sidebar.txt','text']];
+    async function checkIcon(row,type,selector='.icon'){
+      const icon=row.locator(selector),svg=icon.locator('svg');
+      assert.equal(await icon.count(),1);assert.equal(await svg.count(),1);
+      assert.equal(await icon.getAttribute('data-icon'),type);
+      assert.equal(await icon.textContent(),'');
+      assert.equal(await icon.getAttribute('aria-hidden'),'true');
+      assert.equal(await svg.getAttribute('aria-hidden'),'true');assert.equal(await svg.getAttribute('focusable'),'false');
+      assert.ok(await icon.getAttribute('title'));
+      assert.ok(await svg.locator('path').count());
+      assert.equal(await svg.locator('text, image, use, foreignObject, script, title, [href], [tabindex]').count(),0);
+      const box=await icon.evaluate(node=>{
+        const rect=node.getBoundingClientRect(),svg=node.querySelector('svg'),shape=svg.getBoundingClientRect();
+        return {width:rect.width,height:rect.height,svgWidth:shape.width,svgHeight:shape.height,
+          color:getComputedStyle(node).color,stroke:getComputedStyle(svg).stroke};
+      });
+      assert.ok(box.width>=14&&box.width<=22&&box.height>=14&&box.height<=22,JSON.stringify(box));
+      assert.ok(box.svgWidth>=14&&box.svgWidth<=22&&box.svgHeight>=14&&box.svgHeight<=22,JSON.stringify(box));
+      assert.equal(box.color,box.stroke);
+      return svg.innerHTML();
+    }
+    const closedFolder=await checkIcon(treeRow('icon-fixtures'),'folder');
+    assert.equal(await treeRow('icon-fixtures').getAttribute('aria-expanded'),'false');
+    await treeRow('icon-fixtures').click();await treeRow('icon-fixtures/code.py').waitFor();
+    assert.equal(await treeRow('icon-fixtures').getAttribute('aria-expanded'),'true');
+    assert.notEqual(await checkIcon(treeRow('icon-fixtures'),'folder-open'),closedFolder);
+    const typeShapes=new Map();
+    for(const [name,type] of iconSamples){
+      const row=treeRow('icon-fixtures/'+name),shape=await checkIcon(row,type);
+      assert.equal(await row.locator('.filename').textContent(),name);
+      if(typeShapes.has(type))assert.equal(shape,typeShapes.get(type));else typeShapes.set(type,shape);
+      assert.ok((await row.ariaSnapshot()).includes(name.replaceAll('"','\\"'))||(await row.ariaSnapshot()).includes(name));
+    }
+    assert.equal(new Set(typeShapes.values()).size,7,'File types must remain visually distinguishable');
+    const specialName=iconSamples[5][0];
+    await treeRow('icon-fixtures/'+specialName).click();
+    await page.frameLocator('#preview').locator('#code').filter({hasText:'Unknown extension preview'}).waitFor();
+    assert.ok(await treeRow('icon-fixtures/'+specialName).evaluate(node=>node.classList.contains('active')));
+    assert.equal(await page.locator('#entries script, #entries img').count(),0);
+    await treeRow('icon-fixtures').click();assert.equal(await treeRow('icon-fixtures/code.py').count(),0);
+    assert.equal(await checkIcon(treeRow('icon-fixtures'),'folder'),closedFolder);
+    await page.locator('#search').fill('icon-fixtures/');await page.locator('#entries .search-result').first().waitFor();
+    for(const [name,type] of iconSamples)await checkIcon(treeRow('icon-fixtures/'+name),type);
+    const searchLayout=await treeRow('icon-fixtures/code.py').evaluate(node=>({
+      name:node.querySelector('.filename').getBoundingClientRect().left,path:node.querySelector('.result-path').getBoundingClientRect().left,
+    }));
+    assert.ok(Math.abs(searchLayout.name-searchLayout.path)<=2,'Search path aligns with filename');
+    assert.deepEqual(externalRequests,[],'Icons must work without remote fonts or assets');
+    await page.locator('#home').click();await treeRow('icon-fixtures').click();await treeRow('icon-fixtures/code.py').waitFor();
+    await page.locator('#sidebarResize').focus();await page.keyboard.press('Home');
+    const themeColors=[];
+    for(const colorScheme of ['light','dark']){
+      await page.emulateMedia({colorScheme});
+      for(const [name,type] of iconSamples)await checkIcon(treeRow('icon-fixtures/'+name),type);
+      assert.ok(await page.locator('#entries').evaluate(node=>node.scrollWidth<=node.clientWidth+1));
+      assert.ok(await treeRow('icon-fixtures/'+iconSamples.at(-1)[0]).locator('.filename').evaluate(node=>node.scrollWidth>node.clientWidth));
+      themeColors.push(await treeRow('icon-fixtures/code.py').locator('.icon').evaluate(node=>getComputedStyle(node).color));
+      await treeRow('icon-fixtures').scrollIntoViewIfNeeded();
+      await page.screenshot({path:'/tmp/fbrowse-icons-'+colorScheme+'.png'});
+    }
+    assert.notEqual(themeColors[0],themeColors[1]);
+    await page.emulateMedia({colorScheme:'light'});
+    // Restore the usual width for the existing divider and preview regressions.
+    await page.locator('#sidebarResize').focus();for(let i=0;i<5;i++)await page.keyboard.press('ArrowRight');
+    await page.locator('#manageRoots').click();await page.locator('#browseFolder').click();
+    await page.locator('#folderEntries [data-name="icon-fixtures"]').click();await page.locator('#folderEntries [data-name="code.py"]').waitFor();
+    for(const [name,type] of iconSamples){
+      const row=page.locator('#folderEntries .folder-entry').filter({has:page.locator('.folder-entry-name',{hasText:new RegExp('^'+name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'$')})});
+      await checkIcon(row,type,'.folder-icon');assert.equal(await row.locator('.folder-entry-name').textContent(),name);
+      assert.equal(await row.evaluate(node=>node.tagName),'DIV');
+    }
+    await checkIcon(page.locator('#folderEntries [data-name="empty"]'),'folder','.folder-icon');
+    await page.locator('#folderEntries [data-name="empty"]').click();await page.locator('#folderEntries .note').filter({hasText:'빈 폴더'}).waitFor();
+    await page.locator('#cancelFolder').click();await page.locator('#closeRoots').click();await page.locator('#home').click();
+    assert.deepEqual(externalRequests,[]);
+    console.log('PASS: inline SVG icon types/fallback, special names, folder states, search, picker, accessibility, compact light/dark narrow sidebar; screenshots /tmp/fbrowse-icons-{light,dark}.png');
     async function register(name,path){
       await page.locator('#manageRoots').click();
       await page.locator('#browseFolder').click();
@@ -151,11 +236,6 @@ const assert=require('node:assert/strict');
     assert.equal(await page.locator('#code').textContent(),fs.readFileSync(ready.project+'/nested/README.md','utf8'));
     // Render delimiters before Markdown consumes backslashes, underscores, & and <.
     // Disallow every external request: KaTeX JS/CSS/fonts must be served locally.
-    const externalRequests=[];
-    await page.route('**/*',route=>{
-      if(new URL(route.request().url()).origin!==new URL(ready.url).origin){externalRequests.push(route.request().url());return route.abort();}
-      return route.continue();
-    });
     await page.goto(ready.url+'_preview?root=project&path=math.md');
     await page.locator('#markdown .katex').first().waitFor();
     await page.waitForFunction(()=>!document.querySelector('#markdown').hidden);

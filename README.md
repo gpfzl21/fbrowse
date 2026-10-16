@@ -40,7 +40,7 @@ cd fbrowse
 npm ci
 mkdir -p dist
 npm pack --pack-destination dist
-npm install --global ./dist/wlalsrne-fbrowse-0.4.0.tgz
+npm install --global ./dist/wlalsrne-fbrowse-0.4.1.tgz
 ```
 
 로컬 개발용 이름 `@fbrowse/cli`로 설치한 이전 버전을 사용 중이면 같은 prefix에서 이전 패키지를
@@ -108,6 +108,10 @@ fbrowse roots list --project /path/to/other/project
 등록되거나 해당 위치의 파일 내용에 접근할 수 있게 되지 않습니다.
 
 ## 미리보기
+
+파일 트리·검색 결과·폴더 선택기에서는 작은 SVG 아이콘으로 폴더와 파일 형식을 구분합니다.
+폴더를 펼치면 열린 폴더 모양으로 바뀌며, 파일명과 Git 상태·심볼릭 링크 표시는 함께 유지됩니다.
+아이콘은 앱에 내장되어 별도 글꼴이나 네트워크 다운로드가 필요하지 않습니다.
 
 PDF.js의 페이지 너비 보기와 큰 PDF의 HTTP Range 스트리밍, HTML의 상대 이미지·CSS,
 코드 문법 색상, Markdown 렌더링·원문 전환을 지원합니다. Markdown 출력은 정제하고
@@ -235,13 +239,13 @@ Playwright와 Chromium은 선택적 개발 도구이며 앱 실행에는 필요�
 패키지는 npm 계정 `wlalsrne`의 `@wlalsrne/fbrowse` 이름으로 공개 배포합니다.
 배포 전에 변경 내용을 검증하고 새 버전을 지정하세요. 이미 게시한 버전은 덮어쓸 수 없습니다.
 `package.json`과 `package-lock.json`의 버전을 함께 갱신하고 CLI·서버 버전도 맞춥니다.
-다음은 0.4.0 배포 명령의 예입니다.
+다음은 0.4.1 배포 명령의 예입니다.
 
 ```bash
 npm whoami
 npm test
 npm pack --pack-destination dist
-npm publish ./dist/wlalsrne-fbrowse-0.4.0.tgz --access public
+npm publish ./dist/wlalsrne-fbrowse-0.4.1.tgz --access public
 ```
 
 `npm pack`으로 만든 앱 코드·문서만 게시합니다. 프로젝트 데이터, XDG 설정·상태·캐시와

@@ -99,6 +99,20 @@ try {
     await mkdir(path.join(directory, 'nested'));
     await writeFile(path.join(directory, 'nested', 'README.md'), '# Nested\n\n[동일 파일](../same.txt)\n\n![asset](../image.svg)\n');
     await writeFile(path.join(directory, 'image.svg'), '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"><rect width="10" height="10"/></svg>');
+    await mkdir(path.join(directory, 'icon-fixtures', 'empty'), { recursive: true });
+    const iconFixtures = {
+      'code.py': 'print("icon fixture")\n',
+      'document.PDF': pdfBytes(),
+      'page.htm': '<h1>Icon HTML preview</h1>',
+      'notes.markdown': '# Icon Markdown preview\n',
+      'plain.txt': 'Icon text preview\n',
+      'unknown <& "한글".mystery': 'Unknown extension preview\n',
+      'README': 'Extensionless preview\n',
+      'extensionless': 'Generic extensionless preview\n',
+      'picture.svg': '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"><circle cx="5" cy="5" r="4"/></svg>',
+      'a very long filename that must truncate inside the narrow sidebar.txt': 'Long filename preview\n',
+    };
+    await Promise.all(Object.entries(iconFixtures).map(([file, value]) => writeFile(path.join(directory, 'icon-fixtures', file), value)));
   }
   const actionFixture = {};
   if (process.env.FBROWSE_GIT_ACTIONS_FIXTURE === '1') {
