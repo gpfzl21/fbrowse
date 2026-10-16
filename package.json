@@ -1,8 +1,7 @@
 {
-  "name": "@fbrowse/cli",
+  "name": "@wlalsrne/fbrowse",
   "version": "0.4.0",
-  "private": true,
-  "description": "Multi-root file browser with explicit Git actions for Linux servers",
+  "description": "Browse large files on remote Linux servers with multi-root previews and Git tools",
   "type": "module",
   "engines": {
     "node": ">=22.12"
@@ -29,9 +28,23 @@
     "test:browser": "node test/browser.test.cjs && node test/git-browser.test.cjs && node test/git-actions-browser.test.cjs",
     "pack:check": "npm pack --dry-run"
   },
-  "license": "UNLICENSED",
+  "license": "MIT",
   "dependencies": {
     "fflate": "0.8.3",
     "katex": "0.19.0"
+  },
+  "author": "wlalsrne",
+  "keywords": [
+    "fbrowse",
+    "file-browser",
+    "remote-server",
+    "pdf",
+    "markdown",
+    "orca",
+    "git"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }

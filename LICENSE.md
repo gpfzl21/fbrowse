@@ -1,8 +1,21 @@
-# 배포 라이선스
+MIT License
 
-이 저장소의 배포 라이선스는 아직 소유자가 지정하지 않았습니다.
-공개 또는 제3자 배포 전에 소유자가 라이선스를 선택해야 합니다.
-이 문서는 오픈소스 사용·수정·재배포 허가를 부여하지 않습니다.
+Copyright (c) 2026 fbrowse contributors
 
-별도로 다운로드되는 외부 뷰어 구성 요소는 각 upstream의 라이선스를 따릅니다.
-자세한 내용은 [THIRD_PARTY.md](THIRD_PARTY.md)를 참고하세요.
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

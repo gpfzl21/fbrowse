@@ -76,7 +76,7 @@ test('packed npm app installs globally and runs without Python, Bash, tmux or fl
     started = false;
     const unrelated = path.join(prefix, 'bin', 'unrelated');
     await fs.writeFile(unrelated, 'keep me');
-    await exec('npm', ['uninstall', '--global', '--prefix', prefix, '@fbrowse/cli', '--ignore-scripts',
+    await exec('npm', ['uninstall', '--global', '--prefix', prefix, '@wlalsrne/fbrowse', '--ignore-scripts',
       '--no-audit', '--no-fund'], { cwd: temporary, timeout: 30_000 });
     assert.equal(await fs.readFile(unrelated, 'utf8'), 'keep me');
     await assert.rejects(fs.access(installed));

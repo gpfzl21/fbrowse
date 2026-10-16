@@ -1,38 +1,51 @@
 # fbrowse
 
 Linux 서버의 프로젝트 파일과 선택한 디스크 폴더를 한 창에서 탐색하는 파일 브라우저입니다.
+Orca 같은 도구로 원격 서버를 사용할 때 큰 PDF나 파일이 기본 미리보기에서 잘 열리지 않는 문제를
+해결하기 위해 만들었습니다. 서버에서 파일을 HTTP로 제공하고 Orca의 내부 브라우저에서 직접 열어
+탐색·미리보기할 수 있습니다. 큰 PDF는 HTTP Range로 필요한 부분을 나누어 읽습니다.
+
 파일 탐색·미리보기는 읽기 전용이며, Git 패널에서 직접 선택한 스테이징·커밋·push 작업을 실행할 수 있습니다.
 **Node.js 22.12 이상**에서 실행합니다. Python, Bash 실행기, tmux, flock은 필요하지 않습니다.
 
 ## 설치
 
-배포된 npm 압축을 받은 뒤 서버의 사용자 계정에 한 번 설치합니다.
+Node.js와 npm이 설치된 Linux 서버에서 사용자 계정에 한 번 설치합니다.
 
 ```bash
-npm install --global ./fbrowse-cli-0.4.0.tgz
+npm install --global @wlalsrne/fbrowse
 cd /path/to/project
 fbrowse
 ```
 
+설치 명령의 패키지 이름은 `@wlalsrne/fbrowse`, 실행 명령은 `fbrowse`입니다.
 프로젝트마다 앱을 복사하거나 `npm install`을 실행할 필요가 없습니다. 실행할 때의 현재 디렉터리가
 기본 프로젝트 루트가 됩니다. 앱과 설정 파일을 프로젝트 안에 생성하지 않습니다.
-현재 npm registry에는 게시하지 않았습니다. `@fbrowse/cli`는 로컬 패키지 이름이며, 공개 배포 대상과
-라이선스를 결정하기 전까지 `private: true`로 게시를 막아두었습니다.
-
-소스에서 설치용 압축을 만드는 경우:
-
-```bash
-npm install
-mkdir -p dist
-npm pack --pack-destination dist
-npm install --global ./dist/fbrowse-cli-0.4.0.tgz
-```
+공개 패키지는 설치할 때 npm 로그인이 필요하지 않습니다. Linux, Node.js 22.12 이상이 필요합니다.
 
 npm 전역 경로를 사용자 디렉터리로 지정할 수도 있습니다.
 
 ```bash
-npm install --global --prefix "$HOME/.local" ./fbrowse-cli-0.4.0.tgz
+npm install --global --prefix "$HOME/.local" @wlalsrne/fbrowse
 export PATH="$HOME/.local/bin:$PATH"
+```
+
+소스에서 설치용 압축을 만드는 경우:
+
+```bash
+npm ci
+mkdir -p dist
+npm pack --pack-destination dist
+npm install --global ./dist/wlalsrne-fbrowse-0.4.0.tgz
+```
+
+로컬 개발용 이름 `@fbrowse/cli`로 설치한 이전 버전을 사용 중이면 같은 prefix에서 이전 패키지를
+제거한 뒤 새 이름으로 설치하세요. 루트 설정과 프로젝트 파일은 그대로 유지됩니다.
+
+```bash
+npm uninstall --global --prefix "$HOME/.local" @fbrowse/cli
+npm install --global --prefix "$HOME/.local" @wlalsrne/fbrowse
+fbrowse restart /path/to/project
 ```
 
 기존에 다른 `fbrowse` 명령이 있으면 먼저 소유권과 위치를 확인하세요. 무관한 명령에 `--force`로
@@ -134,9 +147,9 @@ PDF.js 준비가 실패하면 브라우저 기본 PDF 뷰어로 전환합니다.
 ## 업데이트와 제거
 
 ```bash
-npm install --global ./새버전의-fbrowse-cli.tgz
+npm install --global @wlalsrne/fbrowse@latest
 fbrowse restart /path/to/project
-npm uninstall --global @fbrowse/cli
+npm uninstall --global @wlalsrne/fbrowse
 ```
 
 `--prefix`로 설치했다면 업데이트·제거 때도 같은 prefix를 지정합니다. 업데이트 자체는 실행 중인
@@ -213,4 +226,27 @@ FBROWSE_PLAYWRIGHT_MODULE=/path/to/playwright npm run test:browser
 PATH에 Node만 남긴 환경에서 실행하여 Python·Bash·tmux·flock 없이 동작하는지 확인합니다.
 Playwright와 Chromium은 선택적 개발 도구이며 앱 실행에는 필요하지 않습니다.
 
-배포 라이선스는 [LICENSE.md](LICENSE.md), 외부 구성 요소는 [THIRD_PARTY.md](THIRD_PARTY.md)를 참고하세요.
+## npm 배포 (관리자)
+
+패키지는 npm 계정 `wlalsrne`의 `@wlalsrne/fbrowse` 이름으로 공개 배포합니다.
+배포 전에 변경 내용을 검증하고 새 버전을 지정하세요. 이미 게시한 버전은 덮어쓸 수 없습니다.
+`package.json`과 `package-lock.json`의 버전을 함께 갱신하고 CLI·서버 버전도 맞춥니다.
+다음은 0.4.0 배포 명령의 예입니다.
+
+```bash
+npm whoami
+npm test
+npm pack --pack-destination dist
+npm publish ./dist/wlalsrne-fbrowse-0.4.0.tgz --access public
+```
+
+`npm pack`으로 만든 앱 코드·문서만 게시합니다. 프로젝트 데이터, XDG 설정·상태·캐시와
+개발용 테스트·인증 파일은 포함하지 않습니다. 게시할 때 npm의 2단계 인증을 완료해야 할 수 있습니다.
+배포 후 임시 전역 경로에 레지스트리의 패키지를 설치해 `fbrowse --version`과 실행을 확인하세요.
+
+## 라이선스
+
+fbrowse의 코드와 문서는 [MIT 라이선스](LICENSE.md)로 제공합니다. 개인·상업적 사용, 수정 및
+재배포가 가능하며, 재배포 시 저작권과 라이선스 고지를 유지해야 합니다.
+표준 전문은 [Open Source Initiative의 MIT 라이선스](https://opensource.org/license/mit)를 따릅니다.
+외부 구성 요소에는 각자의 라이선스가 적용됩니다. [THIRD_PARTY.md](THIRD_PARTY.md)를 참고하세요.
