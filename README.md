@@ -1,14 +1,14 @@
 # fbrowse
 
 Linux 서버의 프로젝트 파일과 선택한 디스크 폴더를 한 창에서 탐색하는 읽기 전용 파일 브라우저입니다.
-**Node.js 22 이상**에서 실행합니다. Python, Bash 실행기, tmux, flock은 필요하지 않습니다.
+**Node.js 22.12 이상**에서 실행합니다. Python, Bash 실행기, tmux, flock은 필요하지 않습니다.
 
 ## 설치
 
 배포된 npm 압축을 받은 뒤 서버의 사용자 계정에 한 번 설치합니다.
 
 ```bash
-npm install --global ./fbrowse-cli-0.2.0.tgz
+npm install --global ./fbrowse-cli-0.2.1.tgz
 cd /path/to/project
 fbrowse
 ```
@@ -24,13 +24,13 @@ fbrowse
 npm install
 mkdir -p dist
 npm pack --pack-destination dist
-npm install --global ./dist/fbrowse-cli-0.2.0.tgz
+npm install --global ./dist/fbrowse-cli-0.2.1.tgz
 ```
 
 npm 전역 경로를 사용자 디렉터리로 지정할 수도 있습니다.
 
 ```bash
-npm install --global --prefix "$HOME/.local" ./fbrowse-cli-0.2.0.tgz
+npm install --global --prefix "$HOME/.local" ./fbrowse-cli-0.2.1.tgz
 export PATH="$HOME/.local/bin:$PATH"
 ```
 
@@ -99,6 +99,29 @@ PDF.js의 페이지 너비 보기와 큰 PDF의 HTTP Range 스트리밍, HTML의
 자동 줄바꿈은 기본 켜짐입니다. 접힌 긴 줄에도 원래 논리 줄번호를 유지하며, 30만 자를 넘는
 텍스트는 문법 색상·Markdown 서식 없이 원문으로 표시하고 2만 논리 줄을 넘으면 줄번호를 생략합니다.
 세로 분할선으로 목록 너비를 조절하고 크게 보기는 웹 페이지 안에서만 동작합니다. Escape로 복귀합니다.
+
+Markdown 수식은 KaTeX로 렌더링합니다. [수식 예제](examples/markdown-math.md)를 미리보기로 열어 확인할 수 있습니다.
+
+| 문법 | 표시 |
+| --- | --- |
+| `$E=mc^2$`, `\(E=mc^2\)` | 문장 안의 수식 |
+| `$$ ... $$`, `\[ ... \]` | 별도 줄의 수식 (여러 줄 가능) |
+| `\begin{equation} ... \end{equation}` | 독립 수식 |
+| `\begin{align} ... \end{align}` | 정렬한 여러 줄 수식 |
+| `gather`, `alignat` 환경 | 여러 줄·열 수식 |
+| 언어를 `math`로 지정한 코드 울타리 | 별도 줄의 수식 |
+
+위 환경은 `equation*`, `align*`처럼 별표가 붙은 형태도 지원합니다. 행렬·분수·합·적분 등은
+수식 구분자 안에 LaTeX 문법으로 작성합니다. 지원 명령은 [KaTeX 공식 목록](https://katex.org/docs/supported.html)을
+따르며 완전한 LaTeX 문서 컴파일이나 문서 전체 자동 수식 번호·참조는 제공하지 않습니다.
+일반 코드 울타리와 인라인 코드는 수식으로 바꾸지 않습니다. 가격 `$5 and $10`, 이스케이프한
+`\$` 및 닫히지 않은 구분자는 텍스트로 유지합니다. `$ ... $`처럼 달러 바로 안쪽에 공백을 넣으면
+일반 텍스트로 취급하므로 `$x + y$`처럼 작성하세요.
+
+잘못된 수식은 해당 수식의 원문과 안내를 표시하고 나머지 문서는 계속 렌더링합니다.
+한 문서에서 최대 1,000개, 개별 수식 2만 자까지 렌더링하며 그 이상은 수식 원문을 표시합니다.
+수식의 외부 이미지·링크·사용자 HTML 명령은 허용하지 않습니다. 원문 보기와 복사는 원래 텍스트를 유지합니다.
+KaTeX의 JS·CSS·폰트는 npm 설치에 포함되어 수식 렌더링 자체에는 네트워크가 필요하지 않습니다.
 
 PDF.js와 코드/Markdown 구성 요소는 고정 버전과 SHA-256 검증을 거쳐
 `$XDG_CACHE_HOME/project-file-browser`에 캐시합니다. 최초 준비에는 네트워크가 필요하고,

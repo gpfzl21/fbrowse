@@ -36,7 +36,7 @@ test('packed npm app installs globally and runs without Python, Bash, tmux or fl
     assert.ok(files.every(file => !/\.(?:py|sh)$/.test(file)), 'legacy runtimes must not ship');
     assert.ok(files.every(file => !/(?:^|\/)(?:\.aws|\.agents|\.codex|test|dist)(?:\/|$)/.test(file)));
     const archive = path.join(temporary, packed.filename);
-    // The sole npm dependency was fetched by npm install; use that cache for an offline clean install.
+    // npm dependencies were fetched by npm install; use that cache for an offline clean install.
     const npmCache = process.env.npm_config_cache || path.join(os.homedir(), '.npm');
     const collisionPrefix = path.join(temporary, 'collision-prefix');
     const collision = path.join(collisionPrefix, 'bin', 'fbrowse');
@@ -48,7 +48,7 @@ test('packed npm app installs globally and runs without Python, Bash, tmux or fl
     assert.equal(await fs.readFile(collision, 'utf8'), 'unrelated command');
     await exec('npm', ['install', '--global', '--prefix', prefix, '--offline', '--ignore-scripts',
       '--no-audit', '--no-fund', '--cache', npmCache, archive], { cwd: temporary, timeout: 30_000 });
-    assert.match((await run('--version')).stdout, /0\.2\.0/);
+    assert.match((await run('--version')).stdout, /0\.2\.1/);
     await run('roots', 'add', 'external', external, '--name', '참고 자료');
     await run('--no-pdfjs');
     started = true;
@@ -59,6 +59,9 @@ test('packed npm app installs globally and runs without Python, Bash, tmux or fl
     assert.equal(info.backend, 'node');
     assert.equal(info.root, await fs.realpath(project));
     assert.equal(info.roots.find(root => root.id === 'external').name, '참고 자료');
+    assert.equal((await fetch(new URL('_math_assets/katex.min.js', url))).status, 200);
+    assert.equal((await fetch(new URL('_math_assets/fonts/KaTeX_Main-Regular.woff2', url))).status, 200);
+    assert.equal((await fetch(new URL('_app_assets/markdown-math.js', url))).status, 200);
     assert.deepEqual(await fs.readdir(project), [], 'no app/config files in caller project');
     assert.deepEqual(await fs.readdir(external), [], 'selected root contents stay intact');
     await run('stop');

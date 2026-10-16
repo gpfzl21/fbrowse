@@ -3,8 +3,9 @@ import { main } from '../lib/cli.mjs';
 
 process.umask(0o077);
 try {
-  if (Number(process.versions.node.split('.')[0]) < 22) {
-    throw new Error('Node.js 22 이상이 필요합니다.');
+  const [major, minor] = process.versions.node.split('.').map(Number);
+  if (major < 22 || (major === 22 && minor < 12)) {
+    throw new Error('Node.js 22.12 이상이 필요합니다.');
   }
   await main(process.argv.slice(2));
 } catch (error) {

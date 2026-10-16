@@ -149,6 +149,50 @@ const assert=require('node:assert/strict');
     assert.equal(await page.locator('#markdown img').getAttribute('src'),ready.url+'roots/project/files/image.svg');
     await page.locator('#mode').click();
     assert.equal(await page.locator('#code').textContent(),fs.readFileSync(ready.project+'/nested/README.md','utf8'));
+    // Render delimiters before Markdown consumes backslashes, underscores, & and <.
+    // Disallow every external request: KaTeX JS/CSS/fonts must be served locally.
+    const externalRequests=[];
+    await page.route('**/*',route=>{
+      if(new URL(route.request().url()).origin!==new URL(ready.url).origin){externalRequests.push(route.request().url());return route.abort();}
+      return route.continue();
+    });
+    await page.goto(ready.url+'_preview?root=project&path=math.md');
+    await page.locator('#markdown .katex').first().waitFor();
+    await page.waitForFunction(()=>!document.querySelector('#markdown').hidden);
+    assert.equal(await page.locator('#markdown .katex').count(),15);
+    assert.equal(await page.locator('#markdown .katex-display').count(),7);
+    const tex=await page.locator('#markdown annotation[encoding="application/x-tex"]').allTextContents();
+    assert.ok(tex.includes('a_i + b_i'));assert.ok(tex.includes('\\frac{1}{2} < x \\land y'));
+    assert.ok(tex.some(text=>text.startsWith('\\begin{align}')));
+    assert.ok(tex.some(text=>text.includes('pmatrix')));
+    assert.equal(await page.locator('#markdown table .katex').count(),1);
+    assert.equal(await page.locator('#markdown pre .katex, #markdown code .katex').count(),0);
+    assert.match(await page.locator('#markdown').textContent(),/가격 \$5 and \$10, 이스케이프 \$20, 미완성 \$x \+ 1/);
+    assert.equal(await page.locator('#markdown .math-error').count(),1);
+    assert.equal(await page.locator('#markdown a[href^="javascript:"], #markdown img').count(),0);
+    assert.equal(await page.evaluate(()=>window.MATH_PWNED),undefined);
+    await page.evaluate(()=>document.fonts.ready);
+    assert.ok(await page.evaluate(()=>[...document.fonts].some(font=>font.family.includes('KaTeX')&&font.status==='loaded')));
+    assert.deepEqual(externalRequests,[]);
+    await page.locator('#mode').click();
+    assert.equal(await page.locator('#code').textContent(),fs.readFileSync(ready.project+'/math.md','utf8'));
+    await page.locator('#mode').click();assert.equal(await page.locator('#markdown .katex').count(),15);
+    await page.setViewportSize({width:360,height:900});
+    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+    await page.goto(ready.url+'_preview?root=project&path=math-environments.md');
+    await page.locator('#markdown .katex').first().waitFor();
+    assert.equal(await page.locator('#markdown .katex-display').count(),8);
+    assert.equal(await page.locator('#markdown .math-error').count(),0);
+    await page.goto(ready.url+'_preview?root=project&path=math-broken.md');
+    await page.locator('#markdown h1').waitFor({timeout:5000});
+    assert.equal(await page.locator('#code').textContent(),fs.readFileSync(ready.project+'/math-broken.md','utf8'));
+    await page.route('**/_math_assets/katex.min.js',route=>route.abort());
+    await page.goto(ready.url+'_preview?root=project&path=math.md');
+    await page.locator('#markdown h1').waitFor();
+    await page.locator('#notice').filter({hasText:'일반 Markdown으로 표시합니다'}).waitFor();
+    assert.equal(await page.locator('#code').textContent(),fs.readFileSync(ready.project+'/math.md','utf8'));
+    await page.unroute('**/_math_assets/katex.min.js');
+    await page.unroute('**/*');
     for(const [file,formatted] of [['highlight-limit.py',true],['large.py',false],['markdown-limit.md',true],['large.md',false]]){
       await page.goto(ready.url+'_preview?root=project&path='+file);
       await page.waitForFunction(()=>window.hljs&&data&&document.querySelector('#code').textContent===data.text);
@@ -165,7 +209,7 @@ const assert=require('node:assert/strict');
       assert.equal(await page.locator('#code').textContent(),fs.readFileSync(ready.project+'/'+file,'utf8'));
     }
     for(const [file,original] of originals)assert.deepEqual(fs.readFileSync(ready.project+'/'+file),original);
-    assert.deepEqual(errors,[]);console.log('PASS: Node multi-root UI, picker, persistence, sanitation, relative assets, divider, expansion, logical wrapping, formatting/gutter limits; PDF.js='+ready.pdfjs);
+    assert.deepEqual(errors,[]);console.log('PASS: Node multi-root UI, picker, persistence, sanitation, relative assets, math delimiters/environments/offline fonts, divider, expansion, logical wrapping, formatting/gutter limits; PDF.js='+ready.pdfjs);
   }finally{
     if(browser)await browser.close();fixture.kill('SIGINT');
     await new Promise(resolve=>{if(fixture.exitCode!==null)resolve();else fixture.once('exit',resolve);});

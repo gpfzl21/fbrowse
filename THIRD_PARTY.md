@@ -3,6 +3,10 @@
 서버와 CLI는 Node.js 표준 모듈을 사용하며, PDF.js 배포 ZIP을 읽기 위해 npm 의존성
 [`fflate` 0.8.3](https://github.com/101arrowz/fflate) (MIT)을 사용합니다. npm 설치가 함께 준비하며
 추가 시스템 패키지나 Python 도구를 실행하지 않습니다.
+Markdown 수식은 npm 의존성 [`KaTeX` 0.19.0](https://github.com/KaTeX/KaTeX) (MIT)으로 렌더링합니다.
+KaTeX의 JS·CSS·폰트는 설치된 패키지에서 로컬로 제공하며 별도의 CDN 요청을 하지 않습니다.
+정확한 버전과 npm 무결성 값은 `package-lock.json`에 기록합니다. KaTeX의 CLI 의존성에 따라
+Node.js 22.12 이상을 사용합니다.
 
 다음 브라우저 구성 요소는 고정 버전과 SHA-256 검증을 거쳐 필요할 때 XDG 캐시에 다운로드합니다.
 외부 뷰어 배포 파일을 이 저장소나 npm 패키지에 포함하지 않습니다.

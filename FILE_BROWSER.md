@@ -3,7 +3,7 @@
 fbrowse 0.2부터 서버와 CLI는 Node.js 기반입니다. 설치·실행·다중 루트·미리보기·검증 안내는
 [README.md](README.md)를 참고하세요.
 
-- 필요한 환경: Linux, Node.js 22 이상과 npm
+- 필요한 환경: Linux, Node.js 22.12 이상과 npm
 - 한 번 전역 설치하고 어느 프로젝트에서든 `fbrowse` 실행
 - Python, Bash 실행기, tmux, flock 불필요
 - 브라우저 자동 열기 없음: 표시된 주소를 Orca Browser에서 직접 열기

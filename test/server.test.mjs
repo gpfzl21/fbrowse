@@ -63,7 +63,7 @@ test('isolated server and storage integrations', async t => {
     const info = (await request(app, '/api/info')).json();
     assert.equal(info.service, 'project-file-browser');
     assert.equal(info.backend, 'node');
-    assert.equal(info.version, '0.2.0');
+    assert.equal(info.version, '0.2.1');
     assert.equal(info.pid, process.pid);
     assert.equal(info.root, roots.project);
     assert.equal(info.pdfjs, false);
@@ -346,6 +346,26 @@ test('isolated server and storage integrations', async t => {
       assert.equal(downloads, 2);
       await assert.rejects(fs.stat(path.join(base, 'cache', 'project-file-browser', `pdfjs-${PDFJS_VERSION}-node`)), { code: 'ENOENT' });
     } finally { globalThis.fetch = originalFetch; console.error = originalError; }
+  }));
+
+  await t.test('math renderer and fonts are local with a strict asset allowlist', () => fixture(async ({ app }) => {
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async () => { throw Error('Unexpected download'); };
+    try {
+      for (const [name, type] of [['katex.min.js', 'text/javascript'], ['katex.min.css', 'text/css'],
+        ['fonts/KaTeX_Main-Regular.woff2', 'font/woff2']]) {
+        const result = await request(app, '/_math_assets/' + name);
+        assert.equal(result.status, 200);
+        assert.ok(result.headers['content-type'].startsWith(type));
+        assert.ok(result.body.length > 1000);
+        const head = await request(app, '/_math_assets/' + name, { method: 'HEAD' });
+        assert.equal(head.body.length, 0);
+        assert.equal(head.headers['content-length'], result.headers['content-length']);
+      }
+      assert.equal((await request(app, '/_app_assets/markdown-math.js')).status, 200);
+      for (const name of ['../package.json', '%2e%2e/package.json', '%2Fetc/passwd', 'katex.js', 'fonts/../../package.json', 'LICENSE'])
+        assert.ok([403, 404].includes((await request(app, '/_math_assets/' + name)).status));
+    } finally { globalThis.fetch = originalFetch; }
   }));
 
   await t.test('verified viewer cache accepts symlinked XDG base and blocks asset traversal', () => fixture(async ({ roots, base }) => {
