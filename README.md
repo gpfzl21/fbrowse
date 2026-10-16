@@ -35,7 +35,7 @@ export PATH="$HOME/.local/bin:$PATH"
 ```
 
 기존에 다른 `fbrowse` 명령이 있으면 먼저 소유권과 위치를 확인하세요. 무관한 명령에 `--force`로
-덮어쓰지 마세요. 기존 Python 설치의 전환 방법은 아래에 설명합니다.
+덮어쓰지 마세요.
 
 ## 실행과 종료
 
@@ -121,13 +121,7 @@ npm uninstall --global @fbrowse/cli
 종료하거나 XDG 설정·상태·캐시 및 프로젝트 데이터를 삭제하는 명령이 아닙니다.
 
 Node 실행 상태와 로그는 `$XDG_STATE_HOME/fbrowse/<경로 해시>/`에 저장합니다.
-Python 버전의 `project-file-browser` 상태 폴더와 분리하여 실행 중인 기존 서버를 보호합니다.
-기존 Python 서버는 기존 설치의 실행기로 종료할 수 있으며 Node 명령은 기존 tmux 세션을 건드리지 않습니다.
-
-현재 서버의 전환에서는 기존 실행기를 `~/.local/bin/fbrowse-python-backup-0.1.0`으로 보관했습니다.
-기존 Python 서버를 종료할 때는 해당 프로젝트에서 `fbrowse-python-backup-0.1.0 stop`을 실행합니다.
-새 `fbrowse`로 시작한 Node 서버는 `fbrowse stop`으로 종료합니다. 전환 전에 열린 창은 기존 서버를
-계속 사용하므로 새 버전을 보려면 새 명령이 출력한 주소를 여세요.
+이전 Python 버전의 상태 위치와 분리되어 있으며 Node 명령은 tmux 세션을 조작하지 않습니다.
 
 ## 개발과 검증
 
