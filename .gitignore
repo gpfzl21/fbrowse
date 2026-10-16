@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+.venv/
+.coverage
+htmlcov/
+dist/
+*.egg-info/
+.DS_Store
+.agents/
+.codex/
+.aws/
