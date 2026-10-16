@@ -98,6 +98,39 @@ const deferred=()=>{let resolve;const promise=new Promise(done=>resolve=done);re
     assert.equal(await page.locator('#diffContent script').count(),0);assert.equal(await page.evaluate(()=>window.DIFF_PWNED),undefined);
     await change('untracked','outside-link.txt').click();await page.locator('#diffContent').filter({hasText:'../outside-secret.txt'}).waitFor();
     assert.doesNotMatch(await page.locator('#diffViewer').textContent(),/OUTSIDE_SECRET_NEVER_RENDER/);assert.ok(await page.locator('#showFile').isDisabled());
+    // Number actual file lines from hunk coordinates, including omitted counts,
+    // zero-length ranges, EOF markers and multiple hunks far apart in the file.
+    const longAddition='+한글\t'+'abcdefghij '.repeat(150);
+    const numberedPatch=['diff --git "a/a.txt" "b/a.txt"','--- a/a.txt','+++ b/a.txt',
+      '@@ -40,4 +70,5 @@',' context','-old','\\ No newline at end of file',longAddition,'+added',' ',' tail',
+      '@@ -100 +130 @@','-previous','+next','@@ -0,0 +1,2 @@','+first','+second',
+      '@@ -999999 +0,0 @@','-removed',''].join('\n');
+    await page.route('**/api/git/diff?**',route=>route.fulfill({json:{root_id:'project',path:'changes/mixed.txt',staged:false,kind:'diff',text:numberedPatch}}));
+    await change('unstaged','changes/mixed.txt').click();await page.locator('#diffContent .diff-old').filter({hasText:'999999'}).waitFor();
+    const positions=await page.locator('#diffContent .diff-line').evaluateAll(rows=>rows.map(row=>[row.dataset.oldLine,row.dataset.newLine]));
+    assert.deepEqual(positions,[['',''],['',''],['',''],['',''],['40','70'],['41',''],['',''],['','71'],['','72'],['42','73'],['43','74'],['',''],['100',''],['','130'],['',''],['','1'],['','2'],['',''],['999999',''],['','']]);
+    assert.equal((await page.locator('#diffContent .diff-code').allTextContents()).join(''),numberedPatch);
+    const wrappedRow=page.locator('#diffContent .diff-line[data-new-line="71"]');
+    async function checkWrappedNumbers(){
+      const measured=await wrappedRow.evaluate(row=>({row:row.getBoundingClientRect().height,number:row.querySelector('.diff-new').getBoundingClientRect().top,code:row.querySelector('.diff-code').getBoundingClientRect().top,line:parseFloat(getComputedStyle(row).lineHeight)}));
+      assert.ok(measured.row>measured.line*2);assert.ok(Math.abs(measured.number-measured.code)<1);
+      assert.equal(await wrappedRow.locator('.diff-new').textContent(),'71');
+      assert.ok(await page.locator('#diffViewer').evaluate(node=>node.scrollWidth<=node.clientWidth+1));
+    }
+    await checkWrappedNumbers();await page.setViewportSize({width:900,height:900});await checkWrappedNumbers();
+    await page.locator('#diffWrap').click();
+    assert.equal(await page.locator('#diffWrap').getAttribute('aria-pressed'),'false');
+    const unwrapped=await wrappedRow.evaluate(row=>({height:row.getBoundingClientRect().height,line:parseFloat(getComputedStyle(row).lineHeight)}));
+    assert.ok(Math.abs(unwrapped.height-unwrapped.line)<1);
+    await page.locator('#diffViewer').evaluate(node=>node.scrollLeft=500);
+    assert.ok(await wrappedRow.locator('.diff-gutter').evaluate(node=>Math.abs(node.getBoundingClientRect().left-document.querySelector('#diffViewer').getBoundingClientRect().left)<1));
+    await page.locator('#diffWrap').click();await checkWrappedNumbers();
+    await page.setViewportSize({width:1280,height:900});
+    assert.deepEqual(await page.locator('#diffContent .diff-line').evaluateAll(rows=>rows.map(row=>[row.dataset.oldLine,row.dataset.newLine])),positions);
+    await page.unroute('**/api/git/diff?**');
+    // Plain untracked content has current-file line numbers and no original side.
+    await change('untracked','untracked <& 한글.txt').click();await page.locator('#diffContent .diff-new').filter({hasText:'1'}).waitFor();
+    assert.equal(await page.locator('#diffContent .diff-old').first().textContent(),'');
     // Explicit messages for bounded, empty and failed diffs, using the actual API shape.
     for(const data of [{kind:'empty',text:''},{kind:'diff',text:'+bounded\n',truncated:true},{kind:'unavailable',message:'Temporary failure',text:''},{kind:'diff',text:'+line\n'.repeat(25000),lineLimit:true}]){
       await page.route('**/api/git/diff?**',route=>route.fulfill({json:{root_id:'project',path:'changes/mixed.txt',staged:false,...data}}));
@@ -138,7 +171,7 @@ const deferred=()=>{let resolve;const promise=new Promise(done=>resolve=done);re
     const idleRequests=statusRequests;await page.waitForTimeout(2300);assert.equal(statusRequests,idleRequests,'Git must not continuously poll');
     for(const [root,snapshot] of sources)assert.deepEqual(sourceSnapshot(root),snapshot,'browser changed source files');
     for(const [root,index] of indexes)assert.deepEqual(fs.readFileSync(path.join(root,'.git/index')),index,'browser changed Git index');
-    assert.deepEqual(errors,[]);console.log('PASS: Git groups, branch, colors, escaped staged/unstaged diffs, rename/deletion/binary/bounded/error states, symlinks, root races, optional Git, no polling, source/index unchanged');
+    assert.deepEqual(errors,[]);console.log('PASS: Git groups, branch, colors, escaped staged/unstaged diffs, actual old/new line numbers, wrapping/resizing/sticky gutters, rename/deletion/binary/bounded/error states, symlinks, root races, optional Git, no polling, source/index unchanged');
   }finally{
     if(browser)await browser.close();fixture.kill('SIGINT');
     await new Promise(resolve=>{if(fixture.exitCode!==null)resolve();else fixture.once('exit',resolve);});

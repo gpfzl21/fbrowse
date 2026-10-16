@@ -1,6 +1,6 @@
 {
   "name": "@fbrowse/cli",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "private": true,
   "description": "Read-only multi-root file browser for Linux servers",
   "type": "module",

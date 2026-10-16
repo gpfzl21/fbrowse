@@ -23,7 +23,7 @@ main{display:flex;min-height:0;flex:1;gap:0;padding:8px}aside{width:330px;min-wi
 #gitPanel{flex:1;min-height:0;overflow:auto;padding:6px 5px}.git-branch{padding:7px 10px;font-weight:600;overflow-wrap:anywhere}.git-group h2{font-size:12px;font-weight:600;margin:14px 9px 5px;color:var(--muted)}.git-row{font-size:12px}.git-row .filename{white-space:normal;overflow-wrap:anywhere}.git-badge{flex:none;font:700 11px/1.5 ui-monospace,monospace;min-width:15px;text-align:center;color:var(--git-color)}
 [data-git-status="M"],[data-git-status="T"]{--git-color:var(--git-modified)}[data-git-status="A"]{--git-color:var(--git-added)}[data-git-status="U"]{--git-color:var(--git-untracked)}[data-git-status="D"]{--git-color:var(--git-deleted)}[data-git-status="R"],[data-git-status="C"]{--git-color:var(--git-renamed)}[data-git-status="!"]{--git-color:var(--git-conflict)}
 .row[data-git-status] .filename{color:var(--git-color)}.symlink{flex:none;font-weight:600;color:var(--muted)}.row:disabled:hover{background:none}.viewer-tabs{display:flex;gap:6px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--line);flex-wrap:wrap}.diff-path{flex:1;min-width:80px;overflow-wrap:anywhere;font-size:12px;color:var(--muted)}
-#diffViewer{position:absolute;inset:0;overflow:auto;background:var(--panel)}#diffContent{margin:0;padding:12px 0;font:12px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;tab-size:4;min-width:100%;width:max-content}.diff-line{display:block;white-space:pre;padding:0 16px;min-height:1.65em}.diff-add{background:var(--diff-add);color:var(--git-added)}.diff-delete{background:var(--diff-delete);color:var(--git-deleted)}.diff-hunk{color:var(--accent);background:var(--selected)}.diff-message{padding:14px 16px;color:var(--muted);font-size:12px;white-space:pre-wrap;overflow-wrap:anywhere}
+#diffViewer{position:absolute;inset:0;overflow:auto;background:var(--panel)}#diffContent{--diff-digits:4;margin:0;padding:12px 0;font:12px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;tab-size:4;min-width:100%;width:max-content}.diff-line,.diff-columns{display:flex;width:100%;min-height:1.65em;background:var(--panel)}.diff-gutter{position:sticky;left:0;z-index:1;display:flex;align-self:stretch;flex:none;background:inherit;color:var(--muted);user-select:none;border-right:1px solid var(--line)}.diff-number{display:block;flex:none;width:calc(var(--diff-digits)*1ch + 16px);padding:0 8px;text-align:right;white-space:pre}.diff-number+.diff-number{border-left:1px solid var(--line)}.diff-code{display:block;flex:1;white-space:pre;padding:0 14px;min-width:0}.diff-columns{color:var(--muted);font-size:11px;user-select:none}.diff-columns .diff-gutter{font-size:12px}.diff-columns .diff-number{text-align:center}#diffContent.wrap{width:100%}#diffContent.wrap .diff-code{white-space:pre-wrap;overflow-wrap:anywhere}.diff-add{background:var(--diff-add);color:var(--git-added)}.diff-delete{background:var(--diff-delete);color:var(--git-deleted)}.diff-hunk{color:var(--accent);background:var(--selected)}.diff-message{padding:14px 16px;color:var(--muted);font-size:12px;white-space:pre-wrap;overflow-wrap:anywhere}
 </style></head><body>
 <main><aside id="fileSidebar" aria-label="파일 탐색"><div class="side-controls">
 <div class="side-brand"><strong class="root" id="rootName">프로젝트 파일</strong><button class="plain" id="home" title="검색을 닫고 프로젝트 루트 보기" aria-label="처음으로">⌂</button><button class="plain" id="refresh" title="목록과 선택한 파일 새로고침" aria-label="새로고침">↻</button></div>
@@ -33,7 +33,7 @@ main{display:flex;min-height:0;flex:1;gap:0;padding:8px}aside{width:330px;min-wi
 <div class="toolbar"><select id="type" aria-label="파일 형식"><option value="all">전체 파일</option><option value="pdf">PDF</option><option value="html">HTML</option><option value="markdown">Markdown</option><option value="code">코드</option></select><div class="actions" id="actions" hidden><button class="button" id="expandPreview" aria-pressed="false" aria-label="크게 보기" title="크게 보기 · Orca 화면 유지 · Esc로 돌아가기">⛶</button><button class="button" id="copy" aria-label="링크 복사" title="링크 복사">⧉</button><a class="button" id="open" target="_blank" rel="noopener" aria-label="새 탭에서 열기" title="새 탭에서 열기">↗</a></div></div>
 </div><div class="side-head" id="listLabel">폴더</div><nav id="entries" aria-label="파일과 폴더" aria-busy="true"></nav><nav id="gitPanel" aria-label="Git 변경사항" aria-busy="false" hidden></nav><div class="side-foot" id="status" role="status">파일 목록을 불러오는 중…</div></aside>
 <div class="splitter" id="sidebarResize" role="separator" aria-label="파일 목록 너비 조절" aria-orientation="vertical" aria-controls="fileSidebar" tabindex="0" title="드래그로 파일 목록 너비 조절 · 방향키로도 조절 가능"></div>
-<section class="viewer" id="viewer" aria-label="파일 미리보기"><div class="viewer-tabs" id="viewerTabs" hidden><span class="diff-path" id="diffPath"></span><button class="button" id="showDiff" aria-pressed="true">변경사항</button><button class="button" id="showFile" aria-pressed="false" disabled>파일 열기</button></div><div class="preview"><div class="empty" id="empty"><div><div class="symbol">▤</div><h1>찾고, 바로 열어보세요</h1><p>폴더를 펼치거나 파일명으로 검색하세요.<br>PDF, HTML, Markdown과 코드를 바로 볼 수 있습니다.</p></div></div><section id="diffViewer" aria-label="파일 변경사항" hidden><div id="diffMessage" class="diff-message" role="status"></div><pre id="diffContent"></pre></section><iframe id="preview" title="선택한 파일 미리보기" hidden></iframe></div><button class="button" id="exitExpanded" hidden title="기본 보기 · Esc" aria-label="기본 보기">↙ 기본 보기 <small>Esc</small></button></section></main>
+<section class="viewer" id="viewer" aria-label="파일 미리보기"><div class="viewer-tabs" id="viewerTabs" hidden><span class="diff-path" id="diffPath"></span><button class="button" id="diffWrap" aria-pressed="true" title="긴 diff 줄을 화면 너비에 맞춰 줄바꿈">자동 줄바꿈</button><button class="button" id="showDiff" aria-pressed="true">변경사항</button><button class="button" id="showFile" aria-pressed="false" disabled>파일 열기</button></div><div class="preview"><div class="empty" id="empty"><div><div class="symbol">▤</div><h1>찾고, 바로 열어보세요</h1><p>폴더를 펼치거나 파일명으로 검색하세요.<br>PDF, HTML, Markdown과 코드를 바로 볼 수 있습니다.</p></div></div><section id="diffViewer" aria-label="파일 변경사항" hidden><div id="diffMessage" class="diff-message" role="status"></div><pre id="diffContent" class="wrap"></pre></section><iframe id="preview" title="선택한 파일 미리보기" hidden></iframe></div><button class="button" id="exitExpanded" hidden title="기본 보기 · Esc" aria-label="기본 보기">↙ 기본 보기 <small>Esc</small></button></section></main>
 <dialog id="rootsDialog" aria-labelledby="rootsTitle">
 <div class="dialog-head"><h2 id="rootsTitle">루트 폴더 관리</h2><button class="button" id="closeRoots">닫기</button></div>
 <div id="rootManagement"><p>이 서버의 폴더를 찾아 연결하세요. 연결을 제거해도 원본 파일은 유지됩니다.</p>
@@ -210,23 +210,45 @@ function renderDiff(data){
   // Bound DOM work as well as response bytes: a newline-heavy patch can be tiny.
   const lines=['diff','text'].includes(data.kind)?(data.text||'').split('\n',20001):[];
   $('diffMessage').textContent=[messages[data.kind],data.message,(data.truncated||lines.length>20000)?'크기 제한으로 일부만 표시합니다.':'',data.kind==='text'?'추적되지 않은 파일의 내용':''].filter(Boolean).join(' · ');
-  let inHunk=false;
-  $('diffContent').replaceChildren(...lines.slice(0,20000).map((line,i)=>{
-    let style='';
+  let oldLine=0,newLine=0,oldLeft=0,newLeft=0,inHunk=false,maxLine=1;
+  const rows=lines.slice(0,20000).map((line,i)=>{
+    let style='',oldNumber='',newNumber='';
+    if(data.kind==='text')newNumber=i+1;
     if(data.kind==='diff'){
       if(line.startsWith('diff '))inHunk=false;
-      if(line.startsWith('@@')){inHunk=true;style=' diff-hunk';}
-      else if(inHunk)style=line.startsWith('+')?' diff-add':line.startsWith('-')?' diff-delete':'';
+      const hunk=/^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@/.exec(line);
+      if(hunk){
+        [oldLine,oldLeft,newLine,newLeft]=[hunk[1],hunk[2]??1,hunk[3],hunk[4]??1].map(Number);
+        inHunk=[oldLine,oldLeft,newLine,newLeft,oldLine+oldLeft,newLine+newLeft].every(Number.isSafeInteger);style=' diff-hunk';
+      }else if(inHunk){
+        if(line[0]===' '&&oldLeft>0&&newLeft>0){oldNumber=oldLine++;newNumber=newLine++;oldLeft--;newLeft--;}
+        else if(line[0]==='-'&&oldLeft>0){oldNumber=oldLine++;oldLeft--;style=' diff-delete';}
+        else if(line[0]==='+'&&newLeft>0){newNumber=newLine++;newLeft--;style=' diff-add';}
+      }
     }
-    return make('span','diff-line'+style,line+(i<lines.length-1?'\n':''));
-  }));
+    maxLine=Math.max(maxLine,Number(oldNumber)||0,Number(newNumber)||0);
+    const row=make('span','diff-line'+style),gutter=make('span','diff-gutter');gutter.setAttribute('aria-hidden','true');
+    row.dataset.oldLine=String(oldNumber);row.dataset.newLine=String(newNumber);
+    const old=make('span','diff-number diff-old',oldNumber),next=make('span','diff-number diff-new',newNumber);
+    old.title='원본 줄번호';next.title='변경 후 줄번호';gutter.append(old,next);
+    row.append(gutter,make('span','diff-code',line+(i<lines.length-1?'\n':'')));return row;
+  });
+  $('diffContent').style.setProperty('--diff-digits',String(Math.max(4,String(maxLine).length)));
+  const heading=make('span','diff-columns'),labels=make('span','diff-gutter');heading.setAttribute('aria-hidden','true');
+  labels.append(make('span','diff-number','원본'),make('span','diff-number','변경'));heading.append(labels);
+  $('diffContent').replaceChildren(...(rows.length?[heading,...rows]:[]));
 }
+$('diffWrap').onclick=()=>{
+  const wrap=$('diffContent').classList.toggle('wrap');$('diffWrap').setAttribute('aria-pressed',String(wrap));
+  try{localStorage.setItem('fbrowse-diff-wrap',String(wrap));}catch{}
+};
+try{if(localStorage.getItem('fbrowse-diff-wrap')==='false'){$('diffContent').classList.remove('wrap');$('diffWrap').setAttribute('aria-pressed','false');}}catch{}
 
 async function selectDiff(change,group){
   const root=state.root,path=change.path;state.diffController?.abort();
   const controller=new AbortController(),generation=++state.diffGeneration;state.diffController=controller;
   state.diff={root,path,group,change};state.viewerMode='diff';state.selected=null;
-  $('viewerTabs').hidden=false;$('diffPath').textContent=rootLabel(root)+' · '+path+' · '+(group==='staged'?'스테이징됨':group==='untracked'?'추적되지 않음':'작업 폴더');
+  $('viewerTabs').hidden=false;$('diffWrap').hidden=false;$('diffPath').textContent=rootLabel(root)+' · '+path+' · '+(group==='staged'?'스테이징됨':group==='untracked'?'추적되지 않음':'작업 폴더');
   $('showDiff').setAttribute('aria-pressed','true');$('showFile').setAttribute('aria-pressed','false');$('showFile').disabled=true;$('showFile').title='파일 확인 중…';
   $('empty').hidden=true;$('preview').hidden=true;$('preview').src='about:blank';$('diffViewer').hidden=false;$('actions').hidden=false;$('open').hidden=true;
   $('viewer').setAttribute('aria-label',path+' 변경사항');$('diffMessage').textContent='변경사항을 불러오는 중…';$('diffContent').replaceChildren();drawGit();
@@ -424,7 +446,7 @@ $('preview').addEventListener('load',()=>{
 function select(entry,keepDiff=false){
   if(entry.available===false)return;
   if(!keepDiff){state.diffController?.abort();state.diffGeneration++;state.diff=null;$('viewerTabs').hidden=true;}
-  state.viewerMode='file';$('diffViewer').hidden=true;$('open').hidden=false;$('showFile').setAttribute('aria-pressed','true');$('showDiff').setAttribute('aria-pressed','false');
+  state.viewerMode='file';$('diffViewer').hidden=true;$('diffWrap').hidden=true;$('open').hidden=false;$('showFile').setAttribute('aria-pressed','true');$('showDiff').setAttribute('aria-pressed','false');
   state.selected=entry;$('preview').title=entry.name+' 미리보기';$('viewer').setAttribute('aria-label',entry.name+' 미리보기');
   $('empty').hidden=true;$('preview').hidden=false;$('actions').hidden=false;$('open').href=previewURL(entry);loadPreview();
   document.title='fbrowse';

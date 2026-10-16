@@ -8,7 +8,7 @@ Linux 서버의 프로젝트 파일과 선택한 디스크 폴더를 한 창에�
 배포된 npm 압축을 받은 뒤 서버의 사용자 계정에 한 번 설치합니다.
 
 ```bash
-npm install --global ./fbrowse-cli-0.3.0.tgz
+npm install --global ./fbrowse-cli-0.3.1.tgz
 cd /path/to/project
 fbrowse
 ```
@@ -24,13 +24,13 @@ fbrowse
 npm install
 mkdir -p dist
 npm pack --pack-destination dist
-npm install --global ./dist/fbrowse-cli-0.3.0.tgz
+npm install --global ./dist/fbrowse-cli-0.3.1.tgz
 ```
 
 npm 전역 경로를 사용자 디렉터리로 지정할 수도 있습니다.
 
 ```bash
-npm install --global --prefix "$HOME/.local" ./fbrowse-cli-0.3.0.tgz
+npm install --global --prefix "$HOME/.local" ./fbrowse-cli-0.3.1.tgz
 export PATH="$HOME/.local/bin:$PATH"
 ```
 
@@ -156,6 +156,9 @@ Node 실행 상태와 로그는 `$XDG_STATE_HOME/fbrowse/<경로 해시>/`에 �
 `R` 이름 변경, `T` 유형 변경, `!` 충돌. 상위 폴더에는 하위 파일의 변경 상태를 요약합니다.
 왼쪽 Git 보기에서는 브랜치와 스테이징된 변경·작업 중 변경·미추적 파일을 구분하고,
 파일을 선택하면 오른쪽에서 추가·삭제 줄을 구분한 diff 또는 새 파일의 내용을 볼 수 있습니다.
+diff 왼쪽에는 원본·변경 후 줄번호를 나란히 표시합니다. 삭제 줄에는 원본 번호, 추가 줄에는 변경 후
+번호가 나오며 중간에 생략된 구간이 있어도 실제 파일의 줄번호를 사용합니다. 자동 줄바꿈은 기본 켜짐이며
+이어진 줄에는 번호를 추가하지 않습니다. 줄바꿈을 끄면 가로로 스크롤해도 줄번호가 왼쪽에 유지됩니다.
 바이너리·큰 파일·변경 없음·조회 실패는 안내로 표시합니다. 스테이징·커밋·푸시 등 쓰기 동작은 제공하지 않습니다.
 diff 응답은 최대 1MiB, 화면은 최대 2만 줄까지 표시하며 미추적 파일 내용은 최대 128KiB입니다.
 전체 파일은 기존 파일 미리보기를 이용하세요. Git 조회는 약 5초 안에 끝나지 않으면 안내로 전환합니다.
