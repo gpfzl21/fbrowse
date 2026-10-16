@@ -208,7 +208,9 @@ elif args[:2] == ['tab', 'create']:
     data['tabs'].append(tab)
     result = {'browserPageId': tab['browserPageId']}
 elif args[0] == 'goto':
-    next(tab for tab in data['tabs'] if tab['browserPageId'] == option('--page'))['url'] = option('--url')
+    tab = next(tab for tab in data['tabs'] if tab['browserPageId'] == option('--page'))
+    tab['url'] = option('--url')
+    tab['title'] = 'fbrowse'
     result = {}
 elif args[:2] == ['tab', 'switch']:
     data['active'] = option('--page')
@@ -284,6 +286,21 @@ print(json.dumps({'ok': True, 'result': result}))
         self.assertIn('http://127.0.0.1:', result.stdout)
         self.assertIn('browser_host_unavailable', result.stderr)
         self.assertEqual(self.info(self.run_launcher('url', root).stdout.strip())['root'], str(root))
+
+    def test_existing_legacy_tab_title_is_migrated_once(self):
+        state = self.fake_orca()
+        root = self.project('legacy tab')
+        self.run_launcher(root, '--no-pdfjs', '--no-open')
+        selected = self.run_launcher('url', root).stdout.strip() + '?root=project&path=sample.py'
+        state.write_text(json.dumps({'tabs': [{'browserPageId': 'legacy-page', 'url': selected,
+                                              'title': 'sample.py · Project Files'}], 'calls': []}))
+        self.run_launcher(root)
+        self.run_launcher(root)
+        data = json.loads(state.read_text())
+        self.assertEqual(len(data['tabs']), 1)
+        self.assertEqual(data['tabs'][0]['title'], 'fbrowse')
+        self.assertEqual(data['tabs'][0]['url'], selected)
+        self.assertEqual(sum(call[0] == 'goto' for call in data['calls']), 1)
 
     def test_never_stops_an_unowned_tmux_session(self):
         root = self.project('unrelated')

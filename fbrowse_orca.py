@@ -87,6 +87,12 @@ def open_browser(url, state_dir, mode='auto'):
                 # A stopped/restarted server may have a new port. Keep its document selection.
                 old, target = urlsplit(candidate['url']), urlsplit(url)
                 call('goto', '--page', page, '--url', urlunsplit((target.scheme, target.netloc, '/', old.query, old.fragment)))
+            elif ((candidate.get('title') or '') == 'Project Files'
+                  or (candidate.get('title') or '').endswith(' · Project Files')) and not (
+                      record.get('page') == page and record.get('named')):
+                # Orca keeps tab metadata on reload; typed navigation updates legacy titles.
+                # Migrate once, retaining the root/file query; later launches only focus.
+                call('goto', '--page', page, '--url', candidate['url'])
             call('tab', 'switch', '--page', page, '--focus')
         else:
             created = call('tab', 'create', '--url', url)
@@ -101,7 +107,7 @@ def open_browser(url, state_dir, mode='auto'):
             call('tab', 'switch', '--page', page, '--focus')
         temporary = record_path.with_suffix('.tmp')
         try:
-            temporary.write_text(json.dumps({'page': page, 'url': url, 'worktree': worktree}))
+            temporary.write_text(json.dumps({'page': page, 'url': url, 'worktree': worktree, 'named': True}))
             temporary.replace(record_path)
         finally:
             temporary.unlink(missing_ok=True)
