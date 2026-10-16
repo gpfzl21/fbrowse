@@ -58,6 +58,7 @@ const assert=require('node:assert/strict');
       await page.locator('button.row[data-path="same.txt"]').click();
       await page.frameLocator('#preview').locator('#code').filter({hasText:expected}).waitFor();
       assert.equal(await page.frameLocator('#preview').locator('#code').textContent(),expected);
+      assert.equal(await page.title(),'fbrowse');
     }
     await switchRoot('project');await openText('project');await switchRoot(papers);await openText('papers');
     assert.match(page.url(),new RegExp('root='+papers));

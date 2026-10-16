@@ -25,7 +25,7 @@ class LauncherTests(unittest.TestCase):
         self.roots = []
         self.env = dict(os.environ, XDG_STATE_HOME=str(self.base / 'state'),
                         XDG_DATA_HOME=str(self.base / 'data'), XDG_CONFIG_HOME=str(self.base / 'config'),
-                        HOME=str(self.base / 'home'))
+                        HOME=str(self.base / 'home'), FBROWSE_NO_OPEN='1')
         Path(self.env['HOME']).mkdir()
 
     def tearDown(self):
@@ -181,6 +181,109 @@ class LauncherTests(unittest.TestCase):
         url = self.run_launcher('url', script=installed, cwd=root).stdout.strip()
         self.assertEqual(self.info(url)['version'], '0.1.0')
         self.assertEqual(list(root.iterdir()), [])
+
+    def fake_orca(self):
+        fake = self.base / 'fake orca'
+        state = self.base / 'orca-tabs.json'
+        state.write_text(json.dumps({'tabs': [], 'calls': []}))
+        fake.write_text('''#!/usr/bin/env python3
+import json, os, sys
+from pathlib import Path
+path = Path(os.environ['FBROWSE_FAKE_ORCA_STATE'])
+data = json.loads(path.read_text())
+args = sys.argv[1:]
+data['calls'].append(args)
+def option(flag): return args[args.index(flag)+1]
+if data.get('fail'):
+    path.write_text(json.dumps(data))
+    print(json.dumps({'ok': False, 'error': {'code': 'browser_host_unavailable'}}))
+    sys.exit(1)
+if args[:2] == ['worktree', 'current']:
+    result = {'worktree': {'id': 'discovered::' + os.environ['FBROWSE_FAKE_WORKTREE_PATH'],
+                          'path': os.environ['FBROWSE_FAKE_WORKTREE_PATH']}}
+elif args[:2] == ['tab', 'list']:
+    result = {'tabs': data['tabs']}
+elif args[:2] == ['tab', 'create']:
+    tab = {'browserPageId': 'page-' + str(len(data['tabs'])), 'url': option('--url')}
+    data['tabs'].append(tab)
+    result = {'browserPageId': tab['browserPageId']}
+elif args[0] == 'goto':
+    next(tab for tab in data['tabs'] if tab['browserPageId'] == option('--page'))['url'] = option('--url')
+    result = {}
+elif args[:2] == ['tab', 'switch']:
+    data['active'] = option('--page')
+    result = {}
+else: raise RuntimeError(args)
+path.write_text(json.dumps(data))
+print(json.dumps({'ok': True, 'result': result}))
+''')
+        fake.chmod(0o755)
+        self.env.update(ORCA_CLI_COMMAND=str(fake), FBROWSE_FAKE_ORCA_STATE=str(state),
+                        FBROWSE_NO_OPEN='0', ORCA_WORKTREE_ID='test-id::' + str(self.base))
+        return state
+
+    def test_auto_open_discovers_current_workspace_without_orca_environment(self):
+        state = self.fake_orca()
+        (self.base / 'orca-ide').symlink_to(self.env['ORCA_CLI_COMMAND'])
+        for name in ('ORCA_CLI_COMMAND', 'ORCA_WORKTREE_ID', 'ORCA_TERMINAL_HANDLE', 'ORCA_DEV_REPO_ROOT'):
+            self.env.pop(name, None)
+        self.env['PATH'] = str(self.base) + os.pathsep + self.env['PATH']
+        self.env['FBROWSE_FAKE_WORKTREE_PATH'] = str(self.base)
+        root = self.project('discovered project')
+        self.assertIn('Orca Browser: fbrowse', self.run_launcher('--no-pdfjs', cwd=root).stdout)
+        data = json.loads(state.read_text())
+        self.assertEqual(len(data['tabs']), 1)
+        self.assertEqual(data['calls'][0][:2], ['worktree', 'current'])
+        # An unrelated active workspace must not receive a tab just because Orca is installed.
+        self.env['FBROWSE_FAKE_WORKTREE_PATH'] = str(self.base / 'elsewhere')
+        previous = data['tabs']
+        self.assertIn('http://', self.run_launcher(cwd=root).stdout)
+        self.assertEqual(json.loads(state.read_text())['tabs'], previous)
+
+    def test_auto_open_reuses_tab_without_reloading_selected_file(self):
+        state = self.fake_orca()
+        root = self.project('auto open')
+        output = self.run_launcher(root, '--no-pdfjs').stdout
+        self.assertIn('Orca Browser: fbrowse', output)
+        self.assertNotIn('http://', output)
+        data = json.loads(state.read_text())
+        selected_url = data['tabs'][0]['url'] + '?root=project&path=sample.py'
+        data['tabs'][0]['url'] = selected_url
+        state.write_text(json.dumps(data))
+        self.run_launcher(root)
+        data = json.loads(state.read_text())
+        self.assertEqual(len(data['tabs']), 1)
+        self.assertEqual(data['tabs'][0]['url'], selected_url)
+        self.assertFalse(any(call[0] == 'goto' for call in data['calls']))
+        self.assertEqual(data['active'], 'page-0')
+        self.assertTrue(all(call[call.index('--worktree')+1] == 'id:' + self.env['ORCA_WORKTREE_ID'] for call in data['calls']))
+        previous_calls = data['calls']
+        self.assertIn('http://', self.run_launcher(root, '--no-open').stdout)
+        self.run_launcher('url', root)
+        self.assertEqual(json.loads(state.read_text())['calls'], previous_calls)
+        self.run_launcher('stop', root)
+        self.run_launcher(root, '--no-pdfjs')
+        data = json.loads(state.read_text())
+        self.assertEqual(len(data['tabs']), 1)
+        self.assertTrue(data['tabs'][0]['url'].endswith('?root=project&path=sample.py'))
+
+    def test_open_preserves_foreign_tabs_and_falls_back_to_url(self):
+        state = self.fake_orca()
+        root = self.project('open isolation')
+        self.run_launcher(root, '--no-pdfjs')
+        data = json.loads(state.read_text())
+        data['tabs'][0]['url'] = 'https://example.com/'
+        state.write_text(json.dumps(data))
+        self.run_launcher('open', root)
+        data = json.loads(state.read_text())
+        self.assertEqual(len(data['tabs']), 2)
+        self.assertEqual(data['tabs'][0]['url'], 'https://example.com/')
+        data['fail'] = True
+        state.write_text(json.dumps(data))
+        result = self.run_launcher(root)
+        self.assertIn('http://127.0.0.1:', result.stdout)
+        self.assertIn('browser_host_unavailable', result.stderr)
+        self.assertEqual(self.info(self.run_launcher('url', root).stdout.strip())['root'], str(root))
 
     def test_never_stops_an_unowned_tmux_session(self):
         root = self.project('unrelated')

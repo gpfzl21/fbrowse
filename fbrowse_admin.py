@@ -10,7 +10,7 @@ import tempfile
 
 from fbrowse_storage import VERSION, project_config, read_config, change_root
 
-FILES = ('file-browser.sh', 'file_browser.py', 'fbrowse_storage.py', 'fbrowse_admin.py',
+FILES = ('file-browser.sh', 'file_browser.py', 'fbrowse_storage.py', 'fbrowse_admin.py', 'fbrowse_orca.py',
          'README.md', 'FILE_BROWSER.md', 'LICENSE.md', 'THIRD_PARTY.md', 'VERSION')
 
 

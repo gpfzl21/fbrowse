@@ -16,7 +16,21 @@ cd /path/to/any/project
 fbrowse
 ```
 
-표시된 HTTP 주소를 서버에 연결된 Orca Browser에서 엽니다. 프로젝트에는 앱이나
+Orca 터미널에서는 **fbrowse** 이름의 Browser 탭이 자동으로 열립니다. 같은 프로젝트의
+탭이 이미 열려 있으면 선택한 파일과 미리보기를 유지하면서 그 탭으로 전환합니다.
+서버 재시작으로 포트가 바뀌어도 기록된 탭을 다시 사용합니다. 탭을 다른 사이트로
+이동했다면 해당 탭은 유지하고 fbrowse 탭을 새로 엽니다.
+
+```bash
+fbrowse              # 서버 시작/재사용 + Orca Browser 열기
+fbrowse open         # Orca Browser에서 명시적으로 열기
+fbrowse --no-open    # 브라우저 없이 서버 시작/주소 표시
+fbrowse url          # 주소만 필요할 때
+```
+
+Orca 밖에서 실행하거나 브라우저를 열 수 없는 경우에는 HTTP 주소를 표시합니다.
+Orca CLI는 선택적 연동이며 앱 서버 실행에는 필요하지 않습니다.
+프로젝트에는 앱이나
 설정 파일이 생성되지 않습니다. 서버별·Linux 사용자별 한 번 설치하면 됩니다.
 다른 PC의 Chrome에서 서버의 `127.0.0.1` 주소로 바로 접속할 수 있는 것은 아닙니다.
 외부 PC 접속에는 별도로 구성한 터널이 필요합니다.
@@ -62,6 +76,7 @@ HTML/SVG는 정적 문서로 표시하며 문서 스크립트와 내장 프레�
 
 ```bash
 fbrowse /path/to/project
+fbrowse open                   # 기존 fbrowse 탭으로 전환하거나 새로 열기
 fbrowse url                    # 현재 프로젝트 주소
 fbrowse list                   # 실행 중인 프로젝트
 fbrowse logs

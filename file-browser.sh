@@ -6,12 +6,14 @@ umask 077
 die() { printf 'fbrowse: %s\n' "$*" >&2; exit 1; }
 usage() {
     cat <<'HELP'
-Usage: fbrowse [start|url|attach|logs|stop|restart] [PROJECT] [--no-pdfjs]
+Usage: fbrowse [start|open|url|attach|logs|stop|restart] [PROJECT] [--no-pdfjs] [--no-open]
        fbrowse list
        fbrowse roots [list|add|edit|remove] [ID] [PATH] [--name NAME] [--project DIR]
        bash file-browser.sh install
 
-  fbrowse               현재 폴더에서 시작, 실행 중이면 기존 주소 표시
+  fbrowse               현재 폴더에서 시작하고 Orca Browser 탭 열기/재사용
+  fbrowse open          현재 프로젝트를 Orca Browser에서 열기
+  fbrowse --no-open     브라우저를 열지 않고 서버 시작/주소 표시
   fbrowse /path/project 다른 프로젝트 시작 (빈 포트 자동 배정)
   fbrowse url           현재 프로젝트 주소만 출력
   fbrowse attach        현재 프로젝트의 tmux 화면 (Ctrl+B, D로 나오기)
@@ -39,7 +41,7 @@ server_script=$script_dir/file_browser.py
 state_base=${XDG_STATE_HOME:-$HOME/.local/state}/project-file-browser
 action=start
 case "${1:-}" in
-    start|url|attach|logs|stop|restart|list|install|update|uninstall|version|roots|help) action=$1; shift ;;
+    start|open|url|attach|logs|stop|restart|list|install|update|uninstall|version|roots|help) action=$1; shift ;;
     --version) action=version; shift ;;
     -h|--help) usage; exit 0 ;;
 esac
@@ -105,9 +107,13 @@ fi
 project=.
 project_set=0
 extra=()
+open_mode=auto
+[[ $action != open ]] || open_mode=yes
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --no-pdfjs) extra+=(--no-pdfjs); shift ;;
+        --no-open) open_mode=no; shift ;;
+        --open) open_mode=yes; shift ;;
         --) shift; [[ $# == 1 && $project_set == 0 ]] || die '프로젝트 경로 하나를 지정하세요.'
             project=$1; project_set=1; shift ;;
         -*) die "알 수 없는 옵션: $1 (fbrowse help 참고)" ;;
@@ -177,11 +183,24 @@ PYWAIT
         exec tmux attach-session -t "=$session" ;;
 esac
 
+show_ready() {
+    # Browser coordination has its own lock and must not hold the server lock.
+    flock -u 9
+    if [[ $open_mode != no && ( $action == start || $action == open || $open_mode == yes ) ]]; then
+        if python3 -B "$script_dir/fbrowse_orca.py" --url "$url" --state-dir "$state_dir" --mode "$open_mode" 9>&-; then
+            printf '\n주소 확인: fbrowse url\n종료: fbrowse stop\n'
+            return
+        fi
+    fi
+    printf '\n%s\n\n세션 보기: fbrowse attach\n전체 목록: fbrowse list\n종료: fbrowse stop\n' "$url"
+}
+
 if has_session; then
     owned_session || die "동일 이름의 다른 tmux 세션을 발견했습니다: $session"
     if url=$(healthy_url); then
         if [[ $action == url ]]; then printf '%s\n' "$url"; else
-            printf '실행 중: %s\n%s\n\n세션 보기: fbrowse attach\n전체 목록: fbrowse list\n' "$root" "$url"
+            printf '실행 중: %s\n' "$root"
+            show_ready
         fi
         exit 0
     fi
@@ -209,7 +228,7 @@ printf '시작 중: %s\n' "$root"
 deadline=$((SECONDS + 60))
 while (( SECONDS < deadline )); do
     if url=$(healthy_url); then
-        printf '\n%s\n\n세션 보기: fbrowse attach\n전체 목록: fbrowse list\n종료: fbrowse stop\n' "$url"
+        show_ready
         exit 0
     fi
     if ! has_session; then

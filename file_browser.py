@@ -127,7 +127,7 @@ def prepare_pdfjs():
 PAGE = r'''<!doctype html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Project Files</title>
+<title>fbrowse</title>
 <style>
 :root{color-scheme:light dark;--bg:#f6f7f9;--panel:#fff;--text:#202937;--muted:#727c8c;--line:#e4e8ef;--hover:#f0f3f8;--accent:#315de5;--selected:#eaf0ff;--shadow:0 4px 20px #17233b08}
 @media(prefers-color-scheme:dark){:root{--bg:#13171f;--panel:#1a202b;--text:#e3e9f2;--muted:#98a5b8;--line:#2a3444;--hover:#242e3e;--accent:#91b1ff;--selected:#263754;--shadow:none}}
@@ -411,7 +411,7 @@ $('preview').addEventListener('load',()=>{
 function select(entry){
   state.selected=entry;$('preview').title=entry.name+' 미리보기';$('viewer').setAttribute('aria-label',entry.name+' 미리보기');
   $('empty').hidden=true;$('preview').hidden=false;$('actions').hidden=false;$('open').href=previewURL(entry);loadPreview();
-  document.title=entry.name+' · Project Files';
+  document.title='fbrowse';
   history.replaceState(null,'','/?'+new URLSearchParams({root:entry.root_id,path:entry.path}));
   for(const node of entries.querySelectorAll('button[data-path]'))node.classList.toggle('active',node.dataset.path===entry.path&&node.dataset.root===entry.root_id);
 }
