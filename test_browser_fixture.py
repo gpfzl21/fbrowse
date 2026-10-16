@@ -40,6 +40,9 @@ if __name__ == '__main__':
                                            '<script>parent.DOCUMENT_SCRIPT_RAN=true</script>')
             (root / 'style.css').write_text('h1 {color: rgb(1, 2, 3)}')
             (root / 'sample.pdf').write_bytes(pdf_bytes())
+        (roots[1] / '하위 폴더').mkdir()
+        (roots[1] / '하위 폴더' / 'marker.txt').write_text('inside folder')
+        (roots[1] / '.hidden-folder').mkdir()
         cache = Path(os.environ.get('XDG_CACHE_HOME', str(Path.home() / '.cache')))
         pdfjs = cache / 'project-file-browser' / ('pdfjs-' + PDFJS_VERSION)
         FileBrowserHandler.log_message = lambda *args: None

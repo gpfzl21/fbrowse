@@ -21,8 +21,33 @@ const assert=require('node:assert/strict');
     await page.locator('button.row[data-path="same.txt"]').waitFor();
     async function register(name,path){
       await page.locator('#manageRoots').click();
-      await page.locator('#rootLabel').fill(name);await page.locator('#rootDirectory').fill(path);
-      await page.locator('#saveRoot').click();await page.locator('#rootMessage').filter({hasText:'저장했습니다.'}).waitFor();
+      await page.locator('#browseFolder').click();
+      await page.locator('#folderEntries [data-name="same.txt"]').waitFor();
+      await page.locator('#folderUp').click();
+      const basename=path.split('/').pop();
+      await page.locator(`#folderEntries button[data-name="${basename}"]`).click();
+      await page.locator('#folderEntries [data-name="same.txt"]').waitFor();
+      if(name==='논문'){
+        assert.equal(await page.locator('#folderEntries button[data-name="same.txt"]').count(),0);
+        await page.locator('#folderEntries button[data-name="하위 폴더"]').click();
+        await page.locator('#folderEntries [data-name="marker.txt"]').waitFor();
+        await page.locator('#folderBreadcrumbs').getByRole('button',{name:'papers',exact:true}).click();
+        await page.locator('#folderHidden').check();await page.locator('#folderEntries [data-name=".hidden-folder"]').waitFor();
+        await page.locator('#folderHidden').uncheck();await page.locator('#folderEntries [data-name=".hidden-folder"]').waitFor({state:'detached'});
+        await page.locator('#folderFilter').fill('same');assert.equal(await page.locator('#folderEntries .folder-entry').count(),1);
+        await page.locator('#folderFilter').fill('');
+        assert.equal((await (await page.request.get(ready.url+'api/info')).json()).roots.length,1);
+        assert.equal((await page.request.get(ready.url+'roots/papers/files/same.txt')).status(),403);
+        await page.locator('#folderLocation').fill(path+'/missing');await page.locator('#folderLocationForm button[type="submit"]').click();
+        await page.locator('#folderError').waitFor();assert.ok(await page.locator('#chooseFolder').isDisabled());
+        await page.locator('#cancelFolder').click();
+        assert.equal((await (await page.request.get(ready.url+'api/info')).json()).roots.length,1);
+        await page.locator('#browseFolder').click();await page.locator('#folderEntries [data-name="same.txt"]').waitFor();
+        await page.locator('#folderUp').click();await page.locator('#folderEntries button[data-name="papers"]').click();await page.locator('#folderEntries [data-name="same.txt"]').waitFor();
+        await page.screenshot({path:'/tmp/fbrowse-folder-picker.png'});
+      }
+      await page.locator('#folderLabel').fill(name);await page.locator('#chooseFolder').click();
+      await page.locator('#rootMessage').filter({hasText:'저장했습니다.'}).waitFor();
       await page.locator('#closeRoots').click();
     }
     await register('논문',ready.papers);await register('실험결과',ready.results);
@@ -34,7 +59,7 @@ const assert=require('node:assert/strict');
       await page.frameLocator('#preview').locator('#code').filter({hasText:expected}).waitFor();
       assert.equal(await page.frameLocator('#preview').locator('#code').textContent(),expected);
     }
-    await openText('project');await switchRoot(papers);await openText('papers');
+    await switchRoot('project');await openText('project');await switchRoot(papers);await openText('papers');
     assert.match(page.url(),new RegExp('root='+papers));
     await switchRoot(results);await openText('results');
     await page.goto(ready.url);await page.locator(`#rootSelect option[value="${results}"]:checked`).waitFor({state:'attached'});

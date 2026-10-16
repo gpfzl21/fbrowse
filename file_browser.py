@@ -11,6 +11,7 @@ this does not create a localhost listener on the connecting desktop computer.
 
 import argparse
 import hashlib
+import heapq
 import json
 import mimetypes
 import os
@@ -140,6 +141,7 @@ main{display:flex;min-height:0;flex:1;gap:0;padding:8px}aside{width:330px;min-wi
 @media(max-width:850px){aside{width:260px}main{padding:5px}}
 @media(max-width:560px){main{flex-direction:column;gap:5px}.splitter{display:none}aside{width:100%!important;max-width:none;height:36%;min-height:200px;resize:vertical}.side-foot{display:none}.viewer{min-height:200px}.side-controls{padding:8px}.side-brand{margin-bottom:6px}}
 .root-picker{display:flex;gap:5px;margin-bottom:4px}.root-picker select{flex:1;min-width:0}.root-path{font-size:11px;color:var(--muted);overflow-wrap:anywhere;margin:0 0 10px;max-height:48px;overflow:auto}dialog{background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:10px;width:min(680px,94vw);max-height:85vh;padding:20px}dialog::backdrop{background:#0006}.root-record{padding:10px 0;border-bottom:1px solid var(--line)}.root-record strong,.root-record small{display:block;overflow-wrap:anywhere}.root-record small{color:var(--muted)}.root-record button{margin:5px 5px 0 0}.root-form{display:grid;gap:8px;margin:16px 0}.root-form label{display:grid;gap:3px}.root-form input{padding:7px;background:var(--bg);border:1px solid var(--line);border-radius:5px}.dialog-head{display:flex;align-items:center;justify-content:space-between}.dialog-head h2{margin:0;font-size:18px}
+.primary{background:var(--accent);border-color:var(--accent);color:var(--panel)}.primary:hover{filter:brightness(.94);background:var(--accent)}.add-folder{margin:16px 0}.path-field{display:flex;gap:6px}.path-field input{flex:1;min-width:0}details summary{font-size:12px;color:var(--muted);cursor:pointer}dialog.is-selecting{width:min(760px,96vw)}.folder-hint{font-size:13px;color:var(--muted);margin:12px 0}.folder-places{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.folder-places button{font-size:12px}.folder-location{display:flex;gap:6px}.folder-location input,.folder-options>input,.folder-name input{min-width:0;border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:6px;padding:7px 9px;font:inherit}.folder-location input{flex:1;font-size:13px}.folder-breadcrumbs{display:flex;gap:2px;overflow:auto;align-items:center;padding:7px 0;white-space:nowrap}.folder-breadcrumbs button{border:0;background:none;color:var(--muted);padding:3px 5px;font-size:12px}.folder-breadcrumbs button:last-child{color:var(--text);font-weight:600}.folder-breadcrumbs button:hover{background:var(--hover);border-radius:4px}.folder-options{display:flex;gap:12px;align-items:center;margin:2px 0 8px}.folder-options>input{flex:1;font-size:12px}.folder-options label{font-size:12px;white-space:nowrap;color:var(--muted)}.folder-list{height:clamp(150px,36vh,360px);overflow:auto;border:1px solid var(--line);border-radius:7px;padding:4px}.folder-entry{display:flex;width:100%;gap:10px;align-items:center;text-align:left;border:0;background:none;padding:7px 9px;border-radius:5px;color:var(--text);font-size:13px}.folder-entry:hover{background:var(--hover)}.folder-entry .folder-icon{width:24px;flex:none;color:var(--accent);font-size:11px;font-weight:600}.folder-entry .folder-entry-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.folder-entry small{color:var(--muted);font-size:11px}.folder-entry.is-file{color:var(--muted);cursor:default}.folder-entry.is-file:hover{background:none}.folder-entry.is-file .folder-icon{color:var(--muted);font-weight:400}.folder-counts,.folder-selection{font-size:12px;color:var(--muted);overflow-wrap:anywhere;margin:7px 0}.folder-name{display:flex;gap:10px;align-items:center;font-size:13px;margin:12px 0 6px}.folder-name input{flex:1}.folder-footer{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}#folderError{font-size:12px;margin:8px 0}@media(max-width:560px){dialog{padding:14px}.folder-options{gap:6px}.folder-location input{width:0}.folder-places{gap:4px}.folder-entry small{display:none}}
 </style></head><body>
 <main><aside id="fileSidebar" aria-label="파일 탐색"><div class="side-controls">
 <div class="side-brand"><strong class="root" id="rootName">프로젝트 파일</strong><button class="plain" id="home" title="검색을 닫고 프로젝트 루트 보기" aria-label="처음으로">⌂</button><button class="plain" id="refresh" title="목록과 선택한 파일 새로고침" aria-label="새로고침">↻</button></div>
@@ -149,7 +151,26 @@ main{display:flex;min-height:0;flex:1;gap:0;padding:8px}aside{width:330px;min-wi
 </div><div class="side-head" id="listLabel">폴더</div><nav id="entries" aria-label="파일과 폴더" aria-busy="true"></nav><div class="side-foot" id="status" role="status">파일 목록을 불러오는 중…</div></aside>
 <div class="splitter" id="sidebarResize" role="separator" aria-label="파일 목록 너비 조절" aria-orientation="vertical" aria-controls="fileSidebar" tabindex="0" title="드래그로 파일 목록 너비 조절 · 방향키로도 조절 가능"></div>
 <section class="viewer" id="viewer" aria-label="파일 미리보기"><div class="preview"><div class="empty" id="empty"><div><div class="symbol">▤</div><h1>찾고, 바로 열어보세요</h1><p>폴더를 펼치거나 파일명으로 검색하세요.<br>PDF, HTML, Markdown과 코드를 바로 볼 수 있습니다.</p></div></div><iframe id="preview" title="선택한 파일 미리보기" hidden></iframe></div><button class="button" id="exitExpanded" hidden title="기본 보기 · Esc" aria-label="기본 보기">↙ 기본 보기 <small>Esc</small></button></section></main>
-<dialog id="rootsDialog" aria-labelledby="rootsTitle"><div class="dialog-head"><h2 id="rootsTitle">루트 폴더 관리</h2><button class="button" id="closeRoots">닫기</button></div><p>이 서버에 있는 폴더를 연결합니다. 연결을 제거해도 원본 파일은 유지됩니다.</p><div id="rootRecords"></div><form class="root-form" id="rootForm"><label>이름<input id="rootLabel" required maxlength="120" placeholder="논문"></label><label>서버 경로<input id="rootDirectory" required placeholder="/mnt/data/papers"></label><div><button class="button" type="submit" id="saveRoot">등록</button> <button class="button" type="button" id="cancelRootEdit" hidden>수정 취소</button></div></form><p id="rootMessage" role="status"></p></dialog>
+<dialog id="rootsDialog" aria-labelledby="rootsTitle">
+<div class="dialog-head"><h2 id="rootsTitle">루트 폴더 관리</h2><button class="button" id="closeRoots">닫기</button></div>
+<div id="rootManagement"><p>이 서버의 폴더를 찾아 연결하세요. 연결을 제거해도 원본 파일은 유지됩니다.</p>
+<div id="rootRecords"></div><button class="button primary add-folder" id="browseFolder">＋ 폴더 찾아 연결…</button>
+<details id="manualRoot"><summary>경로 직접 입력</summary><form class="root-form" id="rootForm">
+<label>이름<input id="rootLabel" required maxlength="120" placeholder="논문"></label>
+<label>서버 경로<span class="path-field"><input id="rootDirectory" required placeholder="/mnt/data/papers"><button class="button" type="button" id="browseRootDirectory">찾아보기…</button></span></label>
+<div><button class="button" type="submit" id="saveRoot">등록</button> <button class="button" type="button" id="cancelRootEdit" hidden>수정 취소</button></div></form></details>
+<p id="rootMessage" role="status"></p></div>
+<section id="folderPicker" hidden aria-label="서버 폴더 선택">
+<p class="folder-hint">폴더를 열어 내용을 확인한 뒤 연결하세요.</p>
+<div class="folder-places" id="folderPlaces" aria-label="자주 쓰는 위치"></div>
+<form id="folderLocationForm" class="folder-location"><button class="button" id="folderUp" type="button" title="상위 폴더" aria-label="상위 폴더">↑</button><input id="folderLocation" aria-label="서버 폴더 경로" autocomplete="off" spellcheck="false"><button class="button" type="submit">이동</button></form>
+<nav id="folderBreadcrumbs" class="folder-breadcrumbs" aria-label="현재 폴더 경로"></nav>
+<div class="folder-options"><input id="folderFilter" type="search" placeholder="현재 폴더에서 이름 찾기" aria-label="현재 폴더에서 이름 찾기"><label><input id="folderHidden" type="checkbox"> 숨김 표시</label></div>
+<div id="folderEntries" class="folder-list" aria-label="폴더 내용" aria-busy="false"></div>
+<div class="folder-counts" id="folderCounts"></div><p id="folderError" class="error" role="status" hidden></p>
+<label class="folder-name">표시 이름<input id="folderLabel" maxlength="120" placeholder="선택한 폴더 이름"></label>
+<div class="folder-selection" id="folderSelection"></div><div class="folder-footer"><button class="button" id="cancelFolder">취소</button><button class="button primary" id="chooseFolder" disabled>이 폴더 연결</button></div>
+</section></dialog>
 <script>
 'use strict';
 const $=id=>document.getElementById(id), entries=$('entries'), input=$('search'), type=$('type');
@@ -252,13 +273,13 @@ async function refreshRoots(signal){
 }
 function resetPreview(){state.selected=null;$('preview').src='about:blank';$('preview').hidden=true;$('empty').hidden=false;$('actions').hidden=true;}
 $('rootSelect').onchange=()=>{state.root=$('rootSelect').value;input.value='';resetPreview();renderRoots();try{localStorage.setItem(selectionKey(),state.root);}catch{}history.replaceState(null,'','/?'+new URLSearchParams({root:state.root}));update();};
-function cancelRootEdit(){state.editRoot=null;$('rootForm').reset();$('saveRoot').textContent='등록';$('cancelRootEdit').hidden=true;}
+function cancelRootEdit(){state.editRoot=null;$('rootForm').reset();$('saveRoot').textContent='등록';$('cancelRootEdit').hidden=true;$('manualRoot').open=false;}
 $('cancelRootEdit').onclick=cancelRootEdit;
 function drawRootRecords(){
   $('rootRecords').replaceChildren(...state.roots.map(root=>{
     const record=make('div','root-record');record.append(make('strong','',root.name+(root.connected?'':' · 연결 안 됨')),make('small','',root.path));
     if(root.id==='project'){record.append(make('small','','기본 프로젝트 · 실행한 폴더'));return record;}
-    const edit=make('button','button','수정');edit.type='button';edit.onclick=()=>{state.editRoot=root.id;$('rootLabel').value=root.name;$('rootDirectory').value=root.path;$('saveRoot').textContent='저장';$('cancelRootEdit').hidden=false;$('rootLabel').focus();};
+    const edit=make('button','button','수정');edit.type='button';edit.onclick=()=>{state.editRoot=root.id;$('rootLabel').value=root.name;$('rootDirectory').value=root.path;$('saveRoot').textContent='저장';$('cancelRootEdit').hidden=false;$('manualRoot').open=true;$('rootLabel').focus();};
     const remove=make('button','button','연결 제거');remove.type='button';remove.onclick=()=>saveRoots({operation:'remove',id:root.id});record.append(edit,remove);return record;
   }));
 }
@@ -268,12 +289,73 @@ async function saveRoots(data){
     const response=await fetch('/api/roots',{method:'POST',headers:{'Content-Type':'application/json','X-Fbrowse-Token':state.token},body:JSON.stringify(data)});
     const result=await response.json();if(!response.ok)throw Error(result.error);
     if(data.id===state.selected?.root_id)resetPreview();
-    cancelRootEdit();await refreshRoots();drawRootRecords();state.cache.clear();await update(true);$('rootMessage').textContent='저장했습니다.';
-  }catch(error){$('rootMessage').textContent=error.message;}
+    if(data.operation==='add'){const added=result.roots.find(root=>!state.roots.some(existing=>existing.id===root.id));if(added){state.root=added.id;input.value='';resetPreview();try{localStorage.setItem(selectionKey(),state.root);}catch{}history.replaceState(null,'','/?'+new URLSearchParams({root:state.root}));}}
+    cancelRootEdit();await refreshRoots();drawRootRecords();state.cache.clear();await update(true);$('rootMessage').textContent='저장했습니다.';return true;
+  }catch(error){$('rootMessage').textContent=error.message;return false;}
 }
 $('rootForm').onsubmit=event=>{event.preventDefault();saveRoots({operation:state.editRoot?'edit':'add',id:state.editRoot,name:$('rootLabel').value,path:$('rootDirectory').value});};
 $('manageRoots').onclick=async()=>{await refreshRoots();drawRootRecords();$('rootMessage').textContent='';$('rootsDialog').showModal();};
-$('closeRoots').onclick=()=>{$('rootsDialog').close();cancelRootEdit();};
+$('closeRoots').onclick=()=>{$('rootsDialog').close();};
+$('rootsDialog').addEventListener('close',()=>{closeFolderPicker();cancelRootEdit();});
+let folderData=null,folderGeneration=0,folderController=null,folderCustomName=false;
+function closeFolderPicker(){
+  folderGeneration++;folderController?.abort();$('folderPicker').hidden=true;$('rootManagement').hidden=false;$('rootsDialog').classList.remove('is-selecting');$('rootsTitle').textContent='루트 폴더 관리';
+}
+function folderFailure(message){$('folderError').textContent=message;$('folderError').hidden=!message;}
+function drawFolderEntries(){
+  const query=$('folderFilter').value.toLocaleLowerCase(),items=folderData.entries.filter(entry=>entry.name.toLocaleLowerCase().includes(query));
+  $('folderEntries').replaceChildren(...items.map(entry=>{
+    const node=make(entry.kind==='directory'?'button':'div','folder-entry'+(entry.kind==='file'?' is-file':''));
+    node.title=entry.path||entry.name;node.dataset.name=entry.name;
+    node.append(make('span','folder-icon',entry.kind==='directory'?'DIR':'FILE'),make('span','folder-entry-name',entry.name));
+    if(entry.kind==='directory'){node.type='button';node.disabled=!entry.readable;node.append(make('small','',entry.readable?(entry.symlink?'연결 폴더 ↗':'열기 →'):'접근 불가'));node.onclick=()=>navigateFolders(entry.path);}
+    else node.append(make('small','','파일 · 참고용'));
+    return node;
+  }));
+  if(!items.length)$('folderEntries').append(make('div','note',query?'이름이 일치하는 항목이 없습니다.':'빈 폴더입니다. 이 폴더도 연결할 수 있습니다.'));
+  $('folderCounts').textContent=`폴더 ${folderData.counts.directory}개 · 파일 ${folderData.counts.file}개`+(folderData.truncated?' · 처음 2,000개 표시':'');
+}
+async function navigateFolders(path){
+  folderController?.abort();const controller=new AbortController();folderController=controller;
+  const generation=++folderGeneration;$('folderEntries').setAttribute('aria-busy','true');$('chooseFolder').disabled=true;folderFailure('');
+  try{
+    const response=await fetch('/api/folders',{method:'POST',headers:{'Content-Type':'application/json','X-Fbrowse-Token':state.token},body:JSON.stringify({path,show_hidden:$('folderHidden').checked}),signal:controller.signal});
+    const data=await response.json();if(!response.ok)throw Error(data.error);
+    if(generation!==folderGeneration)return false;
+    folderData=data;$('folderLocation').value=data.path;$('folderSelection').textContent='선택할 폴더: '+data.path;
+    $('folderUp').disabled=data.path===data.parent;$('folderFilter').value='';
+    if(!folderCustomName)$('folderLabel').value=data.name;
+    $('folderPlaces').replaceChildren(...data.places.map(place=>{const button=make('button','button',place.name);button.type='button';button.title=place.path;button.onclick=()=>navigateFolders(place.path);return button;}));
+    const parts=data.path.split('/').filter(Boolean),crumbs=[{name:'/',path:'/'}];let accumulated='';
+    for(const part of parts){accumulated+='/'+part;crumbs.push({name:part,path:accumulated});}
+    $('folderBreadcrumbs').replaceChildren(...crumbs.flatMap((crumb,index)=>{const button=make('button','',crumb.name);button.type='button';button.title=crumb.path;button.onclick=()=>navigateFolders(crumb.path);return index?[make('span','','›'),button]:[button];}));
+    drawFolderEntries();$('folderEntries').scrollTop=0;$('chooseFolder').disabled=false;return true;
+  }catch(error){if(error.name!=='AbortError'&&generation===folderGeneration){folderFailure(error.message);}return false;}
+  finally{if(generation===folderGeneration)$('folderEntries').setAttribute('aria-busy','false');}
+}
+async function openFolderPicker(){
+  folderData=null;folderCustomName=Boolean($('rootLabel').value.trim());$('folderLabel').value=$('rootLabel').value.trim();$('folderFilter').value='';$('folderEntries').replaceChildren(make('div','note','폴더를 불러오는 중…'));$('folderCounts').textContent='';$('folderSelection').textContent='';
+  $('folderPicker').hidden=false;$('rootManagement').hidden=true;$('rootsDialog').classList.add('is-selecting');$('rootsTitle').textContent='연결할 폴더 선택';$('chooseFolder').textContent=state.editRoot?'이 폴더로 변경':'이 폴더 연결';
+  const requested=$('rootDirectory').value.trim()||state.roots.find(root=>root.id===state.root)?.path||state.project;
+  const openingGeneration=folderGeneration+1,loaded=await navigateFolders(requested);
+  if(!loaded&&openingGeneration===folderGeneration&&!$('folderPicker').hidden&&requested!==state.project){if(await navigateFolders(state.project))folderFailure('기존 경로에 접근할 수 없어 프로젝트 폴더를 표시합니다.');}
+  if(!$('folderPicker').hidden)$('folderLocation').focus();
+}
+$('browseFolder').onclick=()=>{cancelRootEdit();openFolderPicker();};
+$('browseRootDirectory').onclick=openFolderPicker;
+$('folderLocationForm').onsubmit=event=>{event.preventDefault();navigateFolders($('folderLocation').value.trim());};
+$('folderUp').onclick=()=>{if(folderData)navigateFolders(folderData.parent);};
+$('folderHidden').onchange=()=>{if(folderData)navigateFolders(folderData.path);};
+$('folderFilter').oninput=()=>{if(folderData)drawFolderEntries();};
+$('folderLabel').oninput=()=>{folderCustomName=Boolean($('folderLabel').value.trim());};
+$('cancelFolder').onclick=closeFolderPicker;
+$('chooseFolder').onclick=async()=>{
+  if(!folderData)return;
+  $('chooseFolder').disabled=true;
+  const saved=await saveRoots({operation:state.editRoot?'edit':'add',id:state.editRoot,name:$('folderLabel').value.trim()||folderData.name,path:folderData.path});
+  if(saved){closeFolderPicker();$('closeRoots').focus();}else{folderFailure($('rootMessage').textContent);$('chooseFolder').disabled=false;}
+};
+$('rootsDialog').addEventListener('cancel',event=>{if(!$('folderPicker').hidden){event.preventDefault();closeFolderPicker();}});
 async function update(refresh=false){
   clearTimeout(state.timer);state.controller?.abort();const controller=new AbortController();state.controller=controller;
   const generation=++state.generation,query=input.value.trim();entries.setAttribute('aria-busy','true');
@@ -518,6 +600,46 @@ class FileBrowserServer(ThreadingHTTPServer):
         # Keep the configured path as the boundary even if a mount is unavailable.
         return Path(roots[root_id])
 
+    def browse_folders(self, path=None, show_hidden=False):
+        """One-level metadata for the user-invoked folder chooser, never file contents."""
+        if path is None:
+            directory = self.root
+        else:
+            if not isinstance(path, str) or not path or '\x00' in path:
+                raise ValueError('서버의 폴더 경로를 입력하세요.')
+            directory = Path(path).expanduser()
+            if not directory.is_absolute():
+                raise ValueError('서버의 절대 경로를 입력하세요.')
+            directory = directory.resolve(strict=True)
+        if not directory.is_dir():
+            raise ValueError('폴더를 선택하세요.')
+        counts = {'directory': 0, 'file': 0}
+        def children():
+            with os.scandir(directory) as listing:
+                for child in listing:
+                    if not show_hidden and child.name.startswith('.'):
+                        continue
+                    try:
+                        if child.is_dir():
+                            target = Path(child.path).resolve(strict=True)
+                            entry = {'name': child.name, 'kind': 'directory', 'path': str(target),
+                                     'readable': os.access(target, os.R_OK | os.X_OK),
+                                     'symlink': child.is_symlink()}
+                        elif child.is_file():
+                            entry = {'name': child.name, 'kind': 'file'}
+                        else:
+                            continue
+                    except (OSError, RuntimeError):
+                        continue
+                    counts[entry['kind']] += 1
+                    yield entry
+        entries = heapq.nsmallest(2000, children(), key=lambda e: (e['kind'] != 'directory', e['name'].casefold()))
+        places = [('프로젝트', self.root), ('홈', Path.home()), ('/mnt', Path('/mnt')),
+                  ('/media', Path('/media')), ('파일시스템 /', Path('/'))]
+        return {'path': str(directory), 'parent': str(directory.parent), 'name': directory.name or '/',
+                'entries': entries, 'counts': counts, 'truncated': sum(counts.values()) > len(entries),
+                'places': [{'name': name, 'path': str(place)} for name, place in places if place.is_dir()]}
+
     def resolve_path(self, relative, root_id='project', boundary=None):
         if '\\' in relative or '\x00' in relative:
             raise PermissionError('Invalid path')
@@ -628,7 +750,7 @@ class FileBrowserHandler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         try:
-            if self.path != '/api/roots':
+            if self.path not in {'/api/roots', '/api/folders'}:
                 self.json_response({'error': 'Unknown endpoint'}, status=404)
                 return
             if self.headers.get('X-Fbrowse-Token') != self.server.config_token:
@@ -640,6 +762,9 @@ class FileBrowserHandler(BaseHTTPRequestHandler):
             data = json.loads(self.rfile.read(length))
             if not isinstance(data, dict):
                 raise ValueError('Invalid configuration request')
+            if self.path == '/api/folders':
+                self.json_response(self.server.browse_folders(data.get('path'), data.get('show_hidden') is True))
+                return
             change_root(self.server.root, data.get('operation'), data.get('id'), data.get('name'), data.get('path'))
             self.json_response({'roots': self.server.root_info()})
         except (ValueError, TypeError, KeyError, OSError, RuntimeError) as error:

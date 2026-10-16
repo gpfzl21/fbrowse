@@ -277,6 +277,30 @@ class MultiRootTests(unittest.TestCase):
         entries = json.loads(self.request('/api/search?q=same&refresh=1')[1])['entries']
         self.assertEqual([entry['root_id'] for entry in entries], ['project'])
 
+    def test_folder_chooser_lists_metadata_without_connecting_or_reading_files(self):
+        (self.papers / '하위 폴더').mkdir()
+        (self.papers / '.hidden-folder').mkdir()
+        status, body = self.request('/api/folders', {'path': str(self.papers)})
+        self.assertEqual(status, 200)
+        data = json.loads(body)
+        self.assertEqual(data['path'], str(self.papers))
+        self.assertEqual(data['parent'], str(self.base))
+        names = {entry['name'] for entry in data['entries']}
+        self.assertIn('하위 폴더', names)
+        self.assertIn('same.txt', names)
+        self.assertNotIn('.hidden-folder', names)
+        self.assertNotIn('text', data)
+        file = next(entry for entry in data['entries'] if entry['name'] == 'same.txt')
+        self.assertEqual(file, {'name': 'same.txt', 'kind': 'file'})
+        self.assertEqual(read_config(self.project), {})
+        self.assertEqual(self.request('/roots/papers/files/same.txt')[0], 403)
+        shown = json.loads(self.request('/api/folders', {'path': str(self.papers), 'show_hidden': True})[1])
+        self.assertIn('.hidden-folder', {entry['name'] for entry in shown['entries']})
+        self.assertEqual(self.request('/api/folders', {'path': str(self.papers)}, token=False)[0], 403)
+        for path in ('../papers', str(self.papers / 'same.txt'), str(self.base / 'missing')):
+            self.assertEqual(self.request('/api/folders', {'path': path})[0], 400)
+        self.assertEqual(self.request('/api/folders')[0], 404)
+
 
 if __name__ == '__main__':
     unittest.main()
