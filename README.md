@@ -16,14 +16,16 @@ cd /path/to/any/project
 fbrowse
 ```
 
-Orca 터미널에서는 **fbrowse** 이름의 Browser 탭이 자동으로 열립니다. 같은 프로젝트의
+자동 브라우저 열기는 현재 중단되어 있습니다. 기본 `fbrowse`는 서버를 시작하고 주소만
+표시합니다. 아래 브라우저 연동은 `fbrowse open` 또는 `--open`으로 명시한 경우에만
+실행됩니다. 같은 프로젝트의
 탭이 이미 열려 있으면 선택한 파일과 미리보기를 유지하면서 그 탭으로 전환합니다.
 예전 `Project Files` 제목의 탭은 첫 실행 때 한 번 갱신하며 선택한 파일 주소를 유지합니다.
 서버 재시작으로 포트가 바뀌어도 기록된 탭을 다시 사용합니다. 탭을 다른 사이트로
 이동했다면 해당 탭은 유지하고 fbrowse 탭을 새로 엽니다.
 
 ```bash
-fbrowse              # 서버 시작/재사용 + Orca Browser 열기
+fbrowse              # 서버 시작/재사용 + 주소 표시
 fbrowse open         # Orca Browser에서 명시적으로 열기
 fbrowse --no-open    # 브라우저 없이 서버 시작/주소 표시
 fbrowse url          # 주소만 필요할 때

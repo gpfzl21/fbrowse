@@ -11,7 +11,7 @@ Usage: fbrowse [start|open|url|attach|logs|stop|restart] [PROJECT] [--no-pdfjs] 
        fbrowse roots [list|add|edit|remove] [ID] [PATH] [--name NAME] [--project DIR]
        bash file-browser.sh install
 
-  fbrowse               현재 폴더에서 시작하고 Orca Browser 탭 열기/재사용
+  fbrowse               현재 폴더에서 서버 시작/주소 표시 (자동 열기 중단)
   fbrowse open          현재 프로젝트를 Orca Browser에서 열기
   fbrowse --no-open     브라우저를 열지 않고 서버 시작/주소 표시
   fbrowse /path/project 다른 프로젝트 시작 (빈 포트 자동 배정)
@@ -107,7 +107,7 @@ fi
 project=.
 project_set=0
 extra=()
-open_mode=auto
+open_mode=no
 [[ $action != open ]] || open_mode=yes
 while [[ $# -gt 0 ]]; do
     case "$1" in
