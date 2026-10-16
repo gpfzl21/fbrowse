@@ -34,6 +34,14 @@
     "katex": "0.19.0"
   },
   "author": "wlalsrne",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gpfzl21/fbrowse.git"
+  },
+  "homepage": "https://github.com/gpfzl21/fbrowse#readme",
+  "bugs": {
+    "url": "https://github.com/gpfzl21/fbrowse/issues"
+  },
   "keywords": [
     "fbrowse",
     "file-browser",

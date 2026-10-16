@@ -1,5 +1,7 @@
 # fbrowse
 
+[GitHub 소스](https://github.com/gpfzl21/fbrowse) · [npm 패키지](https://www.npmjs.com/package/@wlalsrne/fbrowse) · [MIT 라이선스](LICENSE.md)
+
 Linux 서버의 프로젝트 파일과 선택한 디스크 폴더를 한 창에서 탐색하는 파일 브라우저입니다.
 Orca 같은 도구로 원격 서버를 사용할 때 큰 PDF나 파일이 기본 미리보기에서 잘 열리지 않는 문제를
 해결하기 위해 만들었습니다. 서버에서 파일을 HTTP로 제공하고 Orca의 내부 브라우저에서 직접 열어
@@ -33,6 +35,8 @@ export PATH="$HOME/.local/bin:$PATH"
 소스에서 설치용 압축을 만드는 경우:
 
 ```bash
+git clone https://github.com/gpfzl21/fbrowse.git
+cd fbrowse
 npm ci
 mkdir -p dist
 npm pack --pack-destination dist
