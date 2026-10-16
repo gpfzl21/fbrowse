@@ -16,15 +16,24 @@ main{display:flex;min-height:0;flex:1;gap:0;padding:8px}aside{width:330px;min-wi
 @media(max-width:560px){main{flex-direction:column;gap:5px}.splitter{display:none}aside{width:100%!important;max-width:none;height:36%;min-height:200px;resize:vertical}.side-foot{display:none}.viewer{min-height:200px}.side-controls{padding:8px}.side-brand{margin-bottom:6px}}
 .root-picker{display:flex;gap:5px;margin-bottom:4px}.root-picker select{flex:1;min-width:0}.root-path{font-size:11px;color:var(--muted);overflow-wrap:anywhere;margin:0 0 10px;max-height:48px;overflow:auto}dialog{background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:10px;width:min(680px,94vw);max-height:85vh;padding:20px}dialog::backdrop{background:#0006}.root-record{padding:10px 0;border-bottom:1px solid var(--line)}.root-record strong,.root-record small{display:block;overflow-wrap:anywhere}.root-record small{color:var(--muted)}.root-record button{margin:5px 5px 0 0}.root-form{display:grid;gap:8px;margin:16px 0}.root-form label{display:grid;gap:3px}.root-form input{padding:7px;background:var(--bg);border:1px solid var(--line);border-radius:5px}.dialog-head{display:flex;align-items:center;justify-content:space-between}.dialog-head h2{margin:0;font-size:18px}
 .primary{background:var(--accent);border-color:var(--accent);color:var(--panel)}.primary:hover{filter:brightness(.94);background:var(--accent)}.add-folder{margin:16px 0}.path-field{display:flex;gap:6px}.path-field input{flex:1;min-width:0}details summary{font-size:12px;color:var(--muted);cursor:pointer}dialog.is-selecting{width:min(760px,96vw)}.folder-hint{font-size:13px;color:var(--muted);margin:12px 0}.folder-places{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.folder-places button{font-size:12px}.folder-location{display:flex;gap:6px}.folder-location input,.folder-options>input,.folder-name input{min-width:0;border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:6px;padding:7px 9px;font:inherit}.folder-location input{flex:1;font-size:13px}.folder-breadcrumbs{display:flex;gap:2px;overflow:auto;align-items:center;padding:7px 0;white-space:nowrap}.folder-breadcrumbs button{border:0;background:none;color:var(--muted);padding:3px 5px;font-size:12px}.folder-breadcrumbs button:last-child{color:var(--text);font-weight:600}.folder-breadcrumbs button:hover{background:var(--hover);border-radius:4px}.folder-options{display:flex;gap:12px;align-items:center;margin:2px 0 8px}.folder-options>input{flex:1;font-size:12px}.folder-options label{font-size:12px;white-space:nowrap;color:var(--muted)}.folder-list{height:clamp(150px,36vh,360px);overflow:auto;border:1px solid var(--line);border-radius:7px;padding:4px}.folder-entry{display:flex;width:100%;gap:10px;align-items:center;text-align:left;border:0;background:none;padding:7px 9px;border-radius:5px;color:var(--text);font-size:13px}.folder-entry:hover{background:var(--hover)}.folder-entry .folder-icon{width:24px;flex:none;color:var(--accent);font-size:11px;font-weight:600}.folder-entry .folder-entry-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.folder-entry small{color:var(--muted);font-size:11px}.folder-entry.is-file{color:var(--muted);cursor:default}.folder-entry.is-file:hover{background:none}.folder-entry.is-file .folder-icon{color:var(--muted);font-weight:400}.folder-counts,.folder-selection{font-size:12px;color:var(--muted);overflow-wrap:anywhere;margin:7px 0}.folder-name{display:flex;gap:10px;align-items:center;font-size:13px;margin:12px 0 6px}.folder-name input{flex:1}.folder-footer{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}#folderError{font-size:12px;margin:8px 0}@media(max-width:560px){dialog{padding:14px}.folder-options{gap:6px}.folder-location input{width:0}.folder-places{gap:4px}.folder-entry small{display:none}}
+
+:root{--git-modified:#926600;--git-added:#187343;--git-untracked:#23758a;--git-deleted:#bc3544;--git-renamed:#7951ba;--git-conflict:#b33d16;--diff-add:#e6f5eb;--diff-delete:#ffebed}
+@media(prefers-color-scheme:dark){:root{--git-modified:#e3bf65;--git-added:#7ad49d;--git-untracked:#74c7df;--git-deleted:#ff929c;--git-renamed:#c8a4ff;--git-conflict:#ffb08b;--diff-add:#173626;--diff-delete:#40232c}}
+.sidebar-tabs{display:flex;gap:4px;margin:0 0 10px}.sidebar-tabs button{flex:1}.sidebar-tabs [aria-pressed="true"],.viewer-tabs [aria-pressed="true"]{background:var(--selected);color:var(--accent);border-color:var(--accent)}
+#gitPanel{flex:1;min-height:0;overflow:auto;padding:6px 5px}.git-branch{padding:7px 10px;font-weight:600;overflow-wrap:anywhere}.git-group h2{font-size:12px;font-weight:600;margin:14px 9px 5px;color:var(--muted)}.git-row{font-size:12px}.git-row .filename{white-space:normal;overflow-wrap:anywhere}.git-badge{flex:none;font:700 11px/1.5 ui-monospace,monospace;min-width:15px;text-align:center;color:var(--git-color)}
+[data-git-status="M"],[data-git-status="T"]{--git-color:var(--git-modified)}[data-git-status="A"]{--git-color:var(--git-added)}[data-git-status="U"]{--git-color:var(--git-untracked)}[data-git-status="D"]{--git-color:var(--git-deleted)}[data-git-status="R"],[data-git-status="C"]{--git-color:var(--git-renamed)}[data-git-status="!"]{--git-color:var(--git-conflict)}
+.row[data-git-status] .filename{color:var(--git-color)}.symlink{flex:none;font-weight:600;color:var(--muted)}.row:disabled:hover{background:none}.viewer-tabs{display:flex;gap:6px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--line);flex-wrap:wrap}.diff-path{flex:1;min-width:80px;overflow-wrap:anywhere;font-size:12px;color:var(--muted)}
+#diffViewer{position:absolute;inset:0;overflow:auto;background:var(--panel)}#diffContent{margin:0;padding:12px 0;font:12px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;tab-size:4;min-width:100%;width:max-content}.diff-line{display:block;white-space:pre;padding:0 16px;min-height:1.65em}.diff-add{background:var(--diff-add);color:var(--git-added)}.diff-delete{background:var(--diff-delete);color:var(--git-deleted)}.diff-hunk{color:var(--accent);background:var(--selected)}.diff-message{padding:14px 16px;color:var(--muted);font-size:12px;white-space:pre-wrap;overflow-wrap:anywhere}
 </style></head><body>
 <main><aside id="fileSidebar" aria-label="파일 탐색"><div class="side-controls">
 <div class="side-brand"><strong class="root" id="rootName">프로젝트 파일</strong><button class="plain" id="home" title="검색을 닫고 프로젝트 루트 보기" aria-label="처음으로">⌂</button><button class="plain" id="refresh" title="목록과 선택한 파일 새로고침" aria-label="새로고침">↻</button></div>
 <div class="root-picker"><select id="rootSelect" aria-label="루트 폴더 선택"></select><button class="button" id="manageRoots" title="루트 등록·수정·제거">루트 관리</button></div><div class="root-path" id="rootPath"></div>
-<div class="search"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="파일명·경로 검색" aria-label="파일명 또는 경로 검색" title="하위 폴더 포함 · Ctrl+K / Cmd+K"></div>
+<div class="sidebar-tabs" aria-label="탐색 보기"><button class="button" id="filesTab" aria-pressed="true">파일</button><button class="button" id="gitTab" aria-pressed="false">Git</button></div>
+<div class="search" id="fileSearch"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="파일명·경로 검색" aria-label="파일명 또는 경로 검색" title="하위 폴더 포함 · Ctrl+K / Cmd+K"></div>
 <div class="toolbar"><select id="type" aria-label="파일 형식"><option value="all">전체 파일</option><option value="pdf">PDF</option><option value="html">HTML</option><option value="markdown">Markdown</option><option value="code">코드</option></select><div class="actions" id="actions" hidden><button class="button" id="expandPreview" aria-pressed="false" aria-label="크게 보기" title="크게 보기 · Orca 화면 유지 · Esc로 돌아가기">⛶</button><button class="button" id="copy" aria-label="링크 복사" title="링크 복사">⧉</button><a class="button" id="open" target="_blank" rel="noopener" aria-label="새 탭에서 열기" title="새 탭에서 열기">↗</a></div></div>
-</div><div class="side-head" id="listLabel">폴더</div><nav id="entries" aria-label="파일과 폴더" aria-busy="true"></nav><div class="side-foot" id="status" role="status">파일 목록을 불러오는 중…</div></aside>
+</div><div class="side-head" id="listLabel">폴더</div><nav id="entries" aria-label="파일과 폴더" aria-busy="true"></nav><nav id="gitPanel" aria-label="Git 변경사항" aria-busy="false" hidden></nav><div class="side-foot" id="status" role="status">파일 목록을 불러오는 중…</div></aside>
 <div class="splitter" id="sidebarResize" role="separator" aria-label="파일 목록 너비 조절" aria-orientation="vertical" aria-controls="fileSidebar" tabindex="0" title="드래그로 파일 목록 너비 조절 · 방향키로도 조절 가능"></div>
-<section class="viewer" id="viewer" aria-label="파일 미리보기"><div class="preview"><div class="empty" id="empty"><div><div class="symbol">▤</div><h1>찾고, 바로 열어보세요</h1><p>폴더를 펼치거나 파일명으로 검색하세요.<br>PDF, HTML, Markdown과 코드를 바로 볼 수 있습니다.</p></div></div><iframe id="preview" title="선택한 파일 미리보기" hidden></iframe></div><button class="button" id="exitExpanded" hidden title="기본 보기 · Esc" aria-label="기본 보기">↙ 기본 보기 <small>Esc</small></button></section></main>
+<section class="viewer" id="viewer" aria-label="파일 미리보기"><div class="viewer-tabs" id="viewerTabs" hidden><span class="diff-path" id="diffPath"></span><button class="button" id="showDiff" aria-pressed="true">변경사항</button><button class="button" id="showFile" aria-pressed="false" disabled>파일 열기</button></div><div class="preview"><div class="empty" id="empty"><div><div class="symbol">▤</div><h1>찾고, 바로 열어보세요</h1><p>폴더를 펼치거나 파일명으로 검색하세요.<br>PDF, HTML, Markdown과 코드를 바로 볼 수 있습니다.</p></div></div><section id="diffViewer" aria-label="파일 변경사항" hidden><div id="diffMessage" class="diff-message" role="status"></div><pre id="diffContent"></pre></section><iframe id="preview" title="선택한 파일 미리보기" hidden></iframe></div><button class="button" id="exitExpanded" hidden title="기본 보기 · Esc" aria-label="기본 보기">↙ 기본 보기 <small>Esc</small></button></section></main>
 <dialog id="rootsDialog" aria-labelledby="rootsTitle">
 <div class="dialog-head"><h2 id="rootsTitle">루트 폴더 관리</h2><button class="button" id="closeRoots">닫기</button></div>
 <div id="rootManagement"><p>이 서버의 폴더를 찾아 연결하세요. 연결을 제거해도 원본 파일은 유지됩니다.</p>
@@ -48,7 +57,7 @@ main{display:flex;min-height:0;flex:1;gap:0;padding:8px}aside{width:330px;min-wi
 <script>
 'use strict';
 const $=id=>document.getElementById(id), entries=$('entries'), input=$('search'), type=$('type');
-const state={cache:new Map(),expanded:new Set(['']),selected:null,generation:0,timer:null,controller:null,pdfjs:false,previewExpanded:false,roots:[],root:'project',token:null,editRoot:null};
+const state={cache:new Map(),expanded:new Set(['']),selected:null,generation:0,timer:null,controller:null,pdfjs:false,previewExpanded:false,roots:[],root:'project',token:null,editRoot:null,sidebarMode:'files',git:null,gitRoot:null,gitController:null,gitGeneration:0,gitMarkers:new Map(),diff:null,diffController:null,diffGeneration:0,viewerMode:'file'};
 const initial=new URLSearchParams(location.search).get('path');
 const initialRoot=new URLSearchParams(location.search).get('root');
 const nodeKey=(root,path)=>JSON.stringify([root,path]);
@@ -96,20 +105,147 @@ const previewURL=entry=>['pdf','html','media'].includes(entry.category)?fileURL(
 const make=(tag,cls,text)=>{const node=document.createElement(tag);if(cls)node.className=cls;if(text!==undefined)node.textContent=text;return node;};
 async function api(url,signal){const response=await fetch(url,{cache:'no-store',signal});const data=await response.json();if(!response.ok)throw Error(data.error||'요청에 실패했습니다');return data;}
 function note(message,error=false){entries.replaceChildren(make('div',error?'note error':'note',message));}
+const gitLabels={M:'수정됨',U:'추적되지 않음',A:'추가됨',R:'이름 변경됨',D:'삭제됨',C:'복사됨',T:'파일 형식 변경됨','!':'충돌'};
+const gitPriority=['!','D','R','M','T','A','C','U'];
+function strongest(codes){return gitPriority.find(code=>codes.has(code));}
+function gitCode(change){return change.conflict?'!':change.untracked?'U':change.status;}
+function buildGitMarkers(data){
+  state.gitMarkers.clear();state.gitUntrackedDirs=new Set();
+  for(const change of data.entries||[]){
+    const path=change.path.replace(/\/$/,''),code=gitCode(change);
+    if(change.untracked&&change.path.endsWith('/'))state.gitUntrackedDirs.add(path);
+    for(const affected of [path,...(change.original_path?[change.original_path]:[])]){
+      const parts=affected.split('/');
+      for(let i=1;i<=parts.length;i++){
+        const key=parts.slice(0,i).join('/');
+        if(!state.gitMarkers.has(key))state.gitMarkers.set(key,new Set());
+        state.gitMarkers.get(key).add(code);
+      }
+    }
+  }
+}
+function decorateRow(button,entry){
+  button.querySelector('.git-badge')?.remove();delete button.dataset.gitStatus;
+  button.title=button.dataset.baseTitle||button.title;
+  if(state.gitRoot!==entry.root_id||!state.git?.available)return;
+  const codes=new Set(state.gitMarkers.get(entry.path)||[]);
+  // Porcelain may summarize an entire untracked directory as one path.
+  const parts=entry.path.split('/');for(let i=1;i<parts.length;i++)if(state.gitUntrackedDirs?.has(parts.slice(0,i).join('/')))codes.add('U');
+  const code=strongest(codes);if(!code)return;
+  button.dataset.gitStatus=code;
+  const summary=gitPriority.filter(c=>codes.has(c)).map(c=>c+' · '+gitLabels[c]).join(', ');
+  const badge=make('span','git-badge',code);badge.title=(entry.kind==='directory'?'하위 변경사항: ':'')+summary;
+  badge.setAttribute('aria-label',badge.title);(button.querySelector('.result-name')||button).append(badge);
+  button.title+='\n'+badge.title;
+}
+function repaintGitMarkers(){for(const button of entries.querySelectorAll('button.row'))decorateRow(button,{path:button.dataset.path,root_id:button.dataset.root,kind:button.dataset.kind});}
 function row(entry,result=false){
   const button=make('button','row'+(result?' search-result':'')+(state.selected?.path===entry.path&&state.selected?.root_id===entry.root_id?' active':''));
-  button.type='button';button.dataset.path=entry.path;button.dataset.root=entry.root_id;button.title=rootLabel(entry.root_id)+' · '+(state.roots.find(r=>r.id===entry.root_id)?.path||'')+'/'+entry.path;
-  if(entry.kind==='directory'){
-    button.setAttribute('aria-expanded',String(state.expanded.has(nodeKey(entry.root_id,entry.path))));
-    button.append(make('span','caret',state.expanded.has(nodeKey(entry.root_id,entry.path))?'▾':'▸'),make('span','icon','DIR'),make('span','filename',entry.name));
-    button.onclick=()=>toggle(entry.path,entry.root_id);return button;
-  }
+  button.type='button';button.dataset.path=entry.path;button.dataset.root=entry.root_id;button.dataset.kind=entry.kind;
+  button.title=rootLabel(entry.root_id)+' · '+(state.roots.find(r=>r.id===entry.root_id)?.path||'')+'/'+entry.path;
+  if(entry.symlink)button.title+='\n↗ '+(entry.link_target||'심볼릭 링크')+(entry.available===false?' · '+(entry.unavailable_reason||'접근 불가'):'');
+  button.dataset.baseTitle=button.title;button.disabled=entry.available===false;
   const line=result?make('span','result-name'):button;
-  if(!result)line.append(make('span','caret',''));
-  line.append(make('span','icon',icon(entry)),make('span','filename',entry.name),make('span','size',bytes(entry.size)));
-  if(result){button.append(line,make('span','result-path',rootLabel(entry.root_id)+' · '+entry.path));}
-  button.onclick=()=>select(entry);return button;
+  if(!result)line.append(make('span','caret',entry.kind==='directory'?(state.expanded.has(nodeKey(entry.root_id,entry.path))?'▾':'▸'):''));
+  line.append(make('span','icon',icon(entry)),make('span','filename',entry.name));
+  if(entry.symlink){const link=make('span','symlink','↗');link.setAttribute('aria-label','심볼릭 링크');line.append(link);}
+  if(entry.kind==='directory')button.setAttribute('aria-expanded',String(state.expanded.has(nodeKey(entry.root_id,entry.path))));
+  else line.append(make('span','size',entry.available===false?'—':bytes(entry.size||0)));
+  if(result)button.append(line,make('span','result-path',rootLabel(entry.root_id)+' · '+entry.path));
+  button.onclick=()=>{if(entry.available===false)return;entry.kind==='directory'?toggle(entry.path,entry.root_id):select(entry);};
+  decorateRow(button,entry);return button;
 }
+function clearGit(){
+  state.gitController?.abort();state.gitGeneration++;state.git=null;state.gitRoot=null;state.gitMarkers.clear();
+  $('gitPanel').replaceChildren(make('div','note','Git 상태를 불러오는 중…'));repaintGitMarkers();
+  state.diffController?.abort();state.diffGeneration++;state.diff=null;$('viewerTabs').hidden=true;$('diffViewer').hidden=true;
+}
+function setSidebarMode(mode){
+  state.sidebarMode=mode;const git=mode==='git';
+  $('gitTab').setAttribute('aria-pressed',String(git));$('filesTab').setAttribute('aria-pressed',String(!git));
+  entries.hidden=git;$('gitPanel').hidden=!git;$('fileSearch').hidden=git;type.hidden=git;$('listLabel').hidden=git;
+  if(git){drawGit();ensureGit();}
+}
+$('filesTab').onclick=()=>setSidebarMode('files');$('gitTab').onclick=()=>setSidebarMode('git');
+function drawGit(){
+  const panel=$('gitPanel');panel.replaceChildren();
+  if(state.gitRoot!==state.root||!state.git){panel.append(make('div','note','Git 상태를 불러오는 중…'));return;}
+  const data=state.git;
+  if(!data.available){panel.append(make('div','note',({not_repository:'Git 저장소가 아닙니다. 파일을 계속 탐색할 수 있습니다.',git_unavailable:'Git을 사용할 수 없습니다. 파일을 계속 탐색할 수 있습니다.'})[data.reason]||data.message||'Git 상태를 가져올 수 없습니다.'));return;}
+  panel.append(make('div','git-branch','⑂ '+(data.branch||(data.detached?'분리된 HEAD':'새 저장소'))));
+  if(data.message)panel.append(make('div','note',data.message));
+  const groups=[['staged','스테이징된 변경사항',e=>!e.untracked&&e.index&&e.index!==' '],['unstaged','스테이징되지 않은 변경사항',e=>!e.untracked&&e.worktree&&e.worktree!==' '],['untracked','추적되지 않은 파일',e=>e.untracked]];
+  for(const [group,label,filter] of groups){
+    const changes=(data.entries||[]).filter(filter),section=make('section','git-group');section.dataset.group=group;
+    section.append(make('h2','',label+' · '+changes.length));
+    for(const change of changes){
+      const button=make('button','row git-row');button.type='button';button.dataset.path=change.path;button.dataset.group=group;
+      button.dataset.gitStatus=change.conflict?'!':group==='untracked'?'U':(group==='staged'?change.index:change.worktree);
+      button.classList.toggle('active',state.diff?.root===state.root&&state.diff?.path===change.path&&state.diff?.group===group);
+      button.title=rootLabel(state.root)+' · '+state.roots.find(r=>r.id===state.root)?.path+'/'+change.path+'\n'+(gitLabels[button.dataset.gitStatus]||'변경됨');
+      button.append(make('span','git-badge',button.dataset.gitStatus),make('span','filename',change.original_path?change.original_path+' → '+change.path:change.path));
+      button.onclick=()=>selectDiff(change,group);section.append(button);
+    }
+    panel.append(section);
+  }
+  if(!(data.entries||[]).length)panel.append(make('div','note','변경사항이 없습니다.'));
+  if(data.truncated)panel.append(make('div','note','변경사항이 많아 일부만 표시합니다.'));
+}
+function ensureGit(refresh=false){
+  const root=state.root;
+  if(!refresh&&state.gitRoot===root)return;
+  state.gitController?.abort();const controller=new AbortController(),generation=++state.gitGeneration;
+  state.gitController=controller;state.gitRoot=root;state.git=null;state.gitMarkers.clear();repaintGitMarkers();drawGit();$('gitPanel').setAttribute('aria-busy','true');
+  api('/api/git/status?'+new URLSearchParams({root,...(refresh?{refresh:'1'}:{})}),controller.signal).then(data=>{
+    if(generation!==state.gitGeneration||root!==state.root||data.root_id!==root)return;
+    state.git=data;buildGitMarkers(data);repaintGitMarkers();drawGit();
+  }).catch(error=>{
+    if(error.name==='AbortError'||generation!==state.gitGeneration||root!==state.root)return;
+    state.git={available:false,reason:'error',message:'Git 상태를 가져올 수 없습니다. 파일을 계속 탐색할 수 있습니다.'};drawGit();
+  }).finally(()=>{if(generation===state.gitGeneration)$('gitPanel').setAttribute('aria-busy','false');});
+}
+function renderDiff(data){
+  $('diffContent').replaceChildren();
+  const messages={binary:'바이너리 파일의 변경사항입니다.',empty:'표시할 변경사항이 없습니다.',unavailable:'이 파일의 변경사항을 표시할 수 없습니다.'};
+  // Bound DOM work as well as response bytes: a newline-heavy patch can be tiny.
+  const lines=['diff','text'].includes(data.kind)?(data.text||'').split('\n',20001):[];
+  $('diffMessage').textContent=[messages[data.kind],data.message,(data.truncated||lines.length>20000)?'크기 제한으로 일부만 표시합니다.':'',data.kind==='text'?'추적되지 않은 파일의 내용':''].filter(Boolean).join(' · ');
+  let inHunk=false;
+  $('diffContent').replaceChildren(...lines.slice(0,20000).map((line,i)=>{
+    let style='';
+    if(data.kind==='diff'){
+      if(line.startsWith('diff '))inHunk=false;
+      if(line.startsWith('@@')){inHunk=true;style=' diff-hunk';}
+      else if(inHunk)style=line.startsWith('+')?' diff-add':line.startsWith('-')?' diff-delete':'';
+    }
+    return make('span','diff-line'+style,line+(i<lines.length-1?'\n':''));
+  }));
+}
+
+async function selectDiff(change,group){
+  const root=state.root,path=change.path;state.diffController?.abort();
+  const controller=new AbortController(),generation=++state.diffGeneration;state.diffController=controller;
+  state.diff={root,path,group,change};state.viewerMode='diff';state.selected=null;
+  $('viewerTabs').hidden=false;$('diffPath').textContent=rootLabel(root)+' · '+path+' · '+(group==='staged'?'스테이징됨':group==='untracked'?'추적되지 않음':'작업 폴더');
+  $('showDiff').setAttribute('aria-pressed','true');$('showFile').setAttribute('aria-pressed','false');$('showFile').disabled=true;$('showFile').title='파일 확인 중…';
+  $('empty').hidden=true;$('preview').hidden=true;$('preview').src='about:blank';$('diffViewer').hidden=false;$('actions').hidden=false;$('open').hidden=true;
+  $('viewer').setAttribute('aria-label',path+' 변경사항');$('diffMessage').textContent='변경사항을 불러오는 중…';$('diffContent').replaceChildren();drawGit();
+  const current=()=>generation===state.diffGeneration&&root===state.root;
+  api('/api/entry?'+new URLSearchParams({root,path}),controller.signal).then(data=>{
+    if(!current())return;
+    state.diff.entry=data.entry;const available=data.entry.kind==='file'&&data.entry.available!==false;
+    $('showFile').disabled=!available;$('showFile').title=available?'현재 파일 미리보기':data.entry.unavailable_reason||'파일을 열 수 없습니다.';
+    if(available){$('open').href=previewURL(data.entry);$('open').hidden=false;}
+  }).catch(error=>{if(current()&&error.name!=='AbortError')$('showFile').title='삭제되었거나 열 수 없는 파일입니다.';});
+  try{
+    const data=await api('/api/git/diff?'+new URLSearchParams({root,path,...(group==='staged'?{staged:'1'}:{})}),controller.signal);
+    if(!current()||data.root_id!==root||state.viewerMode!=='diff')return;
+    state.diff.data=data;renderDiff(data);
+  }catch(error){if(current()&&error.name!=='AbortError')renderDiff({kind:'unavailable',message:error.message});}
+}
+$('showFile').onclick=()=>{if(state.diff?.entry&&state.diff.entry.available!==false)select(state.diff.entry,true);};
+$('showDiff').onclick=()=>{if(state.diff)selectDiff(state.diff.change,state.diff.group);};
+
 function drawTree(){
   entries.replaceChildren();let files=0;
   function branch(path,container){
@@ -128,11 +264,11 @@ function drawTree(){
   branch('',entries);$('listLabel').textContent='폴더';$('status').textContent=`표시된 파일 ${files}개 · 읽기 전용`;
 }
 async function toggle(path,root){
-  const key=nodeKey(root,path);
+  const key=nodeKey(root,path),generation=state.generation;
   if(state.expanded.has(key)){state.expanded.delete(key);drawTree();return;}
   state.expanded.add(key);drawTree();
-  try{state.cache.set(key,await api('/api/list?'+new URLSearchParams({root,path})));if(!input.value.trim())drawTree();}
-  catch(error){state.expanded.delete(key);$('status').textContent=error.message;if(!input.value.trim())drawTree();}
+  try{state.cache.set(key,await api('/api/list?'+new URLSearchParams({root,path})));if(root===state.root&&generation===state.generation&&!input.value.trim())drawTree();}
+  catch(error){if(root!==state.root||generation!==state.generation)return;state.expanded.delete(key);$('status').textContent=error.message;if(!input.value.trim())drawTree();}
 }
 function renderRoots(){
   $('rootSelect').replaceChildren(...state.roots.map(root=>{const option=make('option','',root.name+(root.connected?'':' · 연결 안 됨'));option.value=root.id;option.title=root.path;return option;}));
@@ -140,13 +276,13 @@ function renderRoots(){
   const root=state.roots.find(r=>r.id===state.root);$('rootPath').textContent=root?.path||'';$('rootPath').title=root?.path||'';
 }
 async function refreshRoots(signal){
-  const info=await api('/api/info',signal);state.roots=info.roots;state.token=info.config_token;state.pdfjs=info.pdfjs;
+  const info=await api('/api/info',signal);signal?.throwIfAborted();state.roots=info.roots;state.token=info.config_token;state.pdfjs=info.pdfjs;
   state.project=info.root;$('rootName').textContent=info.name;$('rootName').title=info.root;
   if(!state.roots.some(r=>r.id===state.root))state.root='project';
   renderRoots();
 }
-function resetPreview(){state.selected=null;$('preview').src='about:blank';$('preview').hidden=true;$('empty').hidden=false;$('actions').hidden=true;}
-$('rootSelect').onchange=()=>{state.root=$('rootSelect').value;input.value='';resetPreview();renderRoots();try{localStorage.setItem(selectionKey(),state.root);}catch{}history.replaceState(null,'','/?'+new URLSearchParams({root:state.root}));update();};
+function resetPreview(){state.diffController?.abort();state.diffGeneration++;state.diff=null;state.viewerMode='file';$('viewerTabs').hidden=true;$('diffViewer').hidden=true;$('open').hidden=false;state.selected=null;$('preview').src='about:blank';$('preview').hidden=true;$('empty').hidden=false;$('actions').hidden=true;}
+$('rootSelect').onchange=()=>{state.root=$('rootSelect').value;input.value='';clearGit();resetPreview();note('파일 목록을 불러오는 중…');renderRoots();try{localStorage.setItem(selectionKey(),state.root);}catch{}history.replaceState(null,'','/?'+new URLSearchParams({root:state.root}));update();};
 function cancelRootEdit(){state.editRoot=null;$('rootForm').reset();$('saveRoot').textContent='등록';$('cancelRootEdit').hidden=true;$('manualRoot').open=false;}
 $('cancelRootEdit').onclick=cancelRootEdit;
 function drawRootRecords(){
@@ -162,7 +298,8 @@ async function saveRoots(data){
   try{
     const response=await fetch('/api/roots',{method:'POST',headers:{'Content-Type':'application/json','X-Fbrowse-Token':state.token},body:JSON.stringify(data)});
     const result=await response.json();if(!response.ok)throw Error(result.error);
-    if(data.id===state.selected?.root_id)resetPreview();
+    if(data.id===state.selected?.root_id||data.id===state.diff?.root)resetPreview();
+    clearGit();if(state.viewerMode==='diff')resetPreview();
     if(data.operation==='add'){const added=result.roots.find(root=>!state.roots.some(existing=>existing.id===root.id));if(added){state.root=added.id;input.value='';resetPreview();try{localStorage.setItem(selectionKey(),state.root);}catch{}history.replaceState(null,'','/?'+new URLSearchParams({root:state.root}));}}
     cancelRootEdit();await refreshRoots();drawRootRecords();state.cache.clear();await update(true);$('rootMessage').textContent='저장했습니다.';return true;
   }catch(error){$('rootMessage').textContent=error.message;return false;}
@@ -235,6 +372,8 @@ async function update(refresh=false){
   const generation=++state.generation,query=input.value.trim();entries.setAttribute('aria-busy','true');
   try{
     await refreshRoots(controller.signal);
+    if(generation!==state.generation)return;
+    ensureGit(refresh);
     state.expanded.add(nodeKey(state.root,''));
     if(!state.roots.find(r=>r.id===state.root)?.connected){drawTree();return;}
     if(query){
@@ -255,7 +394,7 @@ async function update(refresh=false){
   finally{if(generation===state.generation)entries.setAttribute('aria-busy','false');}
 }
 function loadPreview(){
-  if(!state.selected)return;
+  if(!state.selected||state.viewerMode!=='file')return;
   const entry=state.selected,url=fileURL(entry.path,entry.root_id)+'?v='+Date.now();
   $('preview').src=state.pdfjs&&entry.category==='pdf'?'/_pdfjs/web/viewer.html?file='+encodeURIComponent(url)+'#zoom=page-width':previewURL(entry)+(previewURL(entry).includes('?')?'&':'?')+'v='+Date.now();
 }
@@ -282,7 +421,10 @@ $('preview').addEventListener('load',()=>{
   // Keyboard events in the PDF/HTML iframe do not bubble to the parent document.
   try{$('preview').contentWindow.addEventListener('keydown',handlePreviewEscape,true);}catch{}
 });
-function select(entry){
+function select(entry,keepDiff=false){
+  if(entry.available===false)return;
+  if(!keepDiff){state.diffController?.abort();state.diffGeneration++;state.diff=null;$('viewerTabs').hidden=true;}
+  state.viewerMode='file';$('diffViewer').hidden=true;$('open').hidden=false;$('showFile').setAttribute('aria-pressed','true');$('showDiff').setAttribute('aria-pressed','false');
   state.selected=entry;$('preview').title=entry.name+' 미리보기';$('viewer').setAttribute('aria-label',entry.name+' 미리보기');
   $('empty').hidden=true;$('preview').hidden=false;$('actions').hidden=false;$('open').href=previewURL(entry);loadPreview();
   document.title='fbrowse';
@@ -290,9 +432,9 @@ function select(entry){
   for(const node of entries.querySelectorAll('button[data-path]'))node.classList.toggle('active',node.dataset.path===entry.path&&node.dataset.root===entry.root_id);
 }
 input.oninput=()=>{state.controller?.abort();state.generation++;clearTimeout(state.timer);state.timer=setTimeout(()=>update(),200);};
-type.onchange=()=>update();$('refresh').onclick=()=>{state.cache.clear();update(true);loadPreview();};
+type.onchange=()=>update();$('refresh').onclick=()=>{state.cache.clear();update(true);if(state.viewerMode==='diff'&&state.diff)selectDiff(state.diff.change,state.diff.group);else loadPreview();};
 $('home').onclick=()=>{input.value='';state.expanded=new Set([nodeKey(state.root,'')]);update();};
-$('copy').onclick=async()=>{const url=new URL('/?'+new URLSearchParams({root:state.selected.root_id,path:state.selected.path}),location.origin).href;try{await navigator.clipboard.writeText(url);$('copy').textContent='✓';$('copy').title='복사됨';setTimeout(()=>{$('copy').textContent='⧉';$('copy').title='링크 복사';},1500);}catch{window.prompt('미리보기 링크를 복사하세요',url);}};
+$('copy').onclick=async()=>{const url=new URL('/?'+new URLSearchParams({root:state.selected?.root_id||state.diff?.root,path:state.selected?.path||state.diff?.path}),location.origin).href;try{await navigator.clipboard.writeText(url);$('copy').textContent='✓';$('copy').title='복사됨';setTimeout(()=>{$('copy').textContent='⧉';$('copy').title='링크 복사';},1500);}catch{window.prompt('미리보기 링크를 복사하세요',url);}};
 document.addEventListener('keydown',event=>{
   if(handlePreviewEscape(event))return;
   if(state.previewExpanded)return;
@@ -311,7 +453,7 @@ document.addEventListener('keydown',event=>{
       const data=await api('/api/entry?'+new URLSearchParams({root:state.root,path:initial}));const parts=data.entry.path.split('/');
       const count=data.entry.kind==='directory'?parts.length:parts.length-1;
       for(let i=1;i<=count;i++)state.expanded.add(nodeKey(state.root,parts.slice(0,i).join('/')));
-      if(data.entry.kind==='file')select(data.entry);
+      if(data.entry.kind==='file'&&data.entry.available!==false)select(data.entry);
     }
   }catch(error){$('status').textContent=error.message;}
   await update();

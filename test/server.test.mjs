@@ -5,11 +5,14 @@ import os from 'node:os';
 import path from 'node:path';
 import http from 'node:http';
 import { once } from 'node:events';
-import { spawn } from 'node:child_process';
+import { spawn, execFile } from 'node:child_process';
+import { promisify } from 'node:util';
 import { createHash } from 'node:crypto';
 import { startServer } from '../lib/server.mjs';
 import { projectConfig, projectKey, readConfig, changeRoot } from '../lib/storage.mjs';
 import { textAsset, PDFJS_VERSION, PDFJS_SHA256 } from '../lib/assets.mjs';
+
+const execute = promisify(execFile);
 
 function request(app, route, { method = 'GET', headers = {}, data } = {}) {
   if (data !== undefined) {
@@ -63,7 +66,7 @@ test('isolated server and storage integrations', async t => {
     const info = (await request(app, '/api/info')).json();
     assert.equal(info.service, 'project-file-browser');
     assert.equal(info.backend, 'node');
-    assert.equal(info.version, '0.2.1');
+    assert.equal(info.version, '0.3.0');
     assert.equal(info.pid, process.pid);
     assert.equal(info.root, roots.project);
     assert.equal(info.pdfjs, false);
@@ -165,6 +168,97 @@ test('isolated server and storage integrations', async t => {
     assert.deepEqual((await request(app, '/api/search?q=same&refresh=1')).json().entries.map(e => e.root_id), ['project']);
     assert.equal((await request(app, '/api/search?q=same&root=project&refresh=1')).json().skipped, 0);
     assert.equal((await request(app, '/api/search?q=same&refresh=1')).json().skipped, 1);
+  }));
+
+  await t.test('symlink metadata keeps source identity and unavailable links cannot expose targets', () => fixture(async ({ app, roots }) => {
+    await fs.mkdir(path.join(roots.project, 'docs'));
+    await fs.writeFile(path.join(roots.project, 'docs', 'note.txt'), 'inside');
+    await fs.symlink('docs', path.join(roots.project, 'linked-docs'));
+    await fs.symlink('docs/note.txt', path.join(roots.project, 'linked-note.txt'));
+    await fs.symlink('missing', path.join(roots.project, 'broken.txt'));
+    await fs.symlink(path.join(roots.results, 'same.txt'), path.join(roots.project, 'external.txt'));
+    await fs.symlink('loop', path.join(roots.project, 'loop'));
+    const entries = (await request(app, '/api/list')).json().entries;
+    const byName = name => entries.find(value => value.name === name);
+    assert.equal(byName('linked-docs').kind, 'directory');
+    assert.equal(byName('linked-docs').symlink, true);
+    assert.equal(byName('linked-docs').link_target, 'docs');
+    assert.equal(byName('linked-note.txt').path, 'linked-note.txt');
+    assert.equal(byName('linked-note.txt').available, true);
+    assert.equal((await request(app, '/api/list?path=linked-docs')).json().entries[0].path, 'linked-docs/note.txt');
+    for (const name of ['broken.txt', 'external.txt', 'loop']) {
+      assert.equal(byName(name).available, false);
+      assert.equal(byName(name).symlink, true);
+      const metadata = (await request(app, '/api/entry?path=' + name)).json().entry;
+      assert.equal(metadata.path, name);
+      assert.notEqual((await request(app, '/api/text?path=' + name)).status, 200);
+      assert.notEqual((await request(app, '/_preview?path=' + name)).status, 200);
+      assert.notEqual((await request(app, '/files/' + name)).status, 200);
+    }
+    assert.match(byName('external.txt').unavailable_reason, /루트 밖/);
+    assert.match(byName('broken.txt').unavailable_reason, /없습니다/);
+    assert.match(byName('loop').unavailable_reason, /순환/);
+    const search = (await request(app, '/api/search?q=linked&refresh=1')).json().entries;
+    assert.ok(search.some(value => value.path === 'linked-note.txt' && value.symlink));
+    assert.equal(search.some(value => value.path === 'linked-docs/note.txt'), false);
+  }));
+
+  await t.test('Git HTTP routes isolate roots, filter hidden files and preserve staged versus working diffs', () => fixture(async ({ app, roots, post }) => {
+    const git = (...args) => execute('git', ['-C', roots.project, '-c', 'core.hooksPath=/dev/null', ...args], {
+      env: { ...process.env, GIT_CONFIG_NOSYSTEM: '1', GIT_CONFIG_GLOBAL: '/dev/null' }, timeout: 5000,
+    });
+    await git('init', '-b', 'main');
+    await git('add', 'same.txt');
+    await git('-c', 'user.name=fbrowse test', '-c', 'user.email=fbrowse@example.invalid', '-c', 'commit.gpgsign=false', 'commit', '-m', 'fixture');
+    await fs.writeFile(path.join(roots.project, 'same.txt'), 'staged line\n');
+    await git('add', 'same.txt');
+    await fs.writeFile(path.join(roots.project, 'same.txt'), 'working line\n');
+    await fs.writeFile(path.join(roots.project, 'new 한글.txt'), 'new text\n');
+    await fs.writeFile(path.join(roots.project, '.hidden.txt'), 'hidden\n');
+    await fs.writeFile(path.join(roots.results, 'same.txt'), 'UNREGISTERED_TARGET_SECRET_90217');
+    await fs.symlink(roots.results, path.join(roots.project, 'outside'));
+    await fs.symlink(path.join(roots.results, 'same.txt'), path.join(roots.project, 'outside-link'));
+    await post('/api/roots', { operation: 'add', id: 'results', name: '별도 루트', path: roots.results });
+    const beforeIndex = await fs.readFile(path.join(roots.project, '.git', 'index'));
+    const status = (await request(app, '/api/git/status?root=project')).json();
+    assert.equal(status.available, true);
+    assert.equal(status.root_id, 'project');
+    assert.equal(status.branch, 'main');
+    const modified = status.entries.find(value => value.path === 'same.txt');
+    assert.equal(modified.index, 'M');
+    assert.equal(modified.worktree, 'M');
+    assert.ok(status.entries.some(value => value.path === 'new 한글.txt' && value.untracked));
+    assert.equal(status.entries.some(value => value.path === '.hidden.txt'), false);
+    const working = (await request(app, '/api/git/diff?path=same.txt')).json();
+    const staged = (await request(app, '/api/git/diff?path=same.txt&staged=1')).json();
+    assert.equal(working.kind, 'diff');
+    assert.match(working.text, /working line/);
+    assert.equal(staged.staged, true);
+    assert.match(staged.text, /staged line/);
+    assert.doesNotMatch(staged.text, /working line/);
+    const link = (await request(app, '/api/git/diff?path=outside-link')).json();
+    assert.doesNotMatch(link.text, /UNREGISTERED_TARGET_SECRET_90217/);
+    for (const query of ['path=../same.txt', 'path=/etc/passwd', 'path=.hidden.txt', 'path=.git/config', 'root=unknown&path=same.txt'])
+      assert.equal((await request(app, '/api/git/diff?' + query)).status, 403);
+    const escape = await request(app, '/api/git/diff?path=outside/same.txt');
+    assert.doesNotMatch(escape.body.toString(), /UNREGISTERED_TARGET_SECRET_90217/);
+    const nonrepo = (await request(app, '/api/git/status?root=results')).json();
+    assert.equal(nonrepo.available, false);
+    assert.equal(nonrepo.reason, 'not_repository');
+    assert.equal((await request(app, '/api/list?root=results')).status, 200);
+    assert.deepEqual(await fs.readFile(path.join(roots.project, '.git', 'index')), beforeIndex);
+  }));
+
+  await t.test('missing Git remains optional for file browsing', () => fixture(async ({ app }) => {
+    const oldPath = process.env.PATH;
+    process.env.PATH = '/nonexistent-fbrowse-test-path';
+    try {
+      const status = (await request(app, '/api/git/status')).json();
+      assert.equal(status.available, false);
+      assert.equal(status.reason, 'git_unavailable');
+      assert.equal((await request(app, '/api/list')).status, 200);
+      assert.equal((await request(app, '/files/same.txt')).body.toString(), 'project');
+    } finally { if (oldPath === undefined) delete process.env.PATH; else process.env.PATH = oldPath; }
   }));
 
   await t.test('showHidden exposes dotfiles while excluded dependency and VCS trees stay blocked', () => fixture(async ({ roots }) => {

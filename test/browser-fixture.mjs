@@ -1,9 +1,12 @@
 // Temporary fixtures only. No Python, shell helpers, or browser automation at runtime.
-import { access, cp, mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { access, cp, mkdir, mkdtemp, rm, symlink, unlink, writeFile } from 'node:fs/promises';
 import { homedir, tmpdir } from 'node:os';
 import path from 'node:path';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
 import { startServer } from '../lib/server.mjs';
 import { PDFJS_VERSION } from '../lib/assets.mjs';
+const execFileAsync = promisify(execFile);
 
 function pdfBytes() {
   const objects = ['<< /Type /Catalog /Pages 2 0 R >>',
@@ -96,6 +99,50 @@ try {
     await mkdir(path.join(directory, 'nested'));
     await writeFile(path.join(directory, 'nested', 'README.md'), '# Nested\n\n[동일 파일](../same.txt)\n\n![asset](../image.svg)\n');
     await writeFile(path.join(directory, 'image.svg'), '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"><rect width="10" height="10"/></svg>');
+  }
+  if (process.env.FBROWSE_GIT_FIXTURE === '1') {
+    const git = (root, ...args) => execFileAsync('git', ['-C', root, ...args], { env: {
+      ...Object.fromEntries(Object.entries(process.env).filter(([key]) => !key.startsWith('GIT_'))), GIT_CONFIG_NOSYSTEM: '1', GIT_CONFIG_GLOBAL: '/dev/null',
+      GIT_AUTHOR_NAME: 'Browser Fixture', GIT_AUTHOR_EMAIL: 'fixture@example.invalid',
+      GIT_COMMITTER_NAME: 'Browser Fixture', GIT_COMMITTER_EMAIL: 'fixture@example.invalid',
+    } });
+    for (const root of [roots.project, roots.results]) {
+      await git(root, 'init', '-b', 'browser-fixture');
+      await mkdir(path.join(root, 'changes'));
+      for (const file of ['mixed.txt', 'deleted.txt', 'removed.txt', 'old-name.txt', 'conflict.txt'])
+        await writeFile(path.join(root, 'changes', file), 'baseline ' + file + '\n');
+      await writeFile(path.join(root, 'changes', 'binary.bin'), Buffer.from([0, 1, 2]));
+      await symlink('same.txt', path.join(root, 'file-link.txt'));
+      await symlink('changes', path.join(root, 'directory-link'));
+      await git(root, 'add', '.');
+      await git(root, 'commit', '-qm', 'temporary browser fixture baseline');
+    }
+    // A real merge conflict, created before applying the remaining fixture changes.
+    await git(roots.project, 'checkout', '-qb', 'other');
+    await writeFile(path.join(roots.project, 'changes', 'conflict.txt'), 'other side\n');
+    await git(roots.project, 'add', 'changes/conflict.txt');
+    await git(roots.project, 'commit', '-qm', 'other side');
+    await git(roots.project, 'checkout', '-q', 'browser-fixture');
+    await writeFile(path.join(roots.project, 'changes', 'conflict.txt'), 'our side\n');
+    await git(roots.project, 'add', 'changes/conflict.txt');
+    await git(roots.project, 'commit', '-qm', 'our side');
+    await git(roots.project, 'merge', '--no-edit', 'other').catch(() => {});
+    await writeFile(path.join(roots.project, 'changes', 'mixed.txt'), 'staged version\n++literal\n<script>window.DIFF_PWNED=1</script>\n');
+    await git(roots.project, 'add', 'changes/mixed.txt');
+    await writeFile(path.join(roots.project, 'changes', 'mixed.txt'), 'working version\n--literal\n<img src=x onerror="window.DIFF_PWNED=2">\n');
+    await git(roots.project, 'mv', 'changes/old-name.txt', 'changes/new-name.txt');
+    await git(roots.project, 'rm', 'changes/deleted.txt');
+    await unlink(path.join(roots.project, 'changes', 'removed.txt'));
+    await writeFile(path.join(roots.project, 'changes', 'binary.bin'), Buffer.from([0, 4, 5]));
+    await writeFile(path.join(roots.project, 'changes', 'added.txt'), 'added file\n');
+    await git(roots.project, 'add', 'changes/added.txt');
+    await writeFile(path.join(roots.project, 'untracked <& 한글.txt'), '<script>window.DIFF_PWNED=3</script>\n');
+    await mkdir(path.join(roots.project, 'untracked-folder'));
+    await writeFile(path.join(roots.project, 'untracked-folder', 'child.txt'), 'untracked child\n');
+    await writeFile(path.join(base, 'outside-secret.txt'), 'OUTSIDE_SECRET_NEVER_RENDER');
+    await symlink('../outside-secret.txt', path.join(roots.project, 'outside-link.txt'));
+    await symlink('missing-target', path.join(roots.project, 'broken-link.txt'));
+    await writeFile(path.join(roots.results, 'same.txt'), 'other repository change');
   }
   await mkdir(path.join(roots.papers, '하위 폴더'));
   await writeFile(path.join(roots.papers, '하위 폴더', 'marker.txt'), 'inside folder');
