@@ -1,142 +1,145 @@
 # fbrowse
 
-Linux 서버에서 한 번 설치하고 어느 프로젝트에서나 실행하는 파일 탐색기입니다.
-프로젝트 파일과 `/mnt` 등에 있는 다른 폴더를 한 창에서 전환하고 오른쪽에서
-PDF, HTML, Markdown, 코드, 이미지 등을 미리 봅니다. 파일은 읽기 전용입니다.
+Linux 서버의 프로젝트 파일과 선택한 디스크 폴더를 한 창에서 탐색하는 읽기 전용 파일 브라우저입니다.
+**Node.js 22 이상**에서 실행합니다. Python, Bash 실행기, tmux, flock은 필요하지 않습니다.
 
-## 설치와 실행
+## 설치
 
-필요 환경: Linux, Bash, Python 3.10 이상, tmux, flock. pip/npm 설치는 필요 없습니다.
-이 저장소를 clone하거나 배포 압축을 풀어 다음을 실행합니다.
+배포된 npm 압축을 받은 뒤 서버의 사용자 계정에 한 번 설치합니다.
 
 ```bash
-bash file-browser.sh install
-export PATH="$HOME/.local/bin:$PATH"  # 필요하면 셸 설정 파일에도 추가
-cd /path/to/any/project
+npm install --global ./fbrowse-cli-0.2.0.tgz
+cd /path/to/project
 fbrowse
 ```
 
-자동 브라우저 열기는 현재 중단되어 있습니다. 기본 `fbrowse`는 서버를 시작하고 주소만
-표시합니다. 아래 브라우저 연동은 `fbrowse open` 또는 `--open`으로 명시한 경우에만
-실행됩니다. 같은 프로젝트의
-탭이 이미 열려 있으면 선택한 파일과 미리보기를 유지하면서 그 탭으로 전환합니다.
-예전 `Project Files` 제목의 탭은 첫 실행 때 한 번 갱신하며 선택한 파일 주소를 유지합니다.
-서버 재시작으로 포트가 바뀌어도 기록된 탭을 다시 사용합니다. 탭을 다른 사이트로
-이동했다면 해당 탭은 유지하고 fbrowse 탭을 새로 엽니다.
+프로젝트마다 앱을 복사하거나 `npm install`을 실행할 필요가 없습니다. 실행할 때의 현재 디렉터리가
+기본 프로젝트 루트가 됩니다. 앱과 설정 파일을 프로젝트 안에 생성하지 않습니다.
+현재 npm registry에는 게시하지 않았습니다. `@fbrowse/cli`는 로컬 패키지 이름이며, 공개 배포 대상과
+라이선스를 결정하기 전까지 `private: true`로 게시를 막아두었습니다.
+
+소스에서 설치용 압축을 만드는 경우:
 
 ```bash
-fbrowse              # 서버 시작/재사용 + 주소 표시
-fbrowse open         # Orca Browser에서 명시적으로 열기
-fbrowse --no-open    # 브라우저 없이 서버 시작/주소 표시
-fbrowse url          # 주소만 필요할 때
+npm install
+mkdir -p dist
+npm pack --pack-destination dist
+npm install --global ./dist/fbrowse-cli-0.2.0.tgz
 ```
 
-Orca 밖에서 실행하거나 브라우저를 열 수 없는 경우에는 HTTP 주소를 표시합니다.
-Orca CLI는 선택적 연동이며 앱 서버 실행에는 필요하지 않습니다.
-프로젝트에는 앱이나
-설정 파일이 생성되지 않습니다. 서버별·Linux 사용자별 한 번 설치하면 됩니다.
-다른 PC의 Chrome에서 서버의 `127.0.0.1` 주소로 바로 접속할 수 있는 것은 아닙니다.
-외부 PC 접속에는 별도로 구성한 터널이 필요합니다.
+npm 전역 경로를 사용자 디렉터리로 지정할 수도 있습니다.
 
-## 여러 루트 폴더
+```bash
+npm install --global --prefix "$HOME/.local" ./fbrowse-cli-0.2.0.tgz
+export PATH="$HOME/.local/bin:$PATH"
+```
 
-왼쪽의 **루트 관리 → 폴더 찾아 연결**에서 서버의 디렉터리를 보며 선택합니다.
-프로젝트·홈·`/mnt`·`/media` 바로가기, 상위 폴더, 경로 탐색줄, 직접 경로 이동,
-이름 필터와 숨김 표시를 제공합니다. 폴더 안의 파일 이름도 참고용으로 표시합니다.
-**이 폴더 연결**을 누르면 이름과 경로를 저장하고 바로 해당 루트로 전환합니다.
-직접 입력은 **경로 직접 입력**을 펼쳐서 사용하며, 등록한 이름·경로 수정과 연결 제거도 가능합니다.
-**루트 폴더 선택**으로 빠르게 전환합니다. 기본 `project` 루트는 실행한
-현재 디렉터리이며 고정되어 있습니다. 마지막 선택은 브라우저에 기억됩니다.
+기존에 다른 `fbrowse` 명령이 있으면 먼저 소유권과 위치를 확인하세요. 무관한 명령에 `--force`로
+덮어쓰지 마세요. 기존 Python 설치의 전환 방법은 아래에 설명합니다.
 
-예: 프로젝트 `/home/user/project`, 논문 `/mnt/data/papers`, 실험결과 `/mnt/archive/results`.
-해당 서버에 이미 존재하는 디렉터리만 새로 등록할 수 있습니다. 앱은 디스크를
-마운트하거나 데이터를 업로드·이동·삭제·동기화하지 않습니다.
-연결 후 경로가 사라지면 **연결 안 됨**으로 표시하며 다른 루트는 계속 동작합니다.
-일반 디렉터리로 남아 있는 빈 마운트 지점의 마운트 여부는 자동 판별하지 않습니다.
+## 실행과 종료
 
-명령으로도 설정할 수 있습니다.
+```bash
+fbrowse                        # 현재 프로젝트에서 시작하거나 기존 서버 재사용
+fbrowse /path/to/project        # 다른 프로젝트 시작
+fbrowse url                    # 현재 프로젝트의 HTTP 주소
+fbrowse list                   # 실행 중인 Node 서버 목록
+fbrowse logs                   # 현재 프로젝트의 최근 로그
+fbrowse stop                   # 현재 프로젝트만 종료
+fbrowse restart                # 확인된 기존 포트를 유지하여 재시작
+fbrowse --no-pdfjs              # PDF.js 준비 없이 시작
+fbrowse --version
+fbrowse help
+```
+
+서버는 터미널과 분리된 Node 프로세스로 실행합니다. tmux에 접속하거나 터미널을 계속 열어둘 필요가
+없습니다. 재부팅 시 자동으로 시작하는 서비스는 설치하지 않습니다. 같은 프로젝트에서는 서버를
+재사용하고 다른 프로젝트는 별도 포트로 실행합니다. 종료는 루트·인스턴스 식별과 인증된 HTTP 요청으로
+처리하며, 상태 파일에 적힌 PID만 믿고 다른 프로세스를 종료하지 않습니다.
+
+**브라우저 자동 열기는 하지 않습니다.** 표시된 HTTP 주소를 Orca Browser에서 직접 엽니다.
+Orca는 선택한 브라우저 환경이며 앱의 런타임 의존성은 아닙니다. 원격 Linux 서버의 `127.0.0.1`은
+Windows PC의 localhost와 다릅니다. 외부 Chrome으로 접속하려면 별도의 연결 경로가 필요합니다.
+
+## 여러 루트 폴더 연결
+
+왼쪽 **루트 관리 → 폴더 찾아 연결…**에서 서버의 폴더를 보며 선택합니다.
+
+- 프로젝트·홈·`/mnt`·`/media` 바로가기, 상위 폴더, 경로 탐색줄과 직접 경로 이동
+- 내부 폴더와 참고용 파일 이름, 이름 필터와 숨김 표시
+- **이 폴더 연결**로 이름·경로 저장 후 해당 루트로 전환
+- 등록한 이름·경로 수정, 연결 제거, 끊긴 경로 표시
+
+예를 들어 프로젝트 `/home/user/project`, 논문 `/mnt/data/papers`, 실험결과 `/mnt/archive/results`를
+연결할 수 있습니다. 서버에 이미 존재하는 폴더만 새로 연결할 수 있으며 마운트 작업이나 파일
+이동·삭제·업로드·동기화는 수행하지 않습니다. 경로가 사라지면 연결 안 됨으로 표시합니다.
+디렉터리로 남아 있는 빈 마운트 지점의 마운트 여부까지 자동 판별하지는 않습니다.
 
 ```bash
 fbrowse roots add papers /mnt/data/papers --name 논문
-fbrowse roots add results /mnt/archive/results --name 실험결과
 fbrowse roots edit papers /mnt/new/papers --name 참고논문
 fbrowse roots list
 fbrowse roots remove papers
 fbrowse roots list --project /path/to/other/project
 ```
 
-등록 설정은 프로젝트별로 `$XDG_CONFIG_HOME/fbrowse/projects/<프로젝트 경로 해시>.json`
-(기본 `~/.config/fbrowse/...`)에 저장합니다. 이름은 한글과 공백을 지원하며 ID는
-안정적으로 유지됩니다. 서버 경로와 ID는 검색 결과·링크·미리보기에서 구분됩니다.
-검색은 선택한 루트의 하위 폴더를 대상으로 합니다. 연결 변경은 새로고침으로 반영됩니다.
-폴더 선택기는 명시적으로 연 한 단계의 항목 이름만 조회합니다. 탐색하거나 취소하는
-것만으로 루트가 등록되거나 해당 위치의 파일 미리보기 권한이 생기지 않습니다.
-선택한 루트 밖의 심볼릭 링크와 상위 경로 접근은 차단하고 숨김 파일은 기본 제외합니다.
-HTML/SVG는 정적 문서로 표시하며 문서 스크립트와 내장 프레임 실행은 차단합니다.
-상대 경로의 이미지와 CSS는 그대로 표시합니다.
+등록 정보는 프로젝트별로 `$XDG_CONFIG_HOME/fbrowse/projects/<경로 해시>.json`
+(기본 `~/.config/fbrowse/...`)에 기억됩니다. 기존 Python 버전과 설정 형식·위치를 공유합니다.
+검색과 미리보기 링크에 root ID와 상대 경로를 사용하므로 같은 이름의 파일도 구분됩니다.
+검색은 선택한 루트의 하위 폴더를 대상으로 합니다. 폴더 선택기로 둘러보는 것만으로는 루트가
+등록되거나 해당 위치의 파일 내용에 접근할 수 있게 되지 않습니다.
 
-## 서버 관리
+## 미리보기
 
-```bash
-fbrowse /path/to/project
-fbrowse open                   # 기존 fbrowse 탭으로 전환하거나 새로 열기
-fbrowse url                    # 현재 프로젝트 주소
-fbrowse list                   # 실행 중인 프로젝트
-fbrowse logs
-fbrowse attach                 # Ctrl+B, D로 분리
-fbrowse restart                # 소유권이 확인된 기존 서버의 포트 유지
-fbrowse stop                   # 현재 프로젝트만 종료
-fbrowse --version
-fbrowse --no-pdfjs              # 뷰어 다운로드 없이 시작
-```
+PDF.js의 페이지 너비 보기와 큰 PDF의 HTTP Range 스트리밍, HTML의 상대 이미지·CSS,
+코드 문법 색상, Markdown 렌더링·원문 전환을 지원합니다. Markdown 출력은 정제하고
+사용자 HTML/SVG의 스크립트·내장 프레임은 차단합니다. 선택한 루트 밖의 심볼릭 링크와
+상위 경로 접근을 차단하며 숨김 파일은 기본으로 제외합니다.
 
-같은 프로젝트는 서버를 재사용하고 다른 프로젝트는 별도 세션과 포트를 사용합니다.
-PDF.js와 코드/Markdown 구성 요소는 최초 사용 시 네트워크로 다운로드하여 검증하고
-`$XDG_CACHE_HOME/project-file-browser`에 캐시합니다. 캐시가 준비되면 오프라인 사용이
-가능합니다. PDF.js 준비 실패 시 브라우저 기본 PDF 뷰어를 사용합니다.
+자동 줄바꿈은 기본 켜짐입니다. 접힌 긴 줄에도 원래 논리 줄번호를 유지하며, 30만 자를 넘는
+텍스트는 문법 색상·Markdown 서식 없이 원문으로 표시하고 2만 논리 줄을 넘으면 줄번호를 생략합니다.
+세로 분할선으로 목록 너비를 조절하고 크게 보기는 웹 페이지 안에서만 동작합니다. Escape로 복귀합니다.
+
+PDF.js와 코드/Markdown 구성 요소는 고정 버전과 SHA-256 검증을 거쳐
+`$XDG_CACHE_HOME/project-file-browser`에 캐시합니다. 최초 준비에는 네트워크가 필요하고,
+캐시가 준비되면 오프라인으로 사용할 수 있습니다. 기존 코드/Markdown 캐시는 재사용합니다.
+Python 버전의 PDF.js 캐시에 파일별 검증 정보가 없으면 Node 전용 `pdfjs-6.4.299-node`에
+한 번 새로 준비합니다. 실행 중인 기존 뷰어의 캐시는 덮어쓰지 않습니다.
+PDF.js 준비가 실패하면 브라우저 기본 PDF 뷰어로 전환합니다.
 
 ## 업데이트와 제거
 
-새 버전의 저장소/압축을 받은 뒤 실행합니다. 앱이 GitHub 저장소를 임의로 선택하거나
-네트워크에서 코드를 자동 실행하지 않습니다.
-
 ```bash
-bash /path/to/new/source/file-browser.sh install
-# 또는 이미 설치된 명령으로:
-fbrowse update /path/to/new/source
+npm install --global ./새버전의-fbrowse-cli.tgz
 fbrowse restart /path/to/project
-fbrowse uninstall
+npm uninstall --global @fbrowse/cli
 ```
 
-설치는 `$XDG_DATA_HOME/project-file-browser/releases` 아래에 버전별로 보관하고 실행
-링크를 원자적으로 전환합니다. 이전 설치 파일은 최초 전환 시 `legacy-backup`에 보관합니다.
-진행 중인 서버는 업데이트로 종료하지 않습니다. 재시작하면 현재 설치 버전이 적용됩니다.
-기존의 무관한 `~/.local/bin/fbrowse` 명령은 덮어쓰지 않습니다.
+`--prefix`로 설치했다면 업데이트·제거 때도 같은 prefix를 지정합니다. 업데이트 자체는 실행 중인
+서버를 종료하지 않습니다. 새 코드를 적용할 프로젝트만 명시적으로 재시작하세요.
+제거 전에 필요한 프로젝트의 `fbrowse stop`을 실행하세요. npm 제거는 실행 중인 서버를 강제로
+종료하거나 XDG 설정·상태·캐시 및 프로젝트 데이터를 삭제하는 명령이 아닙니다.
 
-제거 명령은 본 앱의 명령 링크만 제거합니다. 실행 중인 서버와 설치 버전, XDG 설정·상태·캐시는
-유지합니다. 다시 설치하면 재사용할 수 있습니다. 설치 버전은 실행 중인 서버가 있으므로
-자동 정리하지 않습니다. 완전 삭제가 필요하면 모든 fbrowse 서버 종료 후 해당 전용
-디렉터리만 직접 정리하세요.
+Node 실행 상태와 로그는 `$XDG_STATE_HOME/fbrowse/<경로 해시>/`에 저장합니다.
+Python 버전의 `project-file-browser` 상태 폴더와 분리하여 실행 중인 기존 서버를 보호합니다.
+기존 Python 서버는 기존 설치의 실행기로 종료할 수 있으며 Node 명령은 기존 tmux 세션을 건드리지 않습니다.
 
-## 검증과 배포 상태
+현재 서버의 전환에서는 기존 실행기를 `~/.local/bin/fbrowse-python-backup-0.1.0`으로 보관했습니다.
+기존 Python 서버를 종료할 때는 해당 프로젝트에서 `fbrowse-python-backup-0.1.0 stop`을 실행합니다.
+새 `fbrowse`로 시작한 Node 서버는 `fbrowse stop`으로 종료합니다. 전환 전에 열린 창은 기존 서버를
+계속 사용하므로 새 버전을 보려면 새 명령이 출력한 주소를 여세요.
+
+## 개발과 검증
 
 ```bash
-python3 -B -m unittest -v test_file_browser.py test_file_browser_launcher.py
+npm ci
+npm test
+npm run pack:check
+FBROWSE_PLAYWRIGHT_MODULE=/path/to/playwright npm run test:browser
 ```
 
-HTTP/Range, 경로 경계, 다중 루트, CLI 설치·업데이트와 실제 tmux 세션을 검증합니다.
-테스트는 임시 프로젝트와 임시 HOME/XDG를 사용합니다. 앱 실행에는 테스트 도구가 필요 없습니다.
-Node와 Playwright가 있는 개발 환경에서는 다음으로 브라우저 동작도 확인합니다.
+테스트는 임시 HOME/XDG/프로젝트를 사용합니다. 패키지 검증은 실제 npm 압축을 임시 전역 경로에 설치하고,
+PATH에 Node만 남긴 환경에서 실행하여 Python·Bash·tmux·flock 없이 동작하는지 확인합니다.
+Playwright와 Chromium은 선택적 개발 도구이며 앱 실행에는 필요하지 않습니다.
 
-```bash
-node test_browser.cjs /path/to/playwright
-python3 -B build_release.py   # dist/fbrowse-0.1.0.tar.gz 및 SHA-256
-```
-
-배포 압축은 명시한 앱·문서·테스트 파일만 포함하며 사용자 설정이나 프로젝트 데이터는
-포함하지 않습니다.
-상세 뷰어 기능은 [FILE_BROWSER.md](FILE_BROWSER.md)를 참고하세요.
-
-현재 버전: `0.1.0`. GitHub 게시 대상·공개 범위·배포 라이선스는 소유자가 결정한 뒤
-게시합니다. 라이선스 상태는 [LICENSE.md](LICENSE.md), 외부 구성 요소는
-[THIRD_PARTY.md](THIRD_PARTY.md)를 참고하세요.
+배포 라이선스는 [LICENSE.md](LICENSE.md), 외부 구성 요소는 [THIRD_PARTY.md](THIRD_PARTY.md)를 참고하세요.

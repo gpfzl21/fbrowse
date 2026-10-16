@@ -1,0 +1,19 @@
+{
+  "name": "@fbrowse/cli",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Read-only multi-root file browser for Linux servers",
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "os": ["linux"],
+  "bin": { "fbrowse": "bin/fbrowse.mjs" },
+  "files": ["bin/", "lib/", "public/", "README.md", "FILE_BROWSER.md", "LICENSE.md", "THIRD_PARTY.md"],
+  "scripts": {
+    "start": "node bin/fbrowse.mjs",
+    "test": "node --test test/*.test.mjs",
+    "test:browser": "node test/browser.test.cjs",
+    "pack:check": "npm pack --dry-run"
+  },
+  "license": "UNLICENSED",
+  "dependencies": { "fflate": "0.8.3" }
+}

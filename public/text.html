@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>텍스트 미리보기</title><style>
+:root{color-scheme:light dark;--bg:#fff;--text:#24292f;--muted:#6e7781;--line:#d8dee4;--soft:#f6f8fa;--accent:#0969da;--keyword:#cf222e;--string:#0a3069;--number:#0550ae;--title:#8250df}
+@media(prefers-color-scheme:dark){:root{--bg:#161b22;--text:#e6edf3;--muted:#8b949e;--line:#30363d;--soft:#0d1117;--accent:#79c0ff;--keyword:#ff7b72;--string:#a5d6ff;--number:#79c0ff;--title:#d2a8ff}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.7 system-ui,-apple-system,"Segoe UI",sans-serif}header{position:sticky;top:0;z-index:2;display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:8px 14px;border-bottom:1px solid var(--line);background:var(--bg);font-size:12px}#info{flex:1;color:var(--muted)}button,a{font:inherit}button{cursor:pointer;border:1px solid var(--line);background:var(--bg);color:var(--text);padding:4px 9px;border-radius:6px}button:hover,button[aria-pressed="true"]{background:var(--soft);color:var(--accent)}a{color:var(--accent)}#notice{margin:0;padding:8px 16px;background:var(--soft);color:var(--muted);font-size:12px}[hidden]{display:none!important}.source-shell{display:flex;overflow:auto;min-height:calc(100vh - 50px)}pre,code{font-family:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}pre{margin:0;font-size:13px;line-height:1.7;tab-size:4}.gutter{position:sticky;left:0;align-self:stretch;flex-shrink:0;user-select:none;text-align:right;padding:18px 12px;background:var(--soft);border-right:1px solid var(--line);color:var(--muted)}.source{padding:18px;min-width:0;flex:1}.source-shell.wrap .source{white-space:pre-wrap;overflow-wrap:anywhere}.gutter span{display:block}article{max-width:1000px;margin:auto;padding:24px 36px 80px;overflow-wrap:break-word}article h1,article h2{border-bottom:1px solid var(--line);padding-bottom:.3em}article h1{font-size:2em}article h2{font-size:1.5em}article h3{font-size:1.25em}article h1,article h2,article h3,article h4{line-height:1.3;margin:1.4em 0 .65em;scroll-margin-top:65px}article>:first-child{margin-top:0}article p,article ul,article ol,article blockquote,article table,article pre{margin:0 0 16px}article pre{padding:16px;background:var(--soft);border-radius:8px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere}article code{font-size:.88em;background:var(--soft);border-radius:4px;padding:.15em .35em}article pre code{background:none;padding:0;font-size:13px}article blockquote{padding:0 1em;color:var(--muted);border-left:4px solid var(--line)}article table{display:block;max-width:100%;overflow:auto;border-collapse:collapse}article th,article td{border:1px solid var(--line);padding:6px 13px}article tr:nth-child(even){background:var(--soft)}article img{max-width:100%;height:auto}article hr{border:0;border-top:1px solid var(--line);margin:24px 0}article input[type="checkbox"]{margin-right:6px}.hljs-comment,.hljs-quote{color:var(--muted);font-style:italic}.hljs-keyword,.hljs-selector-tag,.hljs-doctag,.hljs-tag{color:var(--keyword)}.hljs-string,.hljs-regexp,.hljs-template-tag{color:var(--string)}.hljs-number,.hljs-literal,.hljs-attr,.hljs-variable,.hljs-params{color:var(--number)}.hljs-title,.hljs-section,.hljs-type,.hljs-built_in{color:var(--title)}.hljs-meta,.hljs-symbol,.hljs-bullet{color:var(--accent)}.hljs-emphasis{font-style:italic}.hljs-strong{font-weight:bold}.hljs-addition{color:#22863a}.hljs-deletion{color:var(--keyword)}@media(max-width:600px){article{padding:18px 16px 50px}.source{padding:14px 10px}.gutter{padding-top:14px;padding-bottom:14px}}
+</style></head><body>
+<header><span id="info">텍스트를 불러오는 중…</span><button id="mode" hidden aria-pressed="false">원문 보기</button><button id="wrap" aria-pressed="true" title="긴 줄을 화면 너비에 맞춰 자동 줄바꿈">자동 줄바꿈</button><button id="copy">복사</button><a id="raw" target="_blank" rel="noopener">원본 ↗</a></header>
+<p id="notice" hidden role="status"></p><div class="source-shell wrap" id="source"><pre class="gutter" id="lines" aria-hidden="true"></pre><pre class="source"><code id="code"></code></pre></div><article id="markdown" hidden></article>
+<script>
+'use strict';
+const $=id=>document.getElementById(id),path=new URLSearchParams(location.search).get('path')||'';
+const root=new URLSearchParams(location.search).get('root')||'project';
+const filePrefix='/roots/'+encodeURIComponent(root)+'/files/';
+const fileURL=filePrefix+path.split('/').map(encodeURIComponent).join('/');
+let data=null,rendered=false,sourceMode=false,lineStarts=[],lineNumberFrame=0;
+$('raw').href=fileURL;
+function notice(text){$('notice').textContent=text;$('notice').hidden=!text;}
+function library(name){return new Promise((resolve,reject)=>{const script=document.createElement('script');script.src='/_text_assets/'+name+'.js';script.onload=resolve;script.onerror=()=>reject(Error('뷰어 구성 요소를 준비하지 못했습니다'));document.head.append(script);});}
+function showMode(){const showMarkdown=rendered&&!sourceMode;$('markdown').hidden=!showMarkdown;$('source').hidden=showMarkdown;$('wrap').hidden=showMarkdown;$('mode').textContent=showMarkdown?'원문 보기':'미리보기';$('mode').setAttribute('aria-pressed',String(sourceMode));}
+function highlight(node,language){
+  // Keep large source files readable without expensive highlighting or auto-detection.
+  if(!window.hljs||!language||node.textContent.length>300000||!hljs.getLanguage(language))return;
+  node.innerHTML=hljs.highlight(node.textContent,{language,ignoreIllegals:true}).value;
+}
+function scheduleLineNumbers(){cancelAnimationFrame(lineNumberFrame);lineNumberFrame=requestAnimationFrame(syncLineNumbers);}
+function syncLineNumbers(){
+  const code=$('code'),gutter=$('lines');
+  if(!data||gutter.hidden||$('source').hidden)return;
+  const labels=[...gutter.children];
+  if(!$('source').classList.contains('wrap')){for(const label of labels)label.style.height='';return;}
+  // Measure caret positions in the highlighted source so wrapping, tabs and wide
+  // characters keep their original line numbers without rewriting the code DOM.
+  const walker=document.createTreeWalker(code,NodeFilter.SHOW_TEXT),nodes=[];
+  while(walker.nextNode())nodes.push(walker.currentNode);
+  if(!nodes.length)return;
+  const range=document.createRange(),lineHeight=parseFloat(getComputedStyle(code.parentElement).lineHeight);
+  let nodeIndex=0,nodeStart=0;
+  function topAt(offset){
+    while(nodeIndex<nodes.length-1&&offset>=nodeStart+nodes[nodeIndex].length){nodeStart+=nodes[nodeIndex++].length;}
+    const node=nodes[nodeIndex],position=Math.min(node.length,Math.max(0,offset-nodeStart));
+    range.setStart(node,position);range.setEnd(node,Math.min(node.length,position+1));
+    const rect=range.getClientRects()[0];if(rect)return rect.top;
+    // A collapsed range on an empty line or after the final newline may have no
+    // rectangle; the last real character still tells us the final visual row.
+    if(offset===data.text.length&&position>0){
+      range.setStart(node,position-1);range.setEnd(node,position);
+      const last=range.getClientRects();
+      if(last.length)return last[last.length-1].top+(data.text.endsWith('\n')?lineHeight:0);
+    }
+  }
+  const tops=lineStarts.map(offset=>topAt(offset));
+  const endTop=topAt(data.text.length);
+  // Read all positions before writing any heights, avoiding repeated layout work.
+  const heights=tops.map((top,index)=>{
+    const next=index+1<tops.length?tops[index+1]:endTop+lineHeight;
+    return Number.isFinite(top)&&Number.isFinite(next)&&next>top?next-top:lineHeight;
+  });
+  labels.forEach((label,index)=>label.style.height=heights[index]+'px');
+}
+let measuredSourceWidth=0;
+new ResizeObserver(([entry])=>{
+  if(entry.contentRect.width!==measuredSourceWidth){measuredSourceWidth=entry.contentRect.width;scheduleLineNumbers();}
+}).observe($('code').parentElement);
+if(document.fonts)document.fonts.ready.then(scheduleLineNumbers);
+function renderMarkdown(){
+  const article=$('markdown');
+  article.innerHTML=DOMPurify.sanitize(marked.parse(data.text,{gfm:true}),{USE_PROFILES:{html:true}});
+  const base=new URL(fileURL,location.origin);
+  // Resolve images and document links relative to the Markdown file, not this viewer route.
+  for(const image of article.querySelectorAll('img[src]')){
+    const src=image.getAttribute('src');if(!src.startsWith('data:'))image.src=new URL(src,base).href;
+  }
+  const headings=new Map();
+  for(const heading of article.querySelectorAll('h1,h2,h3,h4,h5,h6')){
+    const slug=heading.textContent.toLowerCase().trim().replace(/[^\p{L}\p{N}_\s-]/gu,'').replace(/\s/g,'-');
+    const count=headings.get(slug)||0;headings.set(slug,count+1);heading.id=slug+(count?'-'+count:'');
+  }
+  for(const link of article.querySelectorAll('a[href]')){
+    const href=link.getAttribute('href');if(href.startsWith('#'))continue;
+    const target=new URL(href,base);
+    if(target.origin===location.origin){
+      let targetRoot=root,relative;
+      const match=target.pathname.match(/^\/roots\/([^/]+)\/files\/(.*)$/);
+      if(match){targetRoot=decodeURIComponent(match[1]);relative=decodeURIComponent(match[2]);}
+      else relative=decodeURIComponent(target.pathname.replace(/^\/files\//,'').replace(/^\//,''));
+      link.href='/?'+new URLSearchParams({root:targetRoot,path:relative});link.target='_top';
+    }else{link.target='_blank';link.rel='noopener noreferrer';}
+  }
+  for(const code of article.querySelectorAll('pre code')){
+    const language=[...code.classList].find(c=>c.startsWith('language-'))?.slice(9);
+    highlight(code,language);
+  }
+  rendered=true;$('mode').hidden=false;showMode();
+}
+$('mode').onclick=()=>{sourceMode=!sourceMode;showMode();scheduleLineNumbers();};
+$('wrap').onclick=()=>{const wrap=$('source').classList.toggle('wrap');$('wrap').setAttribute('aria-pressed',String(wrap));scheduleLineNumbers();};
+$('copy').onclick=async()=>{if(!data)return;try{await navigator.clipboard.writeText(data.text);$('copy').textContent='복사됨';setTimeout(()=>$('copy').textContent='복사',1200);}catch{notice('복사하려면 원문을 선택하고 Ctrl+C를 누르세요.');}};
+(async()=>{
+  try{
+    const response=await fetch('/api/text?'+new URLSearchParams({root,path}),{cache:'no-store'});data=await response.json();if(!response.ok)throw Error(data.error);
+    document.title=path.split('/').pop()+' · 미리보기';$('code').textContent=data.text;
+    const count=data.text.split('\n').length;$('info').textContent=(data.language||'텍스트')+' · '+data.encoding+' · '+count.toLocaleString()+'줄';
+    lineStarts=[0];for(let index=data.text.indexOf('\n');index!==-1;index=data.text.indexOf('\n',index+1))lineStarts.push(index+1);
+    if(count<=20000){const fragment=document.createDocumentFragment();for(let index=0;index<count;index++){const label=document.createElement('span');label.textContent=index+1;fragment.append(label);}$('lines').replaceChildren(fragment);}else $('lines').hidden=true;
+    scheduleLineNumbers();
+    const highlighting=library('highlight').then(async()=>{if(data.language==='latex')await library('latex');highlight($('code'),data.language);scheduleLineNumbers();});
+    if(data.markdown&&data.text.length<=300000){
+      const formatting=Promise.all([library('marked'),library('purify')]);
+      await Promise.all([formatting,highlighting.catch(()=>{})]);renderMarkdown();
+    }else await highlighting;
+    if(data.text.length>300000)notice('큰 파일은 전체 원문으로 표시합니다. 문법 색상과 Markdown 서식은 30만 자 이하에서 적용합니다.');
+  }catch(error){$('info').textContent=data?.text!==undefined?'원문 미리보기':'미리보기 불가';notice(error.message+(data?.text!==undefined?' · 원문은 그대로 읽을 수 있습니다.':''));}
+})();
+</script></body></html>
