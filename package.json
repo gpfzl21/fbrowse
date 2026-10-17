@@ -1,6 +1,6 @@
 {
   "name": "@wlalsrne/fbrowse",
-  "version": "0.4.1",
+  "version": "0.9.1",
   "description": "Browse large files on remote Linux servers with multi-root previews and Git tools",
   "type": "module",
   "engines": {
@@ -25,7 +25,8 @@
   "scripts": {
     "start": "node bin/fbrowse.mjs",
     "test": "node --test test/*.test.mjs",
-    "test:browser": "node test/browser.test.cjs && node test/git-browser.test.cjs && node test/git-actions-browser.test.cjs",
+    "test:browser": "node test/browser.test.cjs && node test/git-browser.test.cjs && node test/git-actions-browser.test.cjs && node test/editor-browser.test.cjs && node test/workspace-browser.test.cjs && node test/create-file-browser.test.cjs && node test/preview-width-browser.test.cjs && node test/filesystem-actions-browser.test.cjs && node test/copy-browser.test.cjs && node test/tree-drag-browser.test.cjs && node test/drag-insertion-browser.test.cjs && node test/drag-races-browser.test.cjs && node test/immersive-browser.test.cjs && node test/diagnostics-browser.test.cjs && node test/diagnostic-decoration-browser.test.cjs",
+    "test:editor": "node --test test/editor*.test.mjs test/view-preferences.test.mjs && node test/editor-browser.test.cjs",
     "pack:check": "npm pack --dry-run"
   },
   "license": "MIT",

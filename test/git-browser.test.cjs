@@ -44,7 +44,7 @@ const deferred=()=>{let resolve;const promise=new Promise(done=>resolve=done);re
     const heldStatus=deferred(),statusStarted=deferred();
     await page.route('**/api/git/status?**',async route=>{statusStarted.resolve();await heldStatus.promise;await route.continue().catch(()=>{});});
     await page.goto(ready.url);await row('same.txt').waitFor();await statusStarted.promise;
-    await row('same.txt').click();await page.frameLocator('#preview').locator('#code').filter({hasText:'project'}).waitFor();
+    await row('same.txt').click();await page.frameLocator('.workspace-slot.is-visible iframe').locator('#code').filter({hasText:'project'}).waitFor();
     heldStatus.resolve();await page.unroute('**/api/git/status?**');
     await marker(row('changes'),'!');assert.match(await row('changes').getAttribute('title'),/하위 변경사항.*충돌/s);
     await row('changes').click();await marker(row('mixed.txt'),'M');await marker(row('added.txt'),'A');await marker(row('new-name.txt'),'R');await marker(row('conflict.txt'),'!');
@@ -54,7 +54,7 @@ const deferred=()=>{let resolve;const promise=new Promise(done=>resolve=done);re
     assert.notEqual(modifiedColor,addedColor);
     await marker(row('untracked <& 한글.txt'),'U');
     assert.equal(await row('file-link.txt').locator('.symlink').textContent(),'↗');assert.match(await row('file-link.txt').getAttribute('title'),/same\.txt/);
-    await row('file-link.txt').click();await page.frameLocator('#preview').locator('#code').filter({hasText:'project'}).waitFor();
+    await row('file-link.txt').click();await page.frameLocator('.workspace-slot.is-visible iframe').locator('#code').filter({hasText:'project'}).waitFor();
     assert.equal(await row('directory-link').locator('.symlink').textContent(),'↗');
     await row('directory-link').click();
     const alias=page.locator('#entries button[data-path="directory-link/mixed.txt"]');await alias.waitFor();assert.equal(await alias.locator('.git-badge').count(),0);
@@ -84,8 +84,8 @@ const deferred=()=>{let resolve;const promise=new Promise(done=>resolve=done);re
     await page.locator('#copy').click();
     const copied=new URL(await page.evaluate(()=>navigator.clipboard.readText()));assert.equal(copied.searchParams.get('root'),'project');assert.equal(copied.searchParams.get('path'),'changes/mixed.txt');
     await page.locator('#showFile:enabled').waitFor();await page.locator('#showFile').click();
-    await page.frameLocator('#preview').locator('#code').filter({hasText:'working version'}).waitFor();
-    assert.match(await page.locator('#preview').getAttribute('src'),/root=project&path=changes%2Fmixed.txt/);
+    await page.frameLocator('.workspace-slot.is-visible iframe').locator('#code').filter({hasText:'working version'}).waitFor();
+    assert.match(await page.locator('.workspace-slot.is-visible iframe').getAttribute('src'),/root=project&path=changes%2Fmixed.txt/);
     await page.locator('#showDiff').click();await page.locator('#diffContent').filter({hasText:'working version'}).waitFor();
     await page.locator('#expandPreview').click();await page.keyboard.press('Escape');assert.equal(await page.locator('#viewer').evaluate(node=>node.classList.contains('is-expanded')),false);
     await change('staged','changes/new-name.txt').click();await page.locator('#diffContent').filter({hasText:'rename from'}).waitFor();
@@ -158,13 +158,13 @@ const deferred=()=>{let resolve;const promise=new Promise(done=>resolve=done);re
     assert.ok(await page.locator('#diffViewer').isHidden());assert.ok(await page.locator('#viewerTabs').isHidden());
     assert.equal(await change('unstaged','same.txt').count(),1);assert.equal(await change('unstaged','changes/mixed.txt').count(),0);
     await page.locator('#filesTab').click();await marker(row('same.txt'),'M');assert.equal(await row('changes').locator('.git-badge').count(),0);
-    await row('same.txt').click();await page.frameLocator('#preview').locator('#code').filter({hasText:'other repository change'}).waitFor();
+    await row('same.txt').click();await page.frameLocator('.workspace-slot.is-visible iframe').locator('#code').filter({hasText:'other repository change'}).waitFor();
     await page.locator('#rootSelect').selectOption(plain);await row('same.txt').waitFor();await page.locator('#gitTab').click();await page.locator('#gitPanel').filter({hasText:'Git 저장소가 아닙니다'}).waitFor();
-    await page.locator('#filesTab').click();await row('same.txt').click();await page.frameLocator('#preview').locator('#code').filter({hasText:'papers'}).waitFor();
+    await page.locator('#filesTab').click();await row('same.txt').click();await page.frameLocator('.workspace-slot.is-visible iframe').locator('#code').filter({hasText:'papers'}).waitFor();
     // Missing Git is optional and never disables the file view.
     await page.route('**/api/git/status?**',route=>route.fulfill({json:{root_id:plain,available:false,reason:'git_unavailable',entries:[]}}));
     await page.locator('#refresh').click();await page.locator('#gitTab').click();await page.locator('#gitPanel').filter({hasText:'Git을 사용할 수 없습니다'}).waitFor();await page.locator('#filesTab').click();await row('same.txt').click();
-    await page.frameLocator('#preview').locator('#code').filter({hasText:'papers'}).waitFor();await page.unroute('**/api/git/status?**');
+    await page.frameLocator('.workspace-slot.is-visible iframe').locator('#code').filter({hasText:'papers'}).waitFor();await page.unroute('**/api/git/status?**');
     await page.route('**/api/git/status?**',route=>route.fulfill({json:{root_id:plain,available:true,branch:'fixture-status',entries:[],message:'Local filter note <script>window.NOTE_PWNED=1</script>'}}));
     await page.locator('#refresh').click();await page.locator('#gitTab').click();await page.locator('#gitPanel .note').filter({hasText:'Local filter note'}).waitFor();
     assert.equal(await page.locator('#gitPanel script').count(),0);assert.equal(await page.evaluate(()=>window.NOTE_PWNED),undefined);await page.unroute('**/api/git/status?**');

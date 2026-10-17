@@ -67,7 +67,7 @@ const assert=require('node:assert/strict');
     assert.equal(new Set(typeShapes.values()).size,7,'File types must remain visually distinguishable');
     const specialName=iconSamples[5][0];
     await treeRow('icon-fixtures/'+specialName).click();
-    await page.frameLocator('#preview').locator('#code').filter({hasText:'Unknown extension preview'}).waitFor();
+    await page.frameLocator('.workspace-slot.is-visible iframe').locator('#code').filter({hasText:'Unknown extension preview'}).waitFor();
     assert.ok(await treeRow('icon-fixtures/'+specialName).evaluate(node=>node.classList.contains('active')));
     assert.equal(await page.locator('#entries script, #entries img').count(),0);
     await treeRow('icon-fixtures').click();assert.equal(await treeRow('icon-fixtures/code.py').count(),0);
@@ -143,8 +143,8 @@ const assert=require('node:assert/strict');
     async function switchRoot(root){await page.locator('#rootSelect').selectOption(root);await page.locator(`button.row[data-root="${root}"][data-path="same.txt"]`).waitFor();}
     async function openText(expected){
       await page.locator('button.row[data-path="same.txt"]').click();
-      await page.frameLocator('#preview').locator('#code').filter({hasText:expected}).waitFor();
-      assert.equal(await page.frameLocator('#preview').locator('#code').textContent(),expected);
+      await page.frameLocator('.workspace-slot.is-visible iframe').locator('#code').filter({hasText:expected}).waitFor();
+      assert.equal(await page.frameLocator('.workspace-slot.is-visible iframe').locator('#code').textContent(),expected);
       assert.equal(await page.title(),'fbrowse');
     }
     await switchRoot('project');await openText('project');await switchRoot(papers);await openText('papers');
@@ -154,34 +154,35 @@ const assert=require('node:assert/strict');
     assert.equal(await page.locator('#rootPath').textContent(),ready.results);
     await page.locator('#search').fill('same');await page.locator('.search-result .result-path').filter({hasText:'실험결과'}).waitFor();
     await page.locator('#home').click();await page.locator('button.row[data-path="README.md"]').click();
-    const preview=page.frameLocator('#preview');await preview.locator('#markdown table').waitFor();
+    const preview=page.frameLocator('.workspace-slot.is-visible iframe');await preview.locator('#markdown table').waitFor();
     assert.equal(await preview.locator('#markdown script').count(),0);
     assert.equal(await preview.locator('#markdown [onerror], #markdown a[href^="javascript:"]').count(),0);
     assert.equal(await preview.locator('body').evaluate(()=>window.PWNED),undefined);
     const documentLink=preview.getByRole('link',{name:'동일 파일'});
     assert.match(await documentLink.getAttribute('href'),new RegExp('root='+results));
-    await documentLink.click();await page.frameLocator('#preview').locator('#code').filter({hasText:'results'}).waitFor();
+    await documentLink.click();await page.frameLocator('.workspace-slot.is-visible iframe').locator('#code').filter({hasText:'results'}).waitFor();
     await page.locator('button.row[data-path="page.html"]').click();
-    await preview.locator('h1').waitFor();assert.equal(await preview.locator('h1').evaluate(n=>getComputedStyle(n).color),'rgb(1, 2, 3)');
+    const htmlPreview=preview.frameLocator('#htmlPreview');
+    await htmlPreview.locator('h1').waitFor();assert.equal(await htmlPreview.locator('h1').evaluate(n=>getComputedStyle(n).color),'rgb(1, 2, 3)');
     assert.equal(await page.evaluate(()=>window.DOCUMENT_SCRIPT_RAN),undefined);
     assert.equal(await page.evaluate(()=>window.EXTERNAL_DOCUMENT_SCRIPT_RAN),undefined);
-    assert.equal(await preview.locator('body').evaluate(()=>window.DOCUMENT_SCRIPT_RAN),undefined);
+    assert.equal(await htmlPreview.locator('body').evaluate(()=>window.DOCUMENT_SCRIPT_RAN),undefined);
     const before=await page.locator('#fileSidebar').evaluate(n=>n.getBoundingClientRect().width);
     const divider=await page.locator('#sidebarResize').boundingBox();
     await page.mouse.move(divider.x+5,divider.y+100);await page.mouse.down();await page.mouse.move(divider.x+130,divider.y+100);await page.mouse.up();
     assert.ok(await page.locator('#fileSidebar').evaluate(n=>n.getBoundingClientRect().width)>before+60);
-    await page.locator('#expandPreview').click();await preview.locator('h1').click();await page.keyboard.press('Escape');
+    await page.locator('#expandPreview').click();await htmlPreview.locator('h1').click();await page.keyboard.press('Escape');
     assert.equal(await page.locator('#viewer').evaluate(n=>n.classList.contains('is-expanded')),false);
     assert.equal(await page.evaluate(()=>document.fullscreenElement),null);
     if(ready.pdfjs){
       await page.locator('button.row[data-path="sample.pdf"]').click();
       await preview.locator('#viewer .page').first().waitFor({timeout:20000});
-      assert.match(await page.locator('#preview').getAttribute('src'),/#zoom=page-width/);
+      assert.match(await page.locator('.workspace-slot.is-visible iframe').getAttribute('src'),/#zoom=page-width/);
       await page.locator('#expandPreview').click();await preview.locator('#viewerContainer').click();await page.keyboard.press('Escape');
       assert.equal(await page.locator('#viewer').evaluate(n=>n.classList.contains('is-expanded')),false);
     }else{
       await page.locator('button.row[data-path="sample.pdf"]').click();
-      assert.match(await page.locator('#preview').getAttribute('src'),new RegExp('/roots/'+results+'/files/sample.pdf'));
+      assert.match(await page.locator('.workspace-slot.is-visible iframe').getAttribute('src'),new RegExp('/roots/'+results+'/files/sample.pdf'));
     }
     await page.locator('#manageRoots').click();
     const record=page.locator('.root-record').filter({hasText:'논문'});
@@ -272,6 +273,36 @@ const assert=require('node:assert/strict');
     await page.locator('#notice').filter({hasText:'일반 Markdown으로 표시합니다'}).waitFor();
     assert.equal(await page.locator('#code').textContent(),fs.readFileSync(ready.project+'/math.md','utf8'));
     await page.unroute('**/_math_assets/katex.min.js');
+    // Code-block controls copy only the displayed code, including whitespace and Unicode.
+    const snippets=[['bash','printf "한글 $HOME"\n\techo done'],['python','print("<img src=x onerror=alert(1)>")'],['','plain text\n  spaces'],['made-up-language','unknown <&> syntax']];
+    const blockSource='Inline `python` stays inline.\n\n'+snippets.map(([language,text])=>'```'+language+'\n'+text+'\n```').join('\n\n');
+    fs.writeFileSync(ready.project+'/code-blocks.md',blockSource);
+    await page.context().grantPermissions(['clipboard-read','clipboard-write'],{origin:new URL(ready.url).origin});
+    await page.goto(ready.url+'_preview?root=project&path=code-blocks.md');
+    const blocks=page.locator('#markdown .markdown-code-block');await blocks.last().waitFor();
+    assert.equal(await blocks.count(),snippets.length);assert.equal(await page.locator('#markdown>p code').count(),1);
+    for(const [index,[language,text]] of snippets.entries()){
+      const block=blocks.nth(index),button=block.getByRole('button',{name:(language||'text')+' 코드 블록 복사',exact:true});
+      assert.equal(await block.locator('.code-block-language').textContent(),language||'text');
+      assert.equal(await block.locator('pre code').textContent(),text+'\n');
+      await button.click();await button.filter({hasText:'복사됨'}).waitFor();
+      assert.equal(await page.evaluate(()=>navigator.clipboard.readText()),text+'\n');
+      const tools=await block.locator('.code-block-tools').boundingBox(),pre=await block.locator('pre').boundingBox();
+      assert.ok(tools.y+tools.height<=pre.y+1,'controls never cover code');
+      const badge=await block.locator('.code-block-language').boundingBox(),copy=await button.boundingBox();
+      assert.ok(badge.x>=tools.x&&badge.x-tools.x<=16,'language badge is at upper left');
+      assert.ok(copy.x-badge.x-badge.width>=8&&copy.x-badge.x-badge.width<=12&&copy.x+copy.width<=tools.x+tools.width-8,'COPY follows language at upper left');
+    }
+    assert.equal(await page.locator('#markdown img,#markdown script').count(),0,'code remains escaped');
+    // Exercise real legacy copying when the embedded browser denies the Clipboard API.
+    await page.evaluate(()=>{navigator.clipboard.writeText=async()=>{throw Error('Denied for test');};});
+    await blocks.first().getByRole('button').click();
+    assert.equal(await page.evaluate(()=>navigator.clipboard.readText()),snippets[0][1]+'\n');
+    await page.locator('#mode').click();assert.equal(await page.locator('#code').textContent(),blockSource);
+    await page.locator('#mode').click();assert.equal(await blocks.count(),snippets.length,'no duplicate controls after mode switch');
+    assert.equal(fs.readFileSync(ready.project+'/code-blocks.md','utf8'),blockSource);
+    assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'compact controls fit narrow view');
+    console.log('PASS: Markdown language badges, exact per-block clipboard and denied-API fallback, escaped code, narrow layout and mode switching');
     await page.unroute('**/*');
     for(const [file,formatted] of [['highlight-limit.py',true],['large.py',false],['markdown-limit.md',true],['large.md',false]]){
       await page.goto(ready.url+'_preview?root=project&path='+file);
