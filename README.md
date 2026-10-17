@@ -41,7 +41,7 @@ cd fbrowse
 npm ci
 mkdir -p dist
 npm pack --pack-destination dist
-npm install --global ./dist/wlalsrne-fbrowse-0.15.0.tgz
+npm install --global ./dist/wlalsrne-fbrowse-0.15.1.tgz
 ```
 
 로컬 개발용 이름 `@fbrowse/cli`로 설치한 이전 버전을 사용 중이면 같은 prefix에서 이전 패키지를
@@ -100,6 +100,7 @@ Windows PC의 localhost와 다릅니다. 외부 Chrome으로 접속하려면 별
 미리보기는 왼쪽 트리에서 엽니다. 빈 공간의 메뉴·상단 버튼은 현재 폴더에 만들고, 폴더의 우클릭
 메뉴는 그 폴더 안에 만듭니다. Ctrl/Cmd+X/C/V, Delete, F2, Ctrl/Cmd+A는 목록에 포커스가 있을 때
 파일 작업에 적용되며 이름·경로 입력란의 편집 단축키는 그대로 유지됩니다.
+우클릭 메뉴는 다른 파일·폴더나 입력란 등 메뉴 바깥을 클릭하면 닫힙니다.
 
 등록 전 폴더에서도 작업할 수 있습니다. 이동은 등록된 루트 또는 처음 탐색한 폴더의 하위 범위 안에서
 지원하며, 범위를 벗어나면 공통 상위 폴더에서 원본을 다시 잘라내세요. 복사는 다른 범위에도 저장된
@@ -503,13 +504,13 @@ Playwright와 Chromium은 선택적 개발 도구이며 앱 실행에는 필요�
 패키지는 npm 계정 `wlalsrne`의 `@wlalsrne/fbrowse` 이름으로 공개 배포합니다.
 배포 전에 변경 내용을 검증하고 새 버전을 지정하세요. 이미 게시한 버전은 덮어쓸 수 없습니다.
 `package.json`과 `package-lock.json`의 버전을 함께 갱신하고 CLI·서버 버전도 맞춥니다.
-다음은 0.15.0 배포 명령의 예입니다.
+다음은 0.15.1 배포 명령의 예입니다.
 
 ```bash
 npm whoami
 npm test
 npm pack --pack-destination dist
-npm publish ./dist/wlalsrne-fbrowse-0.15.0.tgz --access public
+npm publish ./dist/wlalsrne-fbrowse-0.15.1.tgz --access public
 ```
 
 `npm pack`으로 만든 앱 코드·문서만 게시합니다. 프로젝트 데이터, XDG 설정·상태·캐시와

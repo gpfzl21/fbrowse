@@ -635,7 +635,7 @@ function folderMenu(event){
 }
 $('folderEntries').addEventListener('contextmenu',folderMenu);
 $('folderEntries').addEventListener('pointerdown',event=>{if(event.button===0&&!event.target.closest('.folder-entry')){folderSelected.clear();folderAnchor=null;paintFolderSelection();}});
-$('folderPicker').addEventListener('pointerdown',event=>{if(!$('folderMenu').contains(event.target)&&!event.target.closest('.folder-entry'))closeFolderMenu();});
+document.addEventListener('pointerdown',event=>{if(!$('folderMenu').hidden&&!$('folderMenu').contains(event.target))closeFolderMenu();},true);
 $('folderEntries').addEventListener('scroll',closeFolderMenu,{passive:true});window.addEventListener('resize',()=>{closeFolderMenu();finishFolderDrag();});window.addEventListener('blur',()=>{closeFolderMenu();finishFolderDrag();});
 $('folderClearSelection').onclick=()=>{folderSelected.clear();folderAnchor=null;paintFolderSelection();$('folderEntries').focus();};
 async function pinFolderTargets(targets){
