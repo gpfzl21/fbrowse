@@ -130,7 +130,7 @@ test('copy HTTP mid-operation mapping and cleanup safety', { timeout: 120_000 },
 
 test('filesystem HTTP contract and mutation safety', { timeout: 120_000 }, async t => {
   await t.test('explicit-root info, all action responses and old create API remain compatible', () => fixture(async ({ root, request, info, action, app }) => {
-    assert.equal(app.info.version, '0.11.0');
+    assert.equal(app.info.version, '0.12.0');
     const made = await action('mkdir', '', { name: '文書 folder' });
     assert.equal(made.status, 201); assert.equal(made.value.entry.kind, 'directory');
     const created = await request('/api/create', { root: 'project', parent: made.value.path, name: '새 파일.txt' });

@@ -41,7 +41,7 @@ cd fbrowse
 npm ci
 mkdir -p dist
 npm pack --pack-destination dist
-npm install --global ./dist/wlalsrne-fbrowse-0.10.2.tgz
+npm install --global ./dist/wlalsrne-fbrowse-0.12.0.tgz
 ```
 
 로컬 개발용 이름 `@fbrowse/cli`로 설치한 이전 버전을 사용 중이면 같은 prefix에서 이전 패키지를
@@ -245,6 +245,9 @@ XDG 설정에 보관하여 브라우저나 서버를 다시 열어도 기억합�
 다른 파일을 열거나 루트를 고르면 기존 파일은 탭에 남아 초안·선택 위치·스크롤·실행 취소 기록을 유지합니다.
 Markdown의 내부 문서·파일 링크도 같은 그룹에 fbrowse 탭을 추가하며, 이미 열린 파일이면 해당 탭으로 이동합니다.
 Ctrl/Cmd+클릭 또는 가운데 클릭은 백그라운드 탭으로 열고, 문서의 `#제목` 링크와 다른 등록 루트의 파일도 지원합니다.
+상대 경로(`../` 포함)는 Markdown 파일의 실제 위치를 기준으로 찾으며 서버의 절대 경로와 `file:///` 링크도 지원합니다.
+대상이 다른 연결 루트에 있으면 그 루트로 전환하고 왼쪽 파일 트리에서 상위 폴더를 펼쳐 해당 파일을 표시합니다.
+연결되지 않은 폴더의 파일은 루트 관리에서 해당 폴더를 연결한 뒤 열 수 있습니다.
 외부 HTTP/HTTPS 링크는 기본 클릭으로 **Orca 브라우저의 새 탭**에서 엽니다. fbrowse 서버의 Orca CLI가
 현재 페이지를 호스팅하는 런타임에 연결돼 있으면 페이지 식별자를 대조한 뒤 해당 작업 공간으로 `open-url` 요청을
 한 번 보냅니다. Ctrl/Cmd+클릭과 가운데 클릭은 새 페이지를 만든 뒤 원래 Orca 탭으로 돌아갑니다.
@@ -450,13 +453,13 @@ Playwright와 Chromium은 선택적 개발 도구이며 앱 실행에는 필요�
 패키지는 npm 계정 `wlalsrne`의 `@wlalsrne/fbrowse` 이름으로 공개 배포합니다.
 배포 전에 변경 내용을 검증하고 새 버전을 지정하세요. 이미 게시한 버전은 덮어쓸 수 없습니다.
 `package.json`과 `package-lock.json`의 버전을 함께 갱신하고 CLI·서버 버전도 맞춥니다.
-다음은 0.10.2 배포 명령의 예입니다.
+다음은 0.12.0 배포 명령의 예입니다.
 
 ```bash
 npm whoami
 npm test
 npm pack --pack-destination dist
-npm publish ./dist/wlalsrne-fbrowse-0.10.2.tgz --access public
+npm publish ./dist/wlalsrne-fbrowse-0.12.0.tgz --access public
 ```
 
 `npm pack`으로 만든 앱 코드·문서만 게시합니다. 프로젝트 데이터, XDG 설정·상태·캐시와

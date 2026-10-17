@@ -408,7 +408,7 @@ async function copyCodeText(text){
 function renderMarkdown(mathReady){
   const article=$('markdown');
   const math=mathReady?fbrowseMath.parse(data.text,marked):null;
-  article.innerHTML=DOMPurify.sanitize(math?math.html:marked.parse(data.text,{gfm:true}),{USE_PROFILES:{html:true}});
+  article.innerHTML=DOMPurify.sanitize(math?math.html:marked.parse(data.text,{gfm:true}),{USE_PROFILES:{html:true},ALLOWED_URI_REGEXP:/^(?:(?:https?|ftp|ftps|mailto|tel|callto|sms|cid|xmpp|file):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i});
   const base=new URL(fileURL,location.origin);
   // Resolve images and document links relative to the Markdown file, not this viewer route.
   for(const image of article.querySelectorAll('img[src]')){
@@ -421,16 +421,11 @@ function renderMarkdown(mathReady){
   }
   for(const link of article.querySelectorAll('a[href]')){
     const href=link.getAttribute('href');if(href.startsWith('#'))continue;
-    const target=new URL(href,base);
-    if(target.origin===location.origin){
-      let targetRoot=root,relative;
-      const match=target.pathname.match(/^\/roots\/([^/]+)\/files\/(.*)$/);
-      if(match){targetRoot=decodeURIComponent(match[1]);relative=decodeURIComponent(match[2]);}
-      else if(['/', '/_preview'].includes(target.pathname)&&target.searchParams.has('path')){targetRoot=target.searchParams.get('root')||root;relative=target.searchParams.get('path');}
-      else relative=decodeURIComponent(target.pathname.replace(/^\/files\//,'').replace(/^\//,''));
-      relative=relative.replace(/\/+$/,'');
-      link.href='/?'+new URLSearchParams({root:targetRoot,path:relative})+target.hash;link.target='_blank';
-      markdownLinks.set(link,{kind:'file',root:targetRoot,path:relative,hash:target.hash});
+    let target;try{target=new URL(href,base);}catch{continue;}
+    if(target.origin===location.origin||target.protocol==='file:'){
+      const local=/^(?:https?:)?\/\//i.test(href)?target.pathname+target.search+target.hash:href;
+      link.href='/?'+new URLSearchParams({root,path,link:local});link.target='_blank';
+      markdownLinks.set(link,{kind:'file',href:local});
     }else if(['http:','https:'].includes(target.protocol)){
       link.href=target.href;link.target='_blank';markdownLinks.set(link,{kind:'web',href:target.href});
     }else link.target='_blank';

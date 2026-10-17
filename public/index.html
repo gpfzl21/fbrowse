@@ -144,19 +144,25 @@ function revealFileAnchor(tab,fragment){
   tab.frame.addEventListener('load',apply);apply();
 }
 window.fbrowseOpenMarkdownFile=async(source,destination)=>{
-  const origin=markdownSource(source),mapping=state.roots.find(item=>item.id===destination.root);
-  if(!origin||!mapping?.connected||typeof destination.path!=='string')throw Error('문서 링크의 루트 또는 경로를 확인해 주세요.');
+  const origin=markdownSource(source);
+  if(!origin||typeof destination.href!=='string')throw Error('문서 링크의 루트 또는 경로를 확인해 주세요.');
   const binding={...origin.editor},revision=state.workspaceRevision;
-  const response=await api('/api/entry?'+new URLSearchParams({root:destination.root,path:destination.path})),entry=response.entry;
+  const response=await api('/api/resolve-link?'+new URLSearchParams({root:binding.root,path:binding.path,href:destination.href})),entry=response.entry;
   if(markdownSource(source)!==origin||origin.editor.root!==binding.root||origin.editor.path!==binding.path||origin.editor.session!==binding.session)return;
-  if(!state.roots.some(item=>item.id===mapping.id&&item.path===mapping.path&&item.connected))throw Error('링크의 루트 연결이 변경되었습니다. 다시 확인해 주세요.');
-  if(entry?.root_id!==destination.root||entry.path!==destination.path||entry.available===false)throw Error(entry?.unavailable_reason||'링크의 파일을 열 수 없습니다.');
-  if(entry.kind==='directory'){
-    if(destination.background||state.workspaceRevision!==revision)return;
-    switchRoot(entry.root_id);input.value='';const parts=entry.path.split('/');for(let i=0;i<=parts.length;i++)state.expanded.add(nodeKey(entry.root_id,parts.slice(0,i).join('/')));await update();return;
+  if(!state.roots.some(item=>item.id===binding.root&&item.path===response.source_root_path&&item.connected)||!state.roots.some(item=>item.id===entry?.root_id&&item.path===response.root_path&&item.connected))throw Error('링크의 루트 연결이 변경되었습니다. 다시 확인해 주세요.');
+  if(!entry||entry.available===false)throw Error(entry?.unavailable_reason||'링크의 파일을 열 수 없습니다.');
+  const foreground=!destination.background&&state.workspaceRevision===revision;
+  if(foreground){
+    input.value='';type.value='all';setSidebarMode('files');treeSelection=null;
+    const parts=entry.path.split('/'),count=entry.kind==='directory'?parts.length:parts.length-1;
+    for(let i=0;i<=count;i++)state.expanded.add(nodeKey(entry.root_id,parts.slice(0,i).join('/')));
   }
-  const tab=select(entry,false,undefined,{group:origin.group,activate:!destination.background&&state.workspaceRevision===revision});
-  revealFileAnchor(tab,destination.hash);
+  if(entry.kind==='directory'){
+    if(foreground){switchRoot(entry.root_id);await update();}return;
+  }
+  const tab=select(entry,false,undefined,{group:origin.group,activate:foreground});
+  revealFileAnchor(tab,response.hash);
+  if(foreground){await update();if(state.activeTab===tab?.id)for(const node of entries.querySelectorAll('button.row.active'))node.scrollIntoView({block:'nearest'});}
 };
 window.addEventListener('message',event=>{
   if(event.origin!==location.origin)return;
@@ -1317,10 +1323,12 @@ document.addEventListener('keydown',event=>{
     if(state.roots.some(r=>r.id===preferred))state.root=preferred;
     renderRoots();state.expanded=new Set([nodeKey(state.root,'')]);
     if(initial){
-      const data=await api('/api/entry?'+new URLSearchParams({root:state.root,path:initial}));const parts=data.entry.path.split('/');
+      const documentLink=new URLSearchParams(location.search).get('link');
+      const data=await api((documentLink?'/api/resolve-link?':'/api/entry?')+new URLSearchParams({root:state.root,path:initial,...(documentLink?{href:documentLink}:{})}));
+      state.root=data.entry.root_id;renderRoots();const parts=data.entry.path.split('/');
       const count=data.entry.kind==='directory'?parts.length:parts.length-1;
       for(let i=1;i<=count;i++)state.expanded.add(nodeKey(state.root,parts.slice(0,i).join('/')));
-      if(data.entry.kind==='file'&&data.entry.available!==false){const fragment=location.hash;revealFileAnchor(select(data.entry),fragment);}
+      if(data.entry.kind==='file'&&data.entry.available!==false){const fragment=data.hash||location.hash;revealFileAnchor(select(data.entry),fragment);}
     }
   }catch(error){$('status').textContent=error.message;}
   const sharedWeb=new URLSearchParams(location.search).get('web');

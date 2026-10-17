@@ -66,7 +66,7 @@ test('isolated server and storage integrations', async t => {
     const info = (await request(app, '/api/info')).json();
     assert.equal(info.service, 'project-file-browser');
     assert.equal(info.backend, 'node');
-    assert.equal(info.version, '0.11.0');
+    assert.equal(info.version, '0.12.0');
     assert.equal(info.pid, process.pid);
     assert.equal(info.root, roots.project);
     assert.equal(info.pdfjs, false);
@@ -109,6 +109,22 @@ test('isolated server and storage integrations', async t => {
     assert.equal((await post('/api/roots', { operation: 'remove', id: 'papers' })).status, 200);
     assert.equal((await request(app, '/roots/papers/files/same.txt')).status, 403);
     assert.equal(await fs.readFile(path.join(base, 'offline', 'same.txt'), 'utf8'), 'papers');
+  }));
+
+  await t.test('Markdown link API resolves filesystem paths across registered roots', () => fixture(async ({ app, roots, post }) => {
+    await post('/api/roots', { operation: 'add', id: 'papers', name: 'papers', path: roots.papers });
+    await fs.writeFile(path.join(roots.project, 'README.md'), '# Links');
+    const route = href => '/api/resolve-link?' + new URLSearchParams({ root: 'project', path: 'README.md', href });
+    for (const href of ['../papers/same.txt', roots.papers + '/same.txt']) {
+      const response = await request(app, route(href));
+      assert.equal(response.status, 200, response.body.toString());
+      assert.equal(response.json().entry.root_id, 'papers');
+      assert.equal(response.json().entry.path, 'same.txt');
+    }
+    assert.equal((await request(app, route('missing.md'))).status, 404);
+    assert.equal((await request(app, route('../results/same.txt'))).status, 400);
+    assert.equal((await request(app, route('javascript:alert(1)'))).status, 400);
+    assert.equal((await request(app, route('/roots/project/files/../papers/same.txt'))).status, 403);
   }));
 
   await t.test('mutations validate IDs and require token; chooser provides only metadata', () => fixture(async ({ app, roots, post }) => {

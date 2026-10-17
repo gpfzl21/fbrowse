@@ -73,7 +73,7 @@ test('safe empty file creation through HTTP and descriptor-anchored filesystem o
       assert.equal(entry.kind, 'file'); assert.equal(entry.symlink, false); assert.equal(entry.size, 0);
       assert.equal(entry.available, true); assert.equal(entry.root_id, 'project');
     }
-    assert.equal(app.info.version, '0.11.0');
+    assert.equal(app.info.version, '0.12.0');
     const listed = (await request('/api/list?' + new URLSearchParams({ path: '문서 폴더' }))).value.entries;
     assert.equal(listed.length, 3);
     const found = (await request('/api/search?q=created')).value;
