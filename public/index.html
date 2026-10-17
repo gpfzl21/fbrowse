@@ -30,7 +30,7 @@ main{display:flex;min-height:0;flex:1;gap:0;padding:8px}aside{width:330px;min-wi
 .row[aria-disabled="true"]{opacity:.45;cursor:default}.row[aria-disabled="true"]:hover{background:none}
 .row[data-tree-selected="true"]{background:color-mix(in srgb,var(--accent) 14%,var(--panel));outline:1px solid var(--accent);outline-offset:-2px}.row.active .filename{font-weight:700;text-decoration:underline;text-underline-offset:3px}#selectionBar{display:flex;align-items:center;justify-content:space-between;padding:4px 12px;font-size:11px;flex:none}#selectionBar[hidden]{display:none}#entries .caret{display:inline-flex;align-items:center;justify-content:center;min-height:18px}#entries .filename{flex:0 1 auto;min-width:0}#entries .size{margin-left:auto}.tree-marquee{position:fixed;z-index:3001;pointer-events:none;border:1px solid var(--accent);background:color-mix(in srgb,var(--accent) 18%,transparent)}body.is-tree-selecting{user-select:none}body.is-tree-selecting iframe{pointer-events:none}.row[data-file-clipboard="true"] .filename::after{content:' · Copied';font-size:10px;color:var(--accent)}#clipboardStatus{padding:4px 12px;font-size:11px;color:var(--muted);overflow-wrap:anywhere}.tab-activate{touch-action:none;user-select:none;cursor:grab}.tab-activate:active{cursor:grabbing}body.is-tab-dragging{user-select:none;cursor:grabbing}body.is-tab-dragging iframe{pointer-events:none}#exitExpanded{z-index:20}
 .viewer.is-expanded>.viewer-tabs{display:none!important}.viewer.is-expanded .pane-tabs{display:none!important}
-#viewer:fullscreen{width:100%;height:100%;max-width:none;max-height:none;margin:0;background:var(--panel)}#expandedFullscreen{position:absolute;top:14px;right:54px;z-index:20;height:32px;font-size:12px;box-shadow:0 2px 10px #0003}#fullscreenNotice{position:absolute;top:54px;right:14px;z-index:20;max-width:calc(100% - 28px);padding:8px 12px;background:var(--panel);border:1px solid var(--line);border-radius:6px;font-size:12px}#fullscreenPreview svg{width:18px;height:18px}
+#viewer:fullscreen{width:100%;height:100%;max-width:none;max-height:none;margin:0;background:var(--panel)}#expandedFullscreen{position:absolute;top:14px;right:54px;z-index:20;height:32px;font-size:12px;box-shadow:0 2px 10px #0003}#fullscreenNotice{position:absolute;top:54px;right:14px;z-index:20;max-width:calc(100% - 28px);padding:8px 12px;background:var(--panel);border:1px solid var(--line);border-radius:6px;font-size:12px}.preview-view-actions{display:inline-flex;align-items:center;gap:2px;flex:none}.preview-view-actions button{display:grid;place-items:center;width:28px;height:28px;margin:0;padding:0;border:1px solid transparent;border-radius:4px;background:transparent;color:var(--muted);cursor:pointer}.preview-view-actions button:hover{background:var(--hover);color:var(--text)}.preview-view-actions button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}.preview-view-actions svg{width:16px;height:16px}.workspace-slot{display:flex;flex-direction:column}.workspace-slot>iframe{flex:1;min-height:0}.workspace-slot>.preview-view-actions{justify-content:flex-end;padding:2px 8px;border-bottom:1px solid var(--line);background:var(--panel)}.viewer.is-expanded .workspace-slot>.preview-view-actions{display:none}
 #exitExpanded,#expandedFullscreen{transition:opacity .15s}.viewer.is-expanded:not([data-controls-visible])>#exitExpanded,.viewer.is-expanded:not([data-controls-visible])>#expandedFullscreen{opacity:0;pointer-events:none}@media(prefers-reduced-motion:reduce){#exitExpanded,#expandedFullscreen{transition:none}}
 .row[data-draggable-file="true"] .filename,.row[data-draggable-file="true"] .icon{touch-action:none;user-select:none;cursor:grab}.is-drag-source{opacity:.45}.workspace-drag-ghost{position:fixed;z-index:3000;display:flex;align-items:center;gap:8px;max-width:min(380px,75vw);padding:8px 11px;border:1px solid var(--accent);border-radius:7px;background:var(--panel);color:var(--text);box-shadow:0 5px 18px #0003;pointer-events:none;user-select:none;font-size:12px}.workspace-drag-ghost .drag-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.workspace-drag-ghost small{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px}.workspace.is-empty-drop .pane-tabs{display:none!important}.workspace-insertion{position:absolute;z-index:15;width:3px;background:var(--accent);pointer-events:none;border-radius:2px;box-shadow:0 0 0 1px var(--panel)}.workspace-insertion::before,.workspace-insertion::after{content:'';position:absolute;left:-3px;width:9px;height:3px;background:var(--accent)}.workspace-insertion::before{top:0}.workspace-insertion::after{bottom:0}
 .row.is-move-target,#rootPath.is-move-target,#listLabel.is-move-target{background:var(--selected);outline:2px solid var(--accent);outline-offset:-2px}.row{transition:background-color .12s,opacity .12s}#entries.is-move-root{box-shadow:inset 0 0 0 2px var(--accent)}body.is-tree-drop-invalid,body.is-tree-drop-invalid *{cursor:not-allowed!important}.row.is-move-complete{animation:tree-moved .7s ease-out}.workspace-drag-ghost{animation:drag-appear .12s ease-out}.workspace-drag-ghost[data-drop="move"]{border-style:solid;box-shadow:0 5px 18px #0003,0 0 0 2px var(--selected)}.workspace-drag-ghost[data-drop="invalid"]{opacity:.7}@keyframes drag-appear{from{opacity:0}to{opacity:1}}@keyframes tree-moved{from{background:var(--selected);box-shadow:inset 0 0 0 2px var(--accent)}to{box-shadow:inset 0 0 0 0 transparent}}@media(prefers-reduced-motion:reduce){.row,.workspace-drag-ghost{animation:none!important;transition:none!important}}
@@ -40,10 +40,10 @@ main{display:flex;min-height:0;flex:1;gap:0;padding:8px}aside{width:330px;min-wi
 <div class="root-picker"><select id="rootSelect" aria-label="Select root folder"></select><button class="button" id="manageRoots" title="Add, edit or remove roots">Manage Roots</button></div><div class="root-path" id="rootPath"></div>
 <button class="button" id="newFile" type="button" aria-label="New File" style="margin-bottom:8px">New File…</button><div class="sidebar-tabs" aria-label="Explorer views"><button class="button" id="filesTab" aria-pressed="true">Files</button><button class="button" id="gitTab" aria-pressed="false">Git</button></div>
 <div class="search" id="fileSearch"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="Search filenames and paths" aria-label="Search by filename or path" title="Includes subfolders · Ctrl+K / Cmd+K"></div>
-<div id="clipboardStatus" role="status" aria-live="polite" hidden></div><div class="toolbar"><select id="type" aria-label="File type"><option value="all">All Files</option><option value="pdf">PDF</option><option value="html">HTML</option><option value="markdown">Markdown</option><option value="code">Code</option></select><div class="actions" id="actions" hidden><button class="button" id="expandPreview" aria-pressed="false" aria-label="Expand Preview" title="Expand preview · Stay in Orca · Esc to return">⛶</button><button class="button" id="fullscreenPreview" aria-pressed="false" aria-label="Full Screen" title="Full screen · Esc to return"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></svg></button><button class="button" id="copy" aria-label="Copy Link" title="Copy Link">⧉</button><a class="button" id="open" target="_blank" rel="noopener" aria-label="Open in New Tab" title="Open in New Tab">↗</a></div></div>
+<div id="clipboardStatus" role="status" aria-live="polite" hidden></div><div class="toolbar"><select id="type" aria-label="File type"><option value="all">All Files</option><option value="pdf">PDF</option><option value="html">HTML</option><option value="markdown">Markdown</option><option value="code">Code</option></select><div class="actions" id="actions" hidden><button class="button" id="copy" aria-label="Copy Link" title="Copy Link">⧉</button></div></div>
 </div><div class="side-head" id="listLabel">Folders</div><div id="selectionBar" hidden><span id="selectionCount" role="status" aria-live="polite"></span><button id="clearSelection" class="button" type="button">Clear Selection</button></div><nav id="entries" aria-label="Files and folders" aria-busy="true"></nav><nav id="gitPanel" aria-label="Git changes" aria-busy="false" hidden></nav><div class="side-foot" id="status" role="status">Loading files…</div></aside>
 <div class="splitter" id="sidebarResize" role="separator" aria-label="Resize file list" aria-orientation="vertical" aria-controls="fileSidebar" tabindex="0" title="Drag or use arrow keys to resize the file list"></div>
-<section class="viewer" id="viewer" aria-label="File preview"><div class="viewer-tabs" id="viewerTabs" hidden><span class="diff-path" id="diffPath"></span><button class="button" id="diffWrap" aria-pressed="true" title="Wrap long diff lines to the viewport width">Word Wrap</button><button class="button" id="showDiff" aria-pressed="true">Changes</button><button class="button" id="showFile" aria-pressed="false" disabled>Open File</button></div><div class="preview"><div class="empty" id="empty"><div><div class="symbol">▤</div><h1>Find a file and open it</h1><p>Expand a folder or search by filename.<br>Preview PDF, HTML, Markdown and code files.</p></div></div><section id="diffViewer" aria-label="File changes" hidden><div id="diffMessage" class="diff-message" role="status"></div><pre id="diffContent" class="wrap"></pre></section><div id="workspace" class="workspace" hidden><div id="workspaceDragCover" class="workspace-drag-cover" hidden></div><div id="workspaceDrop" class="workspace-drop" aria-hidden="true" hidden></div><div id="workspaceInsertion" class="workspace-insertion" aria-hidden="true" hidden></div></div></div><p id="fullscreenNotice" role="status" hidden></p><button class="button" id="expandedFullscreen" hidden aria-pressed="false" aria-label="Full Screen" title="Full screen · Esc to return">Full Screen</button><button class="button" id="exitExpanded" hidden title="Exit expanded preview · Esc" aria-label="Exit expanded preview · Esc">×</button></section></main>
+<section class="viewer" id="viewer" aria-label="File preview"><div class="viewer-tabs" id="viewerTabs" hidden><div id="diffPreviewActions" class="preview-view-actions"><button class="button" id="expandPreview" aria-pressed="false" aria-label="Expand Preview" title="Expand preview · Stay in Orca · Esc to return">⛶</button><button class="button" id="fullscreenPreview" aria-pressed="false" aria-label="Full Screen" title="Full screen · Esc to return"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></svg></button></div><span class="diff-path" id="diffPath"></span><button class="button" id="diffWrap" aria-pressed="true" title="Wrap long diff lines to the viewport width">Word Wrap</button><button class="button" id="showDiff" aria-pressed="true">Changes</button><button class="button" id="showFile" aria-pressed="false" disabled>Open File</button></div><div class="preview"><div class="empty" id="empty"><div><div class="symbol">▤</div><h1>Find a file and open it</h1><p>Expand a folder or search by filename.<br>Preview PDF, HTML, Markdown and code files.</p></div></div><section id="diffViewer" aria-label="File changes" hidden><div id="diffMessage" class="diff-message" role="status"></div><pre id="diffContent" class="wrap"></pre></section><div id="workspace" class="workspace" hidden><div id="workspaceDragCover" class="workspace-drag-cover" hidden></div><div id="workspaceDrop" class="workspace-drop" aria-hidden="true" hidden></div><div id="workspaceInsertion" class="workspace-insertion" aria-hidden="true" hidden></div></div></div><p id="fullscreenNotice" role="status" hidden></p><button class="button" id="expandedFullscreen" hidden aria-pressed="false" aria-label="Full Screen" title="Full screen · Esc to return">Full Screen</button><button class="button" id="exitExpanded" hidden title="Exit expanded preview · Esc" aria-label="Exit expanded preview · Esc">×</button></section></main>
 <div id="groupMenu" class="tree-menu" role="menu" aria-label="Editor group actions" hidden></div>
 <div id="treeMenu" class="tree-menu" role="menu" aria-label="File actions" hidden><button id="contextNewFile" type="button" role="menuitem">New File</button><button id="contextNewFolder" type="button" role="menuitem">New Folder</button><button id="contextCopyPath" type="button" role="menuitem">Copy Path</button><button id="contextCopyRelativePath" type="button" role="menuitem">Copy Relative Path</button><button id="contextCopyFile" type="button" role="menuitem">Copy · Ctrl/Cmd+C</button><button id="contextPasteFile" type="button" role="menuitem" disabled>Paste · Ctrl/Cmd+V</button><button id="contextDuplicate" type="button" role="menuitem">Duplicate</button><button id="contextRename" type="button" role="menuitem">Rename</button><button id="contextDelete" type="button" role="menuitem">Delete</button></div>
 <dialog id="fsDialog" aria-labelledby="fsTitle"><form id="fsForm"><div class="dialog-head"><h2 id="fsTitle"></h2><button id="fsCancel" class="button" type="button">Cancel</button></div><p id="fsTarget" class="root-path"></p><p id="fsDescription"></p><label id="fsNameLabel" for="fsName">Name</label><input id="fsName" autocomplete="off" spellcheck="false" style="width:100%;padding:8px"><p id="fsMessage" role="status" style="white-space:pre-wrap;overflow-wrap:anywhere"></p><div class="folder-footer"><button id="fsSubmit" class="button primary" type="submit"></button></div></form></dialog>
@@ -106,7 +106,7 @@ function tabDirty(tab){const editor=tabEditor(tab);return editor?editor.dirty:Bo
 function editorDirty(){return state.tabs.some(tabDirty);}
 function canLeaveEditor(tabs=state.tabs.filter(tab=>tab.id===state.activeTab)){return !tabs.some(tabDirty)||confirm('Discard unsaved changes and continue?');}
 function forgetEditor(){state.editor=null;}
-function abandonTabs(tabs){for(const tab of tabs)tabEditor(tab)?.abandon();}
+function abandonTabs(tabs){for(const tab of tabs){resetPreviewActions(tab);releasePdfZoom(tab);tabEditor(tab)?.abandon();}}
 window.fbrowseConfirmNavigation=source=>{
   // _top navigation discards the whole workspace, including background drafts.
   if(!source||!state.tabs.some(tab=>tab.frame.contentWindow===source&&tabEditor(tab)))return false;
@@ -507,14 +507,13 @@ async function selectDiff(change,group){
   state.diff={root,path,group,change};state.viewerMode='diff';state.selected=null;syncEditorActivity();
   $('viewerTabs').hidden=false;$('diffWrap').hidden=false;$('diffPath').textContent=rootLabel(root)+' · '+path+' · '+(group==='staged'?'Staged':group==='untracked'?'Untracked':'Working Tree');
   $('showDiff').setAttribute('aria-pressed','true');$('showFile').setAttribute('aria-pressed','false');$('showFile').disabled=true;$('showFile').title='Checking file…';
-  $('empty').hidden=true;$('workspace').hidden=true;$('diffViewer').hidden=false;$('actions').hidden=false;$('open').hidden=true;
+  $('empty').hidden=true;$('workspace').hidden=true;$('diffViewer').hidden=false;$('actions').hidden=false;$('diffPreviewActions').hidden=false;
   $('viewer').setAttribute('aria-label',path+' changes');$('diffMessage').textContent='Loading changes…';$('diffContent').replaceChildren();drawGit();
   const current=()=>generation===state.diffGeneration&&root===state.root;
   api('/api/entry?'+new URLSearchParams({root,path}),controller.signal).then(data=>{
     if(!current())return;
     state.diff.entry=data.entry;const available=data.entry.kind==='file'&&data.entry.available!==false;
     $('showFile').disabled=!available;$('showFile').title=available?'Current file preview':data.entry.unavailable_reason||'Could not open the file.';
-    if(available){$('open').href=previewURL(data.entry);$('open').hidden=false;}
   }).catch(error=>{if(current()&&error.name!=='AbortError')$('showFile').title='The file was deleted or cannot be opened.';});
   try{
     const data=await api('/api/git/diff?'+new URLSearchParams({root,path,...(group==='staged'?{staged:'1'}:{})}),controller.signal);
@@ -565,7 +564,7 @@ async function refreshRoots(signal){
   renderRoots();reconcileTreeSelection();updateFileClipboard();syncEditorActivity();
 }
 function resetPreview(){
-  state.diffController?.abort();state.diffGeneration++;state.diff=null;state.viewerMode='file';$('viewerTabs').hidden=true;$('diffViewer').hidden=true;$('open').hidden=false;
+  state.diffController?.abort();state.diffGeneration++;state.diff=null;state.viewerMode='file';$('viewerTabs').hidden=true;$('diffViewer').hidden=true;
   const tab=state.tabs.find(tab=>tab.id===state.activeTab)||state.tabs[0];if(tab)activateTab(tab.id);else{if(state.previewExpanded)setPreviewExpanded(false);state.selected=null;state.editor=null;$('workspace').hidden=true;$('empty').hidden=false;$('actions').hidden=true;}renderWorkspace();
 }
 $('rootSelect').onchange=()=>{switchRoot($('rootSelect').value);};
@@ -875,7 +874,7 @@ function loadPreview(confirmed=false){
 }
 function loadTab(tab,initialTab,pdfPage){
   if(tab.fsBusy){$('status').textContent='Wait for the file operation to finish before reloading.';return;}
-  tabEditor(tab)?.abandon();const entry=tab.entry,url=fileURL(entry.path,entry.root_id)+'?v='+Date.now();let viewerURL=previewURL(entry);tab.editor=null;tab.diagnosticsRootPath=state.roots.find(item=>item.id===entry.root_id)?.path;
+  resetPreviewActions(tab);releasePdfZoom(tab);tabEditor(tab)?.abandon();const entry=tab.entry,url=fileURL(entry.path,entry.root_id)+'?v='+Date.now();let viewerURL=previewURL(entry);tab.editor=null;tab.diagnosticsRootPath=state.roots.find(item=>item.id===entry.root_id)?.path;
   if(!['pdf','media'].includes(entry.category)){
     const session=globalThis.crypto?.randomUUID?.()||Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);tab.editor={root:entry.root_id,path:entry.path,session,dirty:false};viewerURL+='&editorSession='+encodeURIComponent(session);if(initialTab)viewerURL+='&initialTab='+encodeURIComponent(initialTab);
   }
@@ -893,7 +892,7 @@ function activateTab(id,focus=false,followRoot=true){
   if(state.previewExpanded&&state.activeGroup!==tab.group)layoutDirty=true;
   state.activeTab=id;state.activeGroup=tab.group;state.groups.get(tab.group).active=id;state.selected=tab.entry;state.editor=tab.editor;
   if(followRoot&&state.root!==tab.entry.root_id){clearTreeSelection();state.root=tab.entry.root_id;input.value='';clearGit();renderRoots();try{localStorage.setItem(selectionKey(),state.root);}catch{}update();}
-  state.viewerMode='file';$('workspace').hidden=false;$('empty').hidden=true;$('diffViewer').hidden=true;$('viewerTabs').hidden=!(state.diff?.root===tab.entry.root_id&&state.diff?.path===tab.entry.path);$('diffWrap').hidden=true;$('showFile').setAttribute('aria-pressed','true');$('showDiff').setAttribute('aria-pressed','false');$('open').hidden=false;$('actions').hidden=false;$('open').href=previewURL(tab.entry);
+  state.viewerMode='file';$('workspace').hidden=false;$('empty').hidden=true;$('diffViewer').hidden=true;$('viewerTabs').hidden=!(state.diff?.root===tab.entry.root_id&&state.diff?.path===tab.entry.path);$('diffPreviewActions').hidden=true;$('diffWrap').hidden=true;$('showFile').setAttribute('aria-pressed','true');$('showDiff').setAttribute('aria-pressed','false');$('actions').hidden=false;
   $('viewer').setAttribute('aria-label',rootLabel(tab.entry.root_id)+' · '+tab.entry.path+' preview');
   if(followRoot)history.replaceState(null,'','/?'+new URLSearchParams({root:tab.entry.root_id,path:tab.entry.path}));
   for(const node of entries.querySelectorAll('button[data-path]'))node.classList.toggle('active',node.dataset.path===tab.entry.path&&node.dataset.root===tab.entry.root_id);
@@ -901,7 +900,7 @@ function activateTab(id,focus=false,followRoot=true){
 }
 function closeTab(id,discard=false){
   const tab=state.tabs.find(tab=>tab.id===id);if(!tab||tab.fsBusy||(!discard&&!canLeaveEditor([tab])))return false;
-  const wasActive=id===state.activeTab,index=state.tabs.indexOf(tab);tabEditor(tab)?.abandon();tab.slot.remove();state.tabs.splice(index,1);
+  const wasActive=id===state.activeTab,index=state.tabs.indexOf(tab);resetPreviewActions(tab);releasePdfZoom(tab);tabEditor(tab)?.abandon();tab.slot.remove();state.tabs.splice(index,1);
   const group=state.groups.get(tab.group);if(group?.active===id)group.active=state.tabs.filter(other=>other.group===tab.group).at(-1)?.id||null;
   collapseEmptyGroup(tab.group);
   if(wasActive){const next=state.tabs.find(other=>other.id===group?.active)||state.tabs.find(other=>other.id===state.groups.get(state.activeGroup)?.active)||state.tabs[Math.min(index,state.tabs.length-1)];state.activeTab=next?.id||null;if(next)activateTab(next.id);else resetPreview();}else renderWorkspace();return true;
@@ -1052,7 +1051,7 @@ function layoutWorkspace(){
 }
 function renderWorkspace(){
   const workspace=$('workspace');if(state.previewExpanded&&state.activeTab)workspace.dataset.expandedTab=state.activeTab;else delete workspace.dataset.expandedTab;
-  for(const tab of state.tabs){tab.slot.dataset.group=tab.group;const visible=state.previewExpanded?tab.id===state.activeTab:state.groups.get(tab.group)?.active===tab.id;tab.slot.classList.toggle('is-visible',visible);tab.slot.setAttribute('aria-hidden',String(!visible));tab.frame.tabIndex=visible?0:-1;}
+  for(const tab of state.tabs){tab.slot.dataset.group=tab.group;tab.slot.dataset.active=String(tab.id===state.activeTab);const visible=state.previewExpanded?tab.id===state.activeTab:state.groups.get(tab.group)?.active===tab.id;tab.slot.classList.toggle('is-visible',visible);tab.slot.setAttribute('aria-hidden',String(!visible));tab.frame.tabIndex=visible?0:-1;}
   renderWorkspaceTabs();layoutWorkspace();for(const tab of state.tabs)syncPreviewChrome(tab);syncEditorActivity();
 }
 createGroup('group-1');new ResizeObserver(()=>layoutWorkspace()).observe($('workspace'));
@@ -1251,6 +1250,81 @@ function createSeparator(node){
 window.addEventListener('blur',finishWorkspaceResize);
 // Only our preview shell and the pinned same-origin PDF viewer own application chrome.
 // File-authored HTML lives in its separate sandboxed child and is never styled here.
+// One editable percentage field shares its preset menu with the native PDF.js controls.
+const PDF_ZOOM_MIN=10,PDF_ZOOM_MAX=2500;
+function releasePdfZoom(tab){
+  const binding=tab.pdfZoomBinding;if(!binding)return;binding.controller.abort();
+  if(binding.anchor?.parentNode)binding.anchor.parentNode.insertBefore(binding.group,binding.anchor);
+  binding.anchor?.remove();binding.field?.remove();binding.overlay?.remove();
+  if(binding.sheet)binding.doc.adoptedStyleSheets=binding.doc.adoptedStyleSheets.filter(sheet=>sheet!==binding.sheet);
+  tab.pdfZoomBinding=null;
+}
+function syncPdfZoomInput(tab,force=false){
+  const binding=tab.pdfZoomBinding;if(!binding?.input||binding.doc!==tab.frame.contentDocument)return;
+  const viewer=binding.app.pdfViewer,ready=Boolean(binding.app.pdfDocument&&viewer?.pagesCount);
+  binding.input.disabled=!ready;
+  if(!ready){binding.input.value='';return;}
+  if(force||binding.doc.activeElement!==binding.input||!binding.editing)binding.input.value=String(Math.round(viewer.currentScale*10000)/100);
+}
+function applyPdfZoomInput(tab){
+  const binding=tab.pdfZoomBinding;if(!binding||binding.doc!==tab.frame.contentDocument||!state.tabs.includes(tab))return;
+  const value=binding.input.valueAsNumber,viewer=binding.app.pdfViewer;
+  if(Number.isFinite(value)&&binding.app.pdfDocument&&viewer?.pagesCount)viewer.currentScale=Math.max(PDF_ZOOM_MIN,Math.min(PDF_ZOOM_MAX,value))/100;
+  binding.editing=false;syncPdfZoomInput(tab,true);revealPreviewControls();
+}
+function bindPdfZoom(tab){
+  releasePdfZoom(tab);if(previewChromeKind(tab)!=='pdf')return;
+  const doc=tab.frame.contentDocument,app=doc.defaultView.PDFViewerApplication;if(!app)return;
+  const controller=new doc.defaultView.AbortController(),binding={doc,app,controller};tab.pdfZoomBinding=binding;
+  const current=()=>!controller.signal.aborted&&state.tabs.includes(tab)&&tab.pdfZoomBinding===binding&&tab.frame.contentDocument===doc;
+  app.initializedPromise.then(()=>{
+    if(!current())return;
+    const group=doc.getElementById('toolbarViewerMiddle');if(!group)return;
+    const anchor=doc.createComment('fbrowse PDF zoom position');group.before(anchor);
+    const overlay=doc.createElement('div');overlay.id='fbrowsePdfZoom';overlay.setAttribute('role','group');overlay.setAttribute('aria-label','PDF zoom controls');doc.body.append(overlay);
+    const selectContainer=doc.getElementById('scaleSelectContainer');
+    const field=doc.createElement('label');field.id='fbrowsePdfZoomField';
+    const input=doc.createElement('input');input.id='fbrowsePdfZoomPercent';input.type='number';input.min=String(PDF_ZOOM_MIN);input.max=String(PDF_ZOOM_MAX);input.step='1';
+    input.setAttribute('aria-label','PDF zoom percentage');input.title='Zoom percentage · Arrow keys adjust by 1% · Enter to apply';
+    const unit=doc.createElement('span');unit.textContent='%';unit.setAttribute('aria-hidden','true');field.append(input,unit);selectContainer.append(field);
+    const sheet=new doc.defaultView.CSSStyleSheet();
+    sheet.replaceSync(`#toolbarViewerMiddle{gap:4px}#toolbarViewerMiddle>.toolbarHorizontalGroup{gap:2px}#toolbarViewerMiddle .splitToolbarButtonSeparator{display:none}#toolbarViewerMiddle .toolbarButton{width:28px;height:28px;margin:0;border-radius:4px}
+#toolbarViewerMiddle #scaleSelectContainer{display:inline-flex;width:112px;min-width:112px;height:28px;padding:0;box-sizing:border-box;border:1px solid var(--field-border-color);border-radius:4px;background:var(--field-bg-color);transition:border-color .12s,background-color .12s}
+#toolbarViewerMiddle #scaleSelectContainer:hover{border-color:var(--toolbar-icon-bg-color)}#toolbarViewerMiddle #scaleSelectContainer:focus-within{border-color:#0a84ff;outline:1px solid #0a84ff;outline-offset:-1px}
+#toolbarViewerMiddle #scaleSelect{position:absolute;inset-block:0;inset-inline-end:0;width:26px;min-width:26px;height:100%;padding:0;color:transparent;background:transparent;font-size:12px;border-radius:0 4px 4px 0;z-index:1;cursor:pointer}
+#toolbarViewerMiddle #scaleSelect:is(:hover,:focus-visible){color:transparent;background:var(--button-hover-color)}
+#fbrowsePdfZoomField{display:inline-flex;align-items:center;justify-content:flex-end;gap:2px;width:100%;height:100%;box-sizing:border-box;margin:0;padding:0 29px 0 5px;color:var(--main-color);font:12px/18px system-ui,sans-serif}
+#toolbarViewerMiddle input#fbrowsePdfZoomPercent{appearance:textfield;-moz-appearance:textfield;box-sizing:border-box;width:56px;min-width:0;height:100%;margin:0;padding:0;border:0;outline:0;border-radius:0;background:transparent;color:inherit;font:inherit;font-size:12px;line-height:18px;text-align:end;box-shadow:none}
+#fbrowsePdfZoomPercent::-webkit-inner-spin-button,#fbrowsePdfZoomPercent::-webkit-outer-spin-button{appearance:none;-webkit-appearance:none;margin:0}#fbrowsePdfZoomField>span{font:inherit;opacity:.75}
+#fbrowsePdfZoom{display:none;--menuitem-height:calc(var(--toolbar-height) - 6px)}
+html[data-fbrowse-expanded] #fbrowsePdfZoom{display:flex;position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:10000;width:max-content;max-width:calc(100% - 28px);box-sizing:border-box;padding:4px;background:var(--toolbar-bg-color);border:1px solid var(--toolbar-border-color);border-radius:8px;box-shadow:0 3px 14px #0002;transition:opacity .15s}
+#fbrowsePdfZoom #toolbarViewerMiddle{height:auto;min-height:28px;max-width:100%;justify-content:center;flex-wrap:wrap;gap:4px}#fbrowsePdfZoom #toolbarViewerMiddle>.toolbarHorizontalGroup{height:28px;flex:none}
+html[data-fbrowse-expanded]:not([data-fbrowse-controls-visible]) #fbrowsePdfZoom:not(:hover):not(:focus-within){opacity:0;pointer-events:none}@media(prefers-reduced-motion:reduce){#fbrowsePdfZoom,#toolbarViewerMiddle #scaleSelectContainer{transition:none}}`);
+    doc.adoptedStyleSheets=[...doc.adoptedStyleSheets,sheet];Object.assign(binding,{group,anchor,overlay,field,input,sheet});
+    const options={signal:controller.signal},update=()=>{if(current())syncPdfZoomInput(tab);};
+    input.addEventListener('input',()=>{binding.editing=true;},options);
+    input.addEventListener('change',()=>applyPdfZoomInput(tab),options);
+    input.addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();applyPdfZoomInput(tab);}},options);
+    input.addEventListener('blur',()=>{binding.editing=false;syncPdfZoomInput(tab,true);},options);
+    for(const event of ['pointerenter','pointerleave','focusin','focusout'])overlay.addEventListener(event,revealPreviewControls,options);
+    for(const event of ['scalechanging','pagesinit','pagesdestroy'])app.eventBus.on(event,update,options);
+    doc.defaultView.addEventListener('pagehide',()=>{if(tab.pdfZoomBinding===binding)releasePdfZoom(tab);},{once:true,...options});
+    syncPreviewChrome(tab);update();
+  }).catch(()=>{if(current())releasePdfZoom(tab);});
+}
+function placePdfZoomControls(tab,expanded){
+  const binding=tab.pdfZoomBinding;if(!binding?.group)return;
+  const parent=expanded?binding.overlay:binding.anchor.parentNode;
+  if(binding.group.parentNode!==parent){if(expanded)parent.append(binding.group);else parent.insertBefore(binding.group,binding.anchor.nextSibling);}
+}
+function pdfZoomInteracting(){
+  const binding=state.tabs.find(tab=>tab.id===state.activeTab)?.pdfZoomBinding;
+  return Boolean(binding?.overlay?.matches(':hover,:focus-within'));
+}
+function syncPdfZoomVisibility(){
+  const binding=state.tabs.find(tab=>tab.id===state.activeTab)?.pdfZoomBinding;
+  binding?.doc.documentElement.toggleAttribute('data-fbrowse-controls-visible',$('viewer').hasAttribute('data-controls-visible'));
+}
 function previewChromeKind(tab){
   try{
     const url=new URL(tab.frame.contentWindow.location.href);if(url.origin!==location.origin)return null;
@@ -1258,12 +1332,64 @@ function previewChromeKind(tab){
     if(state.pdfjs&&tab.entry.category==='pdf'&&url.pathname==='/_pdfjs/web/viewer.html')return 'pdf';
   }catch{}return null;
 }
+const PREVIEW_EXPAND_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M8 4H4v4m12-4h4v4M4 16v4h4m12-4v4h-4"/><path d="m8 8 3 3m5-3-3 3m-5 5 3-3m5 3-3-3"/></svg>';
+const PREVIEW_FULLSCREEN_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></svg>';
+function createPreviewActions(tab){
+  const actions=make('div','preview-view-actions');actions.setAttribute('role','group');actions.setAttribute('aria-label','Preview view controls');
+  const expand=make('button'),fullscreen=make('button');expand.id='expandPreview';fullscreen.id='fullscreenPreview';
+  for(const button of [expand,fullscreen])button.type='button';
+  expand.innerHTML=PREVIEW_EXPAND_ICON;fullscreen.innerHTML=PREVIEW_FULLSCREEN_ICON;
+  expand.title='Expand preview · Stay in Orca · Esc to return';
+  expand.onclick=()=>{if(!state.tabs.includes(tab))return;tab.frame.focus({preventScroll:true});activateTab(tab.id,false,false);setPreviewExpanded(!state.previewExpanded);};
+  fullscreen.onclick=()=>{if(!state.tabs.includes(tab))return;activateTab(tab.id,false,false);toggleBrowserFullscreen(fullscreen);};
+  actions.append(expand,fullscreen);tab.previewActions={actions,expand,fullscreen};tab.slot.prepend(actions);syncPreviewActionState();
+}
+function syncPreviewActionState(){
+  const active=document.fullscreenElement===$('viewer'),label=active?'Exit Full Screen':'Full Screen';
+  for(const controls of [{expand:$('expandPreview'),fullscreen:$('fullscreenPreview')},...state.tabs.map(tab=>tab.previewActions).filter(Boolean)]){
+    controls.expand.setAttribute('aria-label',state.previewExpanded?'Restore View':'Expand Preview');controls.expand.setAttribute('aria-pressed',String(state.previewExpanded));
+    controls.fullscreen.setAttribute('aria-pressed',String(active));controls.fullscreen.setAttribute('aria-label',label);controls.fullscreen.title=label+' · Esc to return';controls.fullscreen.disabled=fullscreenBusy;
+  }
+}
+function placePreviewActions(tab,kind){
+  const controls=tab.previewActions;if(!controls)return;
+  const doc=tab.frame.contentDocument,host=kind==='pdf'?doc.getElementById('toolbarViewerRight'):doc.getElementById('previewHeader');if(!host)return;
+  if(controls.actions.parentNode===host)return;
+  controls.geometry?.disconnect();
+  if(controls.doc&&controls.sheet)controls.doc.adoptedStyleSheets=controls.doc.adoptedStyleSheets.filter(sheet=>sheet!==controls.sheet);
+  const sheet=new doc.defaultView.CSSStyleSheet();
+  sheet.replaceSync(`.preview-view-actions{display:inline-flex;align-items:center;gap:2px;flex:none;margin-inline-start:6px;padding-inline-start:6px;border-inline-start:1px solid var(--line,var(--toolbar-border-color))}
+.preview-view-actions button{display:grid;place-items:center;box-sizing:border-box;width:28px;height:28px;margin:0;padding:0;border:1px solid transparent;border-radius:4px;background:transparent;color:var(--muted,var(--toolbar-icon-bg-color));cursor:pointer}
+.preview-view-actions button:hover{background:var(--soft,var(--button-hover-color));color:var(--text,var(--main-color))}
+.preview-view-actions button:focus-visible{outline:2px solid var(--accent,#0a84ff);outline-offset:-2px}.preview-view-actions button:disabled{opacity:.45;cursor:default}.preview-view-actions svg{width:16px;height:16px}
+#toolbarViewerRight>.preview-view-actions{height:28px}#toolbarViewer #toolbarViewerLeft{margin-inline-start:0}
+#mainContainer{min-width:0}#toolbarContainer{height:auto}#toolbarViewer{height:auto;min-height:28px;flex-wrap:wrap;gap:2px 4px}#toolbarViewer>.toolbarHorizontalGroup{height:28px}#toolbarViewer #toolbarViewerRight{height:auto;max-width:100%;margin-inline-start:auto;flex-wrap:wrap;justify-content:flex-end;row-gap:2px}
+html[data-fbrowse-expanded] .preview-view-actions{display:none!important}`);
+  // Only our text shell and the pinned PDF.js viewer receive these controls.
+  doc.adoptedStyleSheets=[...doc.adoptedStyleSheets,sheet];controls.doc=doc;controls.sheet=sheet;
+  host.append(controls.actions);
+  if(kind==='pdf'){
+    // Let a narrow PDF toolbar wrap without covering the page or losing the buttons.
+    const offset=sheet.insertRule('#viewerContainer:not(.pdfPresentationMode){inset-block-start:32px}',sheet.cssRules.length),rule=sheet.cssRules[offset];
+    const toolbar=doc.getElementById('toolbarContainer');
+    controls.geometry=new doc.defaultView.ResizeObserver(()=>{const height=Math.ceil(toolbar.getBoundingClientRect().height);if(height)rule.style.setProperty('inset-block-start',height+'px');});
+    controls.geometry.observe(toolbar);
+  }
+}
+function resetPreviewActions(tab){
+  const controls=tab.previewActions;if(!controls)return;
+  controls.geometry?.disconnect();controls.geometry=null;
+  if(controls.doc&&controls.sheet)controls.doc.adoptedStyleSheets=controls.doc.adoptedStyleSheets.filter(sheet=>sheet!==controls.sheet);
+  controls.doc=null;controls.sheet=null;tab.slot.prepend(controls.actions);
+}
 function syncPreviewChrome(tab){
   const kind=previewChromeKind(tab);if(!kind)return;
+  placePreviewActions(tab,kind);
   try{
     const doc=tab.frame.contentDocument,expanded=state.previewExpanded&&state.viewerMode==='file'&&state.activeTab===tab.id;
     if(tab.previewPointerDocument!==doc){tab.previewPointerDocument=doc;for(const type of ['pointermove','pointerdown'])doc.defaultView.addEventListener(type,()=>{if(state.activeTab===tab.id)revealPreviewControls();},{passive:true});}
     if(kind==='text'){doc.documentElement.toggleAttribute('data-fbrowse-expanded',expanded);return;}
+    doc.documentElement.toggleAttribute('data-fbrowse-expanded',expanded);placePdfZoomControls(tab,expanded);syncPdfZoomVisibility();
     // PDF.js disallows inline styles. Its own document realm can adopt an app-owned
     // constructed sheet without changing the viewer's CSP or any vendor asset.
     if(tab.previewChrome?.doc!==doc){
@@ -1281,8 +1407,8 @@ window.fbrowseSyncPreviewChrome=source=>{const tab=state.tabs.find(tab=>tab.fram
 let expandedLayout=null;
 let previewControlsTimer=0;
 function revealPreviewControls(){
-  if(!state.previewExpanded)return;clearTimeout(previewControlsTimer);$('viewer').setAttribute('data-controls-visible','');
-  previewControlsTimer=setTimeout(()=>{previewControlsTimer=0;if(![$('exitExpanded'),$('expandedFullscreen')].some(node=>node.matches(':hover,:focus-visible')))$('viewer').removeAttribute('data-controls-visible');},1800);
+  if(!state.previewExpanded)return;clearTimeout(previewControlsTimer);$('viewer').setAttribute('data-controls-visible','');syncPdfZoomVisibility();
+  previewControlsTimer=setTimeout(()=>{previewControlsTimer=0;if(![$('exitExpanded'),$('expandedFullscreen')].some(node=>node.matches(':hover,:focus-visible'))&&!pdfZoomInteracting()){$('viewer').removeAttribute('data-controls-visible');syncPdfZoomVisibility();}},1800);
 }
 for(const type of ['pointermove','pointerdown'])$('viewer').addEventListener(type,revealPreviewControls,{passive:true});
 for(const id of ['exitExpanded','expandedFullscreen'])for(const type of ['pointerenter','pointerleave','focusin','focusout'])$(id).addEventListener(type,revealPreviewControls);
@@ -1291,7 +1417,7 @@ function setPreviewExpanded(expanded){
   if(expanded&&state.viewerMode==='file'){
     const tab=focusedTab();if(!tab)return;expandedLayout={activeTab:state.activeTab,active:[...state.groups.values()].map(group=>[group.id,group.active])};activateTab(tab.id,false,false);
   }
-  state.previewExpanded=expanded;layoutDirty=true;$('viewer').classList.toggle('is-expanded',expanded);$('expandPreview').textContent=expanded?'↙':'⛶';$('expandPreview').setAttribute('aria-label',expanded?'Restore View':'Expand Preview');$('expandPreview').setAttribute('aria-pressed',String(expanded));$('exitExpanded').hidden=!expanded;$('expandedFullscreen').hidden=!expanded;$('fullscreenNotice').hidden=true;
+  state.previewExpanded=expanded;layoutDirty=true;$('viewer').classList.toggle('is-expanded',expanded);syncPreviewActionState();$('exitExpanded').hidden=!expanded;$('expandedFullscreen').hidden=!expanded;$('fullscreenNotice').hidden=true;
   if(!expanded&&expandedLayout){const saved=expandedLayout;expandedLayout=null;for(const [id,active]of saved.active){const group=state.groups.get(id);if(group&&state.tabs.some(tab=>tab.id===active&&tab.group===id))group.active=active;}if(state.tabs.some(tab=>tab.id===saved.activeTab))activateTab(saved.activeTab,false,false);}
   renderWorkspace();if(expanded)revealPreviewControls();else{clearTimeout(previewControlsTimer);$('viewer').removeAttribute('data-controls-visible');}
 }
@@ -1306,16 +1432,16 @@ function syncBrowserFullscreen(){
   }
   if(!document.fullscreenElement&&session?.entered){browserFullscreenSession=null;setPreviewExpanded(session.expanded);if(session.trigger?.isConnected)session.trigger.focus({preventScroll:true});}
   const label=active?'Exit Full Screen':'Full Screen';
-  for(const id of ['fullscreenPreview','expandedFullscreen']){$(id).setAttribute('aria-pressed',String(active));$(id).setAttribute('aria-label',label);$(id).title=label+' · Esc to return';$(id).disabled=fullscreenBusy;}
+  syncPreviewActionState();$('expandedFullscreen').setAttribute('aria-pressed',String(active));$('expandedFullscreen').setAttribute('aria-label',label);$('expandedFullscreen').title=label+' · Esc to return';$('expandedFullscreen').disabled=fullscreenBusy;
   $('expandedFullscreen').textContent=label;
 }
-async function toggleBrowserFullscreen(){
+async function toggleBrowserFullscreen(trigger){
   if(fullscreenBusy)return;fullscreenBusy=true;$('fullscreenNotice').hidden=true;
   try{
     if(document.fullscreenElement){syncBrowserFullscreen();await document.exitFullscreen();}
     else{
       if(!document.fullscreenEnabled||typeof $('viewer').requestFullscreen!=='function')throw Error('Fullscreen unavailable');
-      browserFullscreenSession={expanded:state.previewExpanded,trigger:document.activeElement,entered:false};syncBrowserFullscreen();
+      browserFullscreenSession={expanded:state.previewExpanded,trigger:trigger?.nodeType===1?trigger:document.activeElement,entered:false};syncBrowserFullscreen();
       await $('viewer').requestFullscreen({navigationUI:'hide'});syncBrowserFullscreen();
       if(browserFullscreenSession&&!browserFullscreenSession.entered)browserFullscreenSession=null;
     }
@@ -1328,7 +1454,7 @@ function closeExpandedPreview(){
   if(browserFullscreenSession&&document.fullscreenElement){browserFullscreenSession.expanded=false;document.exitFullscreen().catch(fullscreenFailure);return;}
   setPreviewExpanded(false);document.querySelector('.file-tab[data-tab="'+state.activeTab+'"] .tab-activate')?.focus({preventScroll:true});
 }
-$('exitExpanded').onclick=closeExpandedPreview;$('expandPreview').onclick=()=>setPreviewExpanded(!state.previewExpanded);
+$('expandPreview').innerHTML=PREVIEW_EXPAND_ICON;$('exitExpanded').onclick=closeExpandedPreview;$('expandPreview').onclick=()=>setPreviewExpanded(!state.previewExpanded);
 // PDF viewers and nested HTML can focus their iframe without sending editor messages.
 window.addEventListener('blur',()=>setTimeout(()=>{const tab=state.tabs.find(tab=>tab.frame===document.activeElement);if(tab)focusTab(tab);},0));
 function handlePreviewEscape(event){
@@ -1345,8 +1471,8 @@ function select(entry,keepDiff=false,initialTab,placement){
   if(placement&&!state.groups.has(placement.group))return;
   if(!keepDiff){state.diffController?.abort();state.diffGeneration++;state.diff=null;}
   const id='file-tab-'+(++state.nextTab),slot=make('section','workspace-slot'),frame=document.createElement('iframe');slot.id='slot-'+id;slot.setAttribute('role','tabpanel');frame.id=state.tabs.length?'preview-'+state.nextTab:'preview';frame.dataset.tab=id;frame.title=rootLabel(entry.root_id)+' · '+entry.path+' preview';slot.append(frame);$('workspace').append(slot);
-  const tab={id,entry:{...entry},group:placement?.group||state.activeGroup,slot,frame,editor:null};state.tabs.push(tab);layoutDirty=true;
-  frame.addEventListener('focus',()=>focusTab(tab));frame.addEventListener('load',()=>{syncPreviewChrome(tab);try{const win=frame.contentWindow;win.addEventListener('keydown',handlePreviewEscape,true);win.addEventListener('focus',()=>focusTab(tab));win.document.addEventListener('pointerdown',()=>{focusTab(tab);queueMicrotask(()=>focusTab(tab));},true);if(initialTab==='source')win.document.querySelector('#editor')?.focus({preventScroll:true});}catch{}});
+  const tab={id,entry:{...entry},group:placement?.group||state.activeGroup,slot,frame,editor:null};state.tabs.push(tab);createPreviewActions(tab);layoutDirty=true;
+  frame.addEventListener('focus',()=>focusTab(tab));frame.addEventListener('load',()=>{bindPdfZoom(tab);syncPreviewChrome(tab);try{const win=frame.contentWindow;win.addEventListener('keydown',handlePreviewEscape,true);win.addEventListener('focus',()=>focusTab(tab));win.document.addEventListener('pointerdown',()=>{focusTab(tab);queueMicrotask(()=>focusTab(tab));},true);if(initialTab==='source')win.document.querySelector('#editor')?.focus({preventScroll:true});}catch{}});
   loadTab(tab,initialTab);if(placement?.activate!==false)activateTab(id);else renderWorkspace();document.title='fbrowse';return tab;
 }
 // File creation captures its root and parent before the network request.
@@ -1614,7 +1740,7 @@ async function retargetFsTabs(target,data,frozen){
   }
   const expanded=new Set();for(const key of state.expanded){const [root,path]=JSON.parse(key);expanded.add(root===target.root&&(path===target.path||path.startsWith(target.path+'/'))?nodeKey(root,data.path+path.slice(target.path.length)):key);}state.expanded=expanded;
   if(state.diff?.root===target.root&&affectedPath(target.root,state.diff.path,target)){state.diffController?.abort();state.diffGeneration++;state.diff=null;$('viewerTabs').hidden=true;}
-  const active=state.tabs.find(tab=>tab.id===state.activeTab);if(active&&frozen.some(item=>item.tab===active)){state.selected=active.entry;state.editor=active.editor;$('open').href=previewURL(active.entry);$('viewer').setAttribute('aria-label',rootLabel(active.entry.root_id)+' · '+active.entry.path+' preview');if(state.root===active.entry.root_id)history.replaceState(null,'','/?'+new URLSearchParams({root:active.entry.root_id,path:active.entry.path}));}
+  const active=state.tabs.find(tab=>tab.id===state.activeTab);if(active&&frozen.some(item=>item.tab===active)){state.selected=active.entry;state.editor=active.editor;$('viewer').setAttribute('aria-label',rootLabel(active.entry.root_id)+' · '+active.entry.path+' preview');if(state.root===active.entry.root_id)history.replaceState(null,'','/?'+new URLSearchParams({root:active.entry.root_id,path:active.entry.path}));}
   renderWorkspace();
 }
 // Use existing descriptor-anchored actions sequentially, with identities pinned

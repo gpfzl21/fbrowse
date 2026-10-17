@@ -1,3 +1,4 @@
+const { previewControl } = require('./workspace-test-helper.cjs');
 // Exercise the actual browser Fullscreen API, alongside in-app expansion.
 const fs = require('node:fs/promises');
 const assert = require('node:assert/strict');
@@ -24,7 +25,7 @@ fixture(async ({ ready, page, open, tab }) => {
     assert.equal(await fs.readFile(ready.project + '/sample.py', 'utf8'), original);
   };
   const enter = async selector => {
-    await page.locator(selector).click();
+    await (selector === '#fullscreenPreview' ? await previewControl(page, 'fullscreenPreview') : page.locator(selector)).click();
     await page.waitForFunction(() => document.fullscreenElement === document.querySelector('#viewer') && state.previewExpanded);
     assert.equal(await page.locator('#expandedFullscreen').getAttribute('aria-pressed'), 'true');
     assert.equal(await page.locator('.workspace-slot.is-visible').count(), 1);
@@ -41,7 +42,7 @@ fixture(async ({ ready, page, open, tab }) => {
   await editor.evaluate(node => node.setSelectionRange(2, 5));await unchanged();
 
   // An external browser exit preserves the preceding in-app expanded mode.
-  await page.locator('#expandPreview').click();
+  await (await previewControl(page, 'expandPreview')).click();
   assert.equal(await page.evaluate(() => document.fullscreenElement), null);
   await enter('#expandedFullscreen');await page.evaluate(() => document.exitFullscreen());await exited(true);
   assert.equal(await page.locator('#expandedFullscreen').isVisible(), true);
@@ -49,7 +50,7 @@ fixture(async ({ ready, page, open, tab }) => {
 
   // Explicit fullscreen toggle restores the split; X exits both modes.
   await enter('#fullscreenPreview');await page.locator('#expandedFullscreen').click();await exited(false);await unchanged();
-  await page.locator('#expandPreview').click();await enter('#expandedFullscreen');
+  await (await previewControl(page, 'expandPreview')).click();await enter('#expandedFullscreen');
   await page.locator('#exitExpanded').click();await exited(false);await unchanged();
 
   // Native fullscreen also keeps an HTML document and its nested frame intact.
@@ -65,11 +66,11 @@ fixture(async ({ ready, page, open, tab }) => {
   before = await model();
   await page.evaluate(() => { window.realFullscreen = Element.prototype.requestFullscreen;
     Element.prototype.requestFullscreen = () => Promise.reject(new TypeError('Permissions policy denied')); });
-  await page.locator('#fullscreenPreview').click();await page.locator('#fullscreenNotice').waitFor();
+  await (await previewControl(page, 'fullscreenPreview')).click();await page.locator('#fullscreenNotice').waitFor();
   assert.equal(await page.evaluate(() => document.fullscreenElement), null);
   assert.equal(await page.locator('#viewer').evaluate(n => n.classList.contains('is-expanded')), false);
   await unchanged();
-  await page.locator('#expandPreview').click();await page.locator('#expandedFullscreen').click();
+  await (await previewControl(page, 'expandPreview')).click();await page.locator('#expandedFullscreen').click();
   await page.locator('#fullscreenNotice').waitFor();
   assert.equal(await page.locator('#viewer').evaluate(n => n.classList.contains('is-expanded')), true);
   assert.equal(await page.locator('#expandedFullscreen').isEnabled(), true);
@@ -88,7 +89,7 @@ fixture(async ({ ready, page, open, tab }) => {
   await page.goto(ready.url+'?root=project&path=presentation.html');
   const slideShell=page.frameLocator('.workspace-slot.is-visible iframe');await slideShell.locator('#slideMode').click();
   const slide=slideShell.frameLocator('#htmlPreview').locator('svg');await slide.waitFor();
-  await page.locator('#expandPreview').click();
+  await (await previewControl(page, 'expandPreview')).click();
   assert.equal(await slideShell.locator('#notice').isVisible(), false);
   await idleControls(slide);await slide.click();await page.keyboard.press('ArrowRight');
   assert.equal(await slide.locator('text').textContent(), 'Slide two', 'pointer relay leaves slide navigation intact');
@@ -102,7 +103,7 @@ fixture(async ({ ready, page, open, tab }) => {
   // Real PDF pointer movement reaches the app through its viewer frame in both modes.
   assert(ready.pdfjs,'real PDF.js required');const pdf=await open('sample.pdf');
   await pdf.locator('#viewer .page').first().waitFor({timeout:20000});
-  await page.locator('#expandPreview').click();await idleControls(pdf.locator('#viewerContainer'));
+  await (await previewControl(page, 'expandPreview')).click();await idleControls(pdf.locator('#viewerContainer'));
   await page.locator('#expandedFullscreen').hover();await page.waitForTimeout(2100);
   assert.equal(await page.locator('#expandedFullscreen').evaluate(node => getComputedStyle(node).opacity), '1', 'hovered controls stay visible');
   await page.locator('#expandedFullscreen').click();

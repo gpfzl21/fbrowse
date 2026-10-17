@@ -56,8 +56,8 @@ const info = async url => {
 
 test('help/version and validation work without external programs or browser features', async t => {
   const f = await fixture(t);
-  assert.equal((await f.run(['version'])).stdout.trim(), '0.17.0');
-  assert.equal((await f.run(['--version'])).stdout.trim(), '0.17.0');
+  assert.equal((await f.run(['version'])).stdout.trim(), '0.18.0');
+  assert.equal((await f.run(['--version'])).stdout.trim(), '0.18.0');
   assert.match((await f.run(['help'])).stdout, /Automatic browser opening is disabled/);
   assert.match((await f.run(['--help'])).stdout, /roots/);
   for (const args of [['--open'], ['list', 'extra'], ['roots', 'add'], ['url', '--port', '0'], ['version', 'extra']]) {

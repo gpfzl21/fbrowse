@@ -1,3 +1,4 @@
+const { previewControl } = require('./workspace-test-helper.cjs');
 // Optional browser integration: FBROWSE_PLAYWRIGHT_MODULE=/path/to/playwright node test/browser.test.cjs
 // Playwright is optional test tooling; the runtime server uses Node only.
 const {chromium}=require(process.env.FBROWSE_PLAYWRIGHT_MODULE||process.argv[2]||'playwright');
@@ -171,14 +172,14 @@ const assert=require('node:assert/strict');
     const divider=await page.locator('#sidebarResize').boundingBox();
     await page.mouse.move(divider.x+5,divider.y+100);await page.mouse.down();await page.mouse.move(divider.x+130,divider.y+100);await page.mouse.up();
     assert.ok(await page.locator('#fileSidebar').evaluate(n=>n.getBoundingClientRect().width)>before+60);
-    await page.locator('#expandPreview').click();await htmlPreview.locator('h1').click();await page.keyboard.press('Escape');
+    await (await previewControl(page, 'expandPreview')).click();await htmlPreview.locator('h1').click();await page.keyboard.press('Escape');
     assert.equal(await page.locator('#viewer').evaluate(n=>n.classList.contains('is-expanded')),false);
     assert.equal(await page.evaluate(()=>document.fullscreenElement),null);
     if(ready.pdfjs){
       await page.locator('button.row[data-path="sample.pdf"]').click();
       await preview.locator('#viewer .page').first().waitFor({timeout:20000});
       assert.match(await page.locator('.workspace-slot.is-visible iframe').getAttribute('src'),/#zoom=page-width/);
-      await page.locator('#expandPreview').click();await preview.locator('#viewerContainer').click();await page.keyboard.press('Escape');
+      await (await previewControl(page, 'expandPreview')).click();await preview.locator('#viewerContainer').click();await page.keyboard.press('Escape');
       assert.equal(await page.locator('#viewer').evaluate(n=>n.classList.contains('is-expanded')),false);
     }else{
       await page.locator('button.row[data-path="sample.pdf"]').click();

@@ -104,4 +104,10 @@ async function expandTab(page, file, { root = 'project', keyboard = false } = {}
   else await label.click({ button: 'right' });
   await page.getByRole('menuitem', { name: /Expand Current File/ }).click();
 }
-module.exports = { fixture, gate, fileTab, groupRect, groupPoint, dragTab, expandTab };
+async function previewControl(page, id) {
+  const tabId = await page.evaluate(() => state.activeTab);
+  const fallback = page.locator('#slot-' + tabId + ' > .preview-view-actions #' + id);
+  if (await fallback.count()) return fallback;
+  return page.frameLocator('iframe[data-tab="' + tabId + '"]').locator('#' + id);
+}
+module.exports = { previewControl, fixture, gate, fileTab, groupRect, groupPoint, dragTab, expandTab };

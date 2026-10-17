@@ -41,7 +41,7 @@ cd fbrowse
 npm ci
 mkdir -p dist
 npm pack --pack-destination dist
-npm install --global ./dist/wlalsrne-fbrowse-0.17.0.tgz
+npm install --global ./dist/wlalsrne-fbrowse-0.18.0.tgz
 ```
 
 로컬 개발용 이름 `@fbrowse/cli`로 설치한 이전 버전을 사용 중이면 같은 prefix에서 이전 패키지를
@@ -139,7 +139,12 @@ PDF.js의 페이지 너비 보기와 큰 PDF의 HTTP Range 스트리밍, HTML의
 
 자동 줄바꿈은 기본 켜짐입니다. 접힌 긴 줄에도 원래 논리 줄번호를 유지하며, 30만 자를 넘는
 텍스트는 문법 색상·Markdown 서식 없이 원문으로 표시하고 2만 논리 줄을 넘으면 줄번호를 생략합니다.
-세로 분할선으로 목록 너비를 조절하고 크게 보기는 웹 페이지 안에서만 동작합니다. Escape로 복귀합니다.
+세로 분할선으로 목록 너비를 조절합니다. **Expand Preview**와 **Full Screen** 버튼은 왼쪽 목록 대신 각 문서 탭 바로 아래의 미리보기 도구줄 오른쪽에 있습니다. PDF·HTML·Markdown·코드에서는 기존 도구줄 안에 표시하며 별도 도구 행을 추가하지 않습니다. 크게 보기는 웹 페이지 안에서만 동작하며 Escape로 복귀합니다. 미리보기를 새 브라우저 탭으로 여는 버튼은 제공하지 않습니다.
+PDF는 일반 보기와 **Expand Preview / Full Screen**에서 같은 기본 **− / +** 버튼과 배율 메뉴를 사용합니다.
+메뉴에서 **Automatic Zoom**, **Actual Size**, **Page Fit**, **Page Width**, 50%·75%·100%·125%·150%·200%·300%·400%를 선택할 수 있습니다.
+두 모드 모두 배율 필드에 숫자(소수점 포함)를 직접 입력한 뒤 Enter를 누르거나 입력란을 벗어나 적용합니다. 필드 오른쪽 화살표를 누르면 프리셋·맞춤 메뉴가 열립니다. 방향키로도 1%씩 조절할 수 있습니다.
+Ctrl+휠·맞춤 보기·창 크기 변경 결과도 입력란과 메뉴에 반영됩니다. 확대 보기에서는 조절기가 읽는 동안 자동으로 숨고 마우스를 움직이면 다시 나타납니다.
+조절기에 포커스가 있는 동안은 계속 표시되며, 일반 보기로 돌아가도 배율·메뉴·입력란·PDF 문서는 그대로 유지됩니다.
 
 ### 파일 탭·두 창 비교·미리보기 너비 (0.6.0)
 
@@ -511,13 +516,13 @@ Playwright와 Chromium은 선택적 개발 도구이며 앱 실행에는 필요�
 패키지는 npm 계정 `wlalsrne`의 `@wlalsrne/fbrowse` 이름으로 공개 배포합니다.
 배포 전에 변경 내용을 검증하고 새 버전을 지정하세요. 이미 게시한 버전은 덮어쓸 수 없습니다.
 `package.json`과 `package-lock.json`의 버전을 함께 갱신하고 CLI·서버 버전도 맞춥니다.
-다음은 0.17.0 배포 명령의 예입니다.
+다음은 0.18.0 배포 명령의 예입니다.
 
 ```bash
 npm whoami
 npm test
 npm pack --pack-destination dist
-npm publish ./dist/wlalsrne-fbrowse-0.17.0.tgz --access public
+npm publish ./dist/wlalsrne-fbrowse-0.18.0.tgz --access public
 ```
 
 `npm pack`으로 만든 앱 코드·문서만 게시합니다. 프로젝트 데이터, XDG 설정·상태·캐시와

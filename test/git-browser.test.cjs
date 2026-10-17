@@ -92,7 +92,7 @@ const deferred=()=>{let resolve;const promise=new Promise(done=>resolve=done);re
     assert.match(await change('staged','changes/new-name.txt').textContent(),/old-name.txt → changes\/new-name.txt/);
     assert.equal(await change('staged','changes/deleted.txt').getAttribute('data-git-status'),'D');assert.match(await change('staged','changes/deleted.txt').getAttribute('title'),/Deleted/);
     await change('staged','changes/deleted.txt').click();await page.locator('#diffContent').filter({hasText:'deleted file'}).waitFor();
-    await page.waitForFunction(()=>document.querySelector('#showFile').title.includes('deleted'));assert.ok(await page.locator('#showFile').isDisabled());assert.ok(await page.locator('#open').isHidden());
+    await page.waitForFunction(()=>document.querySelector('#showFile').title.includes('deleted'));assert.ok(await page.locator('#showFile').isDisabled());assert.equal(await page.locator('#open').count(),0);
     await change('unstaged','changes/binary.bin').click();await page.locator('#diffMessage').filter({hasText:'Binary'}).waitFor();
     await change('untracked','untracked <& 한글.txt').click();await page.locator('#diffContent').filter({hasText:'window.DIFF_PWNED=3'}).waitFor();
     assert.equal(await page.locator('#diffContent script').count(),0);assert.equal(await page.evaluate(()=>window.DIFF_PWNED),undefined);

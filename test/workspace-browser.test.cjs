@@ -1,3 +1,4 @@
+const { previewControl } = require('./workspace-test-helper.cjs');
 // Independent physical Chromium interactions; mutations use disposable fixture roots only.
 const { fixture, dragTab, groupRect, groupPoint, expandTab } = require('./workspace-test-helper.cjs');
 const assert = require('node:assert/strict');
@@ -258,7 +259,7 @@ const fs = require('node:fs/promises');
   await page.mouse.move(sb.x + 3, sb.y + 90); await page.mouse.down(); await page.mouse.move(sb.x + 100, sb.y + 90, { steps: 10 }); await page.mouse.up();
   assert(await page.locator('#fileSidebar').evaluate(n => n.offsetWidth) > oldWidth + 50);
   for (const file of ['page.html', 'sample.pdf']) {
-    await tab(file).locator('.tab-activate').click(); await page.locator('#expandPreview').click();
+    await tab(file).locator('.tab-activate').click(); await (await previewControl(page, 'expandPreview')).click();
     if (file.endsWith('html')) await html.frameLocator('#htmlPreview').locator('h1').click(); else await pdf.locator('#viewerContainer').click();
     await page.keyboard.press('Escape'); assert.equal(await page.locator('#viewer').evaluate(n => n.classList.contains('is-expanded')), false);
   }
