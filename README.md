@@ -41,7 +41,7 @@ cd fbrowse
 npm ci
 mkdir -p dist
 npm pack --pack-destination dist
-npm install --global ./dist/wlalsrne-fbrowse-0.15.1.tgz
+npm install --global ./dist/wlalsrne-fbrowse-0.16.0.tgz
 ```
 
 로컬 개발용 이름 `@fbrowse/cli`로 설치한 이전 버전을 사용 중이면 같은 prefix에서 이전 패키지를
@@ -143,7 +143,10 @@ PDF.js의 페이지 너비 보기와 큰 PDF의 HTTP Range 스트리밍, HTML의
 
 ### 파일 탭·두 창 비교·미리보기 너비 (0.6.0)
 
-파일을 열면 루트 이름과 상대 경로를 표시한 탭이 생깁니다. 같은 루트·경로를 다시 선택하면 기존 탭을
+파일을 열면 파일명만 표시한 탭이 생깁니다. 0.16.0부터 같은 이름이 여러 개 열려 있을 때만 구분에 필요한
+짧은 폴더 경로를 작게 표시합니다. 폴더 경로도 겹치면 루트 이름을 더하고, 루트 이름까지 같으면 ID로
+구분합니다. 전체 경로는 탭에 마우스를 올리면 확인할 수 있으며 스크린 리더의 탭 이름에도 유지됩니다.
+탭을 닫거나 파일·폴더를 이동·이름 변경하면 보조 경로도 갱신됩니다. 같은 루트·경로를 다시 선택하면 기존 탭을
 활성화하며, 다른 루트의 같은 이름은 별도 탭으로 구분합니다. 다른 파일·루트를 고르거나 Git diff를
 열어도 기존 편집기는 탭에 남습니다. 탭의 **×**로 닫고 필요 없는 탭은 닫아 메모리를 돌려주세요.
 열린 탭마다 문서와 편집기를 메모리에 유지하므로 큰 파일을 많이 열면 메모리 사용량이 늘어납니다.
@@ -504,13 +507,13 @@ Playwright와 Chromium은 선택적 개발 도구이며 앱 실행에는 필요�
 패키지는 npm 계정 `wlalsrne`의 `@wlalsrne/fbrowse` 이름으로 공개 배포합니다.
 배포 전에 변경 내용을 검증하고 새 버전을 지정하세요. 이미 게시한 버전은 덮어쓸 수 없습니다.
 `package.json`과 `package-lock.json`의 버전을 함께 갱신하고 CLI·서버 버전도 맞춥니다.
-다음은 0.15.1 배포 명령의 예입니다.
+다음은 0.16.0 배포 명령의 예입니다.
 
 ```bash
 npm whoami
 npm test
 npm pack --pack-destination dist
-npm publish ./dist/wlalsrne-fbrowse-0.15.1.tgz --access public
+npm publish ./dist/wlalsrne-fbrowse-0.16.0.tgz --access public
 ```
 
 `npm pack`으로 만든 앱 코드·문서만 게시합니다. 프로젝트 데이터, XDG 설정·상태·캐시와

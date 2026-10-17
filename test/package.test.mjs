@@ -50,7 +50,7 @@ test('packed npm app installs globally and runs without Python, Bash, tmux or fl
     assert.equal(await fs.readFile(collision, 'utf8'), 'unrelated command');
     await exec('npm', ['install', '--global', '--prefix', prefix, '--offline', '--ignore-scripts',
       '--no-audit', '--no-fund', '--cache', npmCache, archive], { cwd: temporary, timeout: 30_000 });
-    assert.match((await run('--version')).stdout, /0\.15\.1/);
+    assert.match((await run('--version')).stdout, /0\.16\.0/);
     await run('roots', 'add', 'external', external, '--name', '참고 자료');
     await run('--no-pdfjs');
     started = true;
