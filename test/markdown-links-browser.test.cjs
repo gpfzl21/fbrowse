@@ -1,0 +1,80 @@
+// Follow real Markdown links without replacing the workspace or losing drafts.
+const fs=require('node:fs/promises');
+const assert=require('node:assert/strict');
+const {fixture,dragTab,groupPoint,gate}=require('./workspace-test-helper.cjs');
+fixture(async({ready,page,browser,open,tab,frame,register})=>{
+  await fs.mkdir(ready.project+'/docs');
+  const markdown='# Links\n\n[문서](target.md#세부-항목)\n\n[같은 문서](target.md)\n\n[파일](../same.txt)\n\n[PDF](../sample.pdf)\n\n[이미지](../image.svg)\n\n[다른 루트](/roots/other/files/same.txt)\n\n[앱 경로](/?root=project&path=docs%2Ftarget.md)\n\n[공백 한글](한글%20%25.md)\n\n[웹](https://links.example.test/guide?q=hello#section)\n\n[누락](missing.md)\n\n[지연](late.md)\n\n[폴더](../nested/)\n';
+  await fs.writeFile(ready.project+'/docs/links.md',markdown);
+  await fs.writeFile(ready.project+'/docs/target.md','# Target\n\n'+('Some paragraph.\n\n').repeat(180)+'## 세부 항목\n\nDetails\n');
+  await fs.writeFile(ready.project+'/docs/한글 %.md','# Unicode filename\n');
+  await fs.writeFile(ready.project+'/docs/late.md','# Slow link\n');
+  await register('other',ready.results);await page.goto(ready.url+'?root=project&path=docs%2Flinks.md');
+  const source=await frame('docs/links.md');await source.locator('#markdown h1').waitFor();
+  await source.locator('#mode').click();await source.locator('#editor').fill(markdown+'\nUnsaved Markdown draft\n');await source.locator('#mode').click();
+  const code=await open('sample.py');await code.locator('#editor:not([readonly])').waitFor();
+  const original=await fs.readFile(ready.project+'/sample.py','utf8');
+  await code.locator('#editor').focus();await page.keyboard.press('Control+End');await page.keyboard.insertText('\n# retained draft\n');
+  const draft=await code.locator('#editor').inputValue();
+  await dragTab(page,'sample.py',groupPoint(page,'docs/links.md','right'));
+  await tab('docs/links.md').locator('.tab-activate').click();
+  const sourceId=await tab('docs/links.md').getAttribute('data-tab');
+  await page.evaluate(()=>{window.linkIdentity=state.tabs.map(tab=>({frame:tab.frame,doc:tab.frame.contentDocument}));window.openCalls=[];
+    const original=window.open;window.open=function(...args){openCalls.push({args,active:navigator.userActivation.isActive});return original.apply(window,args);};});
+  let dialogs=0;page.on('dialog',async dialog=>{dialogs++;await dialog.dismiss();});
+  const sourceTab=()=>tab('docs/links.md').locator('.tab-activate').click();
+  const count=()=>page.locator('.file-tab').count();
+  const intact=async()=>{
+    assert.equal(await page.evaluate(()=>linkIdentity.every(item=>item.frame.isConnected&&item.frame.contentDocument===item.doc)),true);
+    assert.equal(await code.locator('#editor').inputValue(),draft);
+    assert.equal(await source.locator('#editor').inputValue(),markdown+'\nUnsaved Markdown draft\n');
+    assert.equal(await fs.readFile(ready.project+'/sample.py','utf8'),original);
+    assert.equal(await fs.readFile(ready.project+'/docs/links.md','utf8'),markdown);
+    assert.equal(await page.locator('.workspace-slot.is-visible').count(),2);
+    assert.equal(dialogs,0,'opening a link never discards or confirms discarding retained drafts');
+  };
+  await source.getByRole('link',{name:'문서',exact:true}).click();
+  const target=await frame('docs/target.md');await target.locator('#markdown h2').waitFor();
+  const targetFrame=await (await page.locator('iframe[data-tab="'+await tab('docs/target.md').getAttribute('data-tab')+'"]').elementHandle()).contentFrame();
+  await targetFrame.waitForFunction(()=>document.querySelector('#markdown').scrollTop>0);
+  assert.equal(await count(),3);assert.equal(await tab('docs/target.md').evaluate(n=>n.closest('.pane-tabs').dataset.group),await tab('docs/links.md').evaluate(n=>n.closest('.pane-tabs').dataset.group));
+  await intact();await sourceTab();await source.getByRole('link',{name:'같은 문서',exact:true}).click();
+  await page.waitForFunction(()=>state.selected?.path==='docs/target.md');
+  assert.equal(await count(),3,'existing exact file tab is activated, not duplicated');
+
+  await sourceTab();await source.getByRole('link',{name:'파일',exact:true}).click({modifiers:['Control']});
+  await tab('same.txt').waitFor();assert.equal(await page.evaluate(()=>state.activeTab),sourceId,'Ctrl+click opens a background file tab');
+  await source.getByRole('link',{name:'공백 한글',exact:true}).click({button:'middle'});
+  await tab('docs/한글 %.md').waitFor();assert.equal(await page.evaluate(()=>state.activeTab),sourceId,'middle click preserves the source tab');
+  await source.getByRole('link',{name:'PDF',exact:true}).click();await tab('sample.pdf').waitFor();await intact();
+  await sourceTab();await source.getByRole('link',{name:'이미지',exact:true}).click();await tab('image.svg').waitFor();await intact();
+  await sourceTab();await source.getByRole('link',{name:'다른 루트',exact:true}).click();await tab('same.txt','other').waitFor();
+  const other=await frame('same.txt','other');await other.locator('#code').filter({hasText:'results'}).waitFor();await intact();
+  await sourceTab();const priorCount=await count();await source.getByRole('link',{name:'앱 경로',exact:true}).click();await page.waitForFunction(()=>state.selected?.path==='docs/target.md');assert.equal(await count(),priorCount);
+
+  await sourceTab();await page.context().route('https://links.example.test/**',route=>route.fulfill({contentType:'text/html',body:'<h1>External site</h1>'}));
+  const popupEvent=page.waitForEvent('popup');await source.getByRole('link',{name:'웹',exact:true}).click();const popup=await popupEvent;
+  await popup.waitForLoadState('domcontentloaded');assert.equal(popup.url(),'https://links.example.test/guide?q=hello#section');
+  assert.equal(await popup.evaluate(()=>opener===null),true);await popup.close();
+  assert.deepEqual(await page.evaluate(()=>openCalls),[{args:['https://links.example.test/guide?q=hello#section','_blank','noopener,noreferrer'],active:true}]);
+  assert.equal(await count(),priorCount);await intact();
+  await source.getByRole('link',{name:'누락',exact:true}).click();await source.locator('#notice').filter({hasText:'파일이 없습니다'}).waitFor();
+  assert.equal(await count(),priorCount);await intact();
+
+  // A slow response cannot steal focus from a later explicit tab selection.
+  const entered=gate(),release=gate();await page.route('**/api/entry?*',async route=>{
+    if(new URL(route.request().url()).searchParams.get('path')!=='docs/late.md')return route.continue();entered.release();await release.promise;await route.continue();
+  });
+  await source.getByRole('link',{name:'지연',exact:true}).click();await entered.promise;
+  await tab('sample.py').locator('.tab-activate').click();const codeId=await tab('sample.py').getAttribute('data-tab');release.release();
+  await tab('docs/late.md').waitFor();assert.equal(await page.evaluate(()=>state.activeTab),codeId);await page.unroute('**/api/entry?*');
+  await sourceTab();await source.getByRole('link',{name:'폴더',exact:true}).click();await page.locator('#entries [data-path="nested"][aria-expanded="true"]').waitFor();await intact();
+  assert.equal(await page.evaluate(()=>fbrowseOpenExternal(null,'https://links.example.test')),false);
+  await code.locator('#editor').focus();await page.keyboard.press('Control+z');assert.equal(await code.locator('#editor').inputValue(),original,'native undo survives all navigation');
+  const anchorContext=await browser.newContext(),anchored=await anchorContext.newPage();
+  try{
+    await anchored.goto(ready.url+'?root=project&path=docs%2Ftarget.md#'+encodeURIComponent('세부-항목'));
+    await anchored.waitForFunction(()=>document.querySelector('.workspace-slot.is-visible iframe')?.contentDocument?.querySelector('#markdown')?.scrollTop>0);
+  }finally{await anchorContext.close();}
+  console.log('PASS: internal file/Markdown/anchor/PDF/image/cross-root links retain tabs, groups, drafts and undo; background clicks, missing/slow paths; parent-owned external popup with user activation');
+}).catch(error=>{console.error(error);process.exitCode=1;});

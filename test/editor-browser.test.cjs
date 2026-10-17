@@ -45,7 +45,7 @@ const gate = () => { let release; const promise = new Promise(resolve => release
     page.setDefaultTimeout(10_000);
     const errors = []; page.on('pageerror', error => errors.push(error.message));
     const info = await (await page.request.get(new URL('/api/info', app.url).href)).json();
-    assert.equal(info.version, '0.9.1');
+    assert.equal(info.version, require('../package.json').version);
     const add = await page.request.post(new URL('/api/roots', app.url).href, {
       headers: { 'X-Fbrowse-Token': info.config_token, Origin: new URL(app.url).origin },
       data: { operation: 'add', id: 'other', name: 'Other root', path: other },

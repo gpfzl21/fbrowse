@@ -52,8 +52,8 @@ test('editor HTTP integration preserves disk bytes and durable file identities',
     await fs.writeFile(path.join(otherProject, 'notes.md'), '# Other project\n');
     app = await start(project);
 
-    await t.test('old text route remains compatible; version is 0.10.1', async () => {
-      assert.equal((await (await fetch(url('/api/info'))).json()).version, '0.10.1');
+    await t.test('old text route remains compatible; version is 0.10.2', async () => {
+      assert.equal((await (await fetch(url('/api/info'))).json()).version, '0.10.2');
       const response = await fetch(url('/api/text?path=plain.txt'));
       assert.equal(response.status, 200);
       assert.equal((await response.json()).text, originals['plain.txt'].toString());

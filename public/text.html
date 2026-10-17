@@ -52,7 +52,8 @@ configurePreviewWidth(/\.(md|markdown|mdown)$/i.test(path));
 $('previewWidth').onclick=()=>{previewWidth=previewWidth==='full'?'readable':'full';applyPreviewWidth();try{localStorage.setItem(previewWidthKey,previewWidth);}catch{}};
 const filePrefix='/roots/'+encodeURIComponent(root)+'/files/';
 let fileURL=filePrefix+path.split('/').map(encodeURIComponent).join('/');
-let data=null,rendered=false,sourceMode=false,lineStarts=[],lineNumberFrame=0,slideView=false,marpDocument=false;
+let data=null,rendered=false,sourceMode=false,lineStarts=[],lineNumberFrame=0,slideView=false,marpDocument=false,pendingMarkdownAnchor=null;
+const markdownLinks=new WeakMap();
 const slideMode=document.createElement('button');slideMode.id='slideMode';slideMode.textContent='슬라이드 보기';slideMode.hidden=true;slideMode.setAttribute('aria-pressed','false');$('previewWidth').before(slideMode);
 slideMode.onclick=()=>{slideView=!slideView;renderHTML();showMode();if(slideView)$('htmlPreview').focus();};
 window.addEventListener('blur',()=>{if(document.activeElement===$('htmlPreview'))notifyFocus();});
@@ -235,6 +236,7 @@ window.fbrowseEditor={root,get path(){return path;},session,get version(){return
     else if(data?.html){$('htmlPreview').focus();$('htmlPreview').contentWindow.focus();}
     else{$('markdown').tabIndex=-1;$('markdown').focus({preventScroll:true});}
   },
+  revealAnchor(fragment){pendingMarkdownAnchor=fragment;applyMarkdownAnchor();},
   setDiagnosticsActive(binding){
     if(!binding||binding.root!==root||binding.path!==path||binding.session!==session||typeof binding.active!=='boolean')return false;
     if(diagnosticsActive!==binding.active){diagnosticsActive=binding.active;scheduleDiagnostics();}return true;
@@ -292,10 +294,18 @@ async function save(){
 }
 function reload(){if(mutationLock)return;if(isDirty()&&!confirm('저장하지 않은 변경사항을 버리고 디스크에서 다시 불러올까요?'))return;abandoned=true;cancelDiagnostics();updateDirty();location.reload();}
 $('save').onclick=save;$('reload').onclick=reload;
-document.addEventListener('click',event=>{
-  const link=event.target.closest('a[href]');if(!link||link.target!=='_top'||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;
-  if(parent!==window){try{if(!parent.fbrowseConfirmNavigation(window)){event.preventDefault();}}catch{}}
-});
+function followMarkdownLink(event){
+  const link=event.target.closest?.('a[href]'),destination=link&&markdownLinks.get(link);
+  if(!destination||event.defaultPrevented||event.shiftKey||event.altKey||![0,1].includes(event.button))return;
+  try{
+    if(destination.kind==='file'&&parent!==window&&typeof parent.fbrowseOpenMarkdownFile==='function'){
+      event.preventDefault();parent.fbrowseOpenMarkdownFile(window,{...destination,background:event.button===1||event.ctrlKey||event.metaKey}).catch(error=>notice(error.message));
+    }else if(destination.kind==='web'&&event.button===0&&!event.ctrlKey&&!event.metaKey&&parent!==window&&typeof parent.fbrowseOpenExternal==='function'){
+      event.preventDefault();if(!parent.fbrowseOpenExternal(window,destination.href))notice('웹 링크를 열 수 없습니다. 링크를 다시 확인해 주세요.');
+    }
+  }catch(error){if(event.defaultPrevented)notice(error.message);}
+}
+document.addEventListener('click',followMarkdownLink);document.addEventListener('auxclick',followMarkdownLink);
 window.addEventListener('beforeunload',event=>{if(isDirty()&&parent===window){event.preventDefault();event.returnValue='';}});
 document.addEventListener('keydown',event=>{if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='s'){event.preventDefault();save();}});
 editor.addEventListener('keydown',event=>{
@@ -401,9 +411,15 @@ function renderMarkdown(mathReady){
       let targetRoot=root,relative;
       const match=target.pathname.match(/^\/roots\/([^/]+)\/files\/(.*)$/);
       if(match){targetRoot=decodeURIComponent(match[1]);relative=decodeURIComponent(match[2]);}
+      else if(['/', '/_preview'].includes(target.pathname)&&target.searchParams.has('path')){targetRoot=target.searchParams.get('root')||root;relative=target.searchParams.get('path');}
       else relative=decodeURIComponent(target.pathname.replace(/^\/files\//,'').replace(/^\//,''));
-      link.href='/?'+new URLSearchParams({root:targetRoot,path:relative});link.target='_top';
-    }else{link.target='_blank';link.rel='noopener noreferrer';}
+      relative=relative.replace(/\/+$/,'');
+      link.href='/?'+new URLSearchParams({root:targetRoot,path:relative})+target.hash;link.target='_blank';
+      markdownLinks.set(link,{kind:'file',root:targetRoot,path:relative,hash:target.hash});
+    }else if(['http:','https:'].includes(target.protocol)){
+      link.href=target.href;link.target='_blank';markdownLinks.set(link,{kind:'web',href:target.href});
+    }else link.target='_blank';
+    link.rel='noopener noreferrer';
   }
   for(const code of article.querySelectorAll('pre code')){
     const language=[...code.classList].find(c=>c.startsWith('language-'))?.slice(9);
@@ -417,6 +433,15 @@ function renderMarkdown(mathReady){
   }
   if(math&&fbrowseMath.render(article,math,katex))notice('일부 수식을 렌더링하지 못해 수식 원문으로 표시합니다.');
   rendered=true;
+}
+function applyMarkdownAnchor(){
+  if(pendingMarkdownAnchor===null||!data?.markdown||!previewReady)return;
+  const fragment=pendingMarkdownAnchor;pendingMarkdownAnchor=null;
+  if(sourceMode){sourceMode=false;renderPreview();showMode();}
+  let id;try{id=decodeURIComponent(fragment.replace(/^#/,''));}catch{return;}
+  const target=id?$('markdown').querySelector('#'+CSS.escape(id)):null;
+  if(target)target.scrollIntoView({block:'start'});else if(!id)$('markdown').scrollTop=0;
+  if(fragment)history.replaceState(history.state,'',location.pathname+location.search+fragment);
 }
 function renderHTML(){
   const doc=new DOMParser().parseFromString(currentText(),'text/html');
@@ -477,6 +502,7 @@ $('copy').onclick=async()=>{if(!data)return;try{await navigator.clipboard.writeT
     if(initialSource)editor.focus({preventScroll:true});
     if(!data.editable&&data.reason)notice('읽기 전용: '+data.reason);
     await preparePreview();
+    applyMarkdownAnchor();
     if(data.text.length>300000)notice([data.reason,data.html?'큰 HTML 파일의 원문은 문법 색상 없이 표시합니다.':'큰 파일은 전체 원문으로 표시합니다. 문법 색상과 Markdown 서식은 30만 자 이하에서 적용합니다.'].filter(Boolean).join(' · '),{sourceOnly:data.html});
   }catch(error){$('info').textContent=data?.text!==undefined?'원문 보기':'미리보기 불가';notice(error.message+(data?.text!==undefined?' · 원문은 그대로 읽을 수 있습니다.':''));}
 })();
