@@ -75,5 +75,39 @@ fixture(async ({ ready, page, open, tab }) => {
   assert.equal(await page.locator('#expandedFullscreen').isEnabled(), true);
   await page.locator('#exitExpanded').click();
   await page.evaluate(() => { Element.prototype.requestFullscreen = realFullscreen; });
-  console.log('PASS: real browser fullscreen, editor/nested HTML Escape, external exit/toggle/X restoration, stable split/DOM/drafts, denied-request recovery');
+
+  const idleControls = async content => {
+    await content.hover({position:{x:120,y:100}});
+    await page.waitForFunction(() => !document.querySelector('#viewer').hasAttribute('data-controls-visible') && getComputedStyle(document.querySelector('#exitExpanded')).opacity==='0');
+    assert.equal(await page.locator('#exitExpanded').evaluate(node => getComputedStyle(node).pointerEvents), 'none', 'hidden buttons do not intercept the document');
+    await content.hover({position:{x:220,y:120}});
+    await page.waitForFunction(() => document.querySelector('#viewer').hasAttribute('data-controls-visible'));
+  };
+  const slidesSource='<style>body{margin:0}svg{width:100%;height:100vh}</style><svg data-marpit-svg viewBox="0 0 1280 720"><text y="200">Slide one</text></svg><script>addEventListener("keydown",event=>{if(event.key==="ArrowRight")document.querySelector("text").textContent="Slide two";});</script><!--'+'x'.repeat(300001)+'-->';
+  await fs.writeFile(ready.project+'/presentation.html',slidesSource);
+  await page.goto(ready.url+'?root=project&path=presentation.html');
+  const slideShell=page.frameLocator('.workspace-slot.is-visible iframe');await slideShell.locator('#slideMode').click();
+  const slide=slideShell.frameLocator('#htmlPreview').locator('svg');await slide.waitFor();
+  await page.locator('#expandPreview').click();
+  assert.equal(await slideShell.locator('#notice').isVisible(), false);
+  await idleControls(slide);await slide.click();await page.keyboard.press('ArrowRight');
+  assert.equal(await slide.locator('text').textContent(), 'Slide two', 'pointer relay leaves slide navigation intact');
+  await page.locator('#expandedFullscreen').focus();await page.keyboard.press('Tab');
+  assert.equal(await page.locator('#exitExpanded').evaluate(node => node.matches(':focus-visible')), true);
+  await page.waitForTimeout(2100);
+  assert.equal(await page.locator('#exitExpanded').evaluate(node => getComputedStyle(node).opacity), '1', 'keyboard-focused controls stay visible');
+  await page.locator('#exitExpanded').click();
+  assert.equal(await fs.readFile(ready.project+'/presentation.html','utf8'),slidesSource);
+
+  // Real PDF pointer movement reaches the app through its viewer frame in both modes.
+  assert(ready.pdfjs,'real PDF.js required');const pdf=await open('sample.pdf');
+  await pdf.locator('#viewer .page').first().waitFor({timeout:20000});
+  await page.locator('#expandPreview').click();await idleControls(pdf.locator('#viewerContainer'));
+  await page.locator('#expandedFullscreen').hover();await page.waitForTimeout(2100);
+  assert.equal(await page.locator('#expandedFullscreen').evaluate(node => getComputedStyle(node).opacity), '1', 'hovered controls stay visible');
+  await page.locator('#expandedFullscreen').click();
+  await page.waitForFunction(() => document.fullscreenElement===document.querySelector('#viewer'));
+  await idleControls(pdf.locator('#viewerContainer'));
+  await page.locator('#exitExpanded').click();await exited(false);
+  console.log('PASS: browser fullscreen restoration, stable drafts, source-only HTML notice, idle/hover/keyboard controls, real PDF and opaque slide pointer relay');
 }).catch(error => { console.error(error); process.exitCode = 1; });

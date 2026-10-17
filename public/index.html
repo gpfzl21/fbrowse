@@ -31,6 +31,7 @@ main{display:flex;min-height:0;flex:1;gap:0;padding:8px}aside{width:330px;min-wi
 .row[data-tree-selected="true"]{outline:1px solid var(--accent);outline-offset:-2px}.row[data-file-clipboard="true"] .filename::after{content:' · 복사됨';font-size:10px;color:var(--accent)}#clipboardStatus{padding:4px 12px;font-size:11px;color:var(--muted);overflow-wrap:anywhere}.tab-activate{touch-action:none;user-select:none;cursor:grab}.tab-activate:active{cursor:grabbing}body.is-tab-dragging{user-select:none;cursor:grabbing}body.is-tab-dragging iframe{pointer-events:none}#exitExpanded{z-index:20}
 .viewer.is-expanded>.viewer-tabs{display:none!important}.viewer.is-expanded .pane-tabs{display:none!important}
 #viewer:fullscreen{width:100%;height:100%;max-width:none;max-height:none;margin:0;background:var(--panel)}#expandedFullscreen{position:absolute;top:14px;right:54px;z-index:20;height:32px;font-size:12px;box-shadow:0 2px 10px #0003}#fullscreenNotice{position:absolute;top:54px;right:14px;z-index:20;max-width:calc(100% - 28px);padding:8px 12px;background:var(--panel);border:1px solid var(--line);border-radius:6px;font-size:12px}#fullscreenPreview svg{width:18px;height:18px}
+#exitExpanded,#expandedFullscreen{transition:opacity .15s}.viewer.is-expanded:not([data-controls-visible])>#exitExpanded,.viewer.is-expanded:not([data-controls-visible])>#expandedFullscreen{opacity:0;pointer-events:none}@media(prefers-reduced-motion:reduce){#exitExpanded,#expandedFullscreen{transition:none}}
 .row[data-draggable-file="true"] .filename,.row[data-draggable-file="true"] .icon{touch-action:none;user-select:none;cursor:grab}.is-drag-source{opacity:.45}.workspace-drag-ghost{position:fixed;z-index:3000;display:flex;align-items:center;gap:8px;max-width:min(380px,75vw);padding:8px 11px;border:1px solid var(--accent);border-radius:7px;background:var(--panel);color:var(--text);box-shadow:0 5px 18px #0003;pointer-events:none;user-select:none;font-size:12px}.workspace-drag-ghost .drag-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.workspace-drag-ghost small{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px}.workspace.is-empty-drop .pane-tabs{display:none!important}.workspace-insertion{position:absolute;z-index:15;width:3px;background:var(--accent);pointer-events:none;border-radius:2px;box-shadow:0 0 0 1px var(--panel)}.workspace-insertion::before,.workspace-insertion::after{content:'';position:absolute;left:-3px;width:9px;height:3px;background:var(--accent)}.workspace-insertion::before{top:0}.workspace-insertion::after{bottom:0}
 </style></head><body>
 <main><aside id="fileSidebar" aria-label="파일 탐색"><div class="side-controls">
@@ -114,6 +115,7 @@ window.addEventListener('message',event=>{
   if(message.type==='fbrowse-editor-state'&&typeof message.dirty==='boolean'){editor.dirty=message.dirty;renderWorkspaceTabs();}
   else if(message.type==='fbrowse-editor-saved'){if(tab.entry.root_id===state.root)ensureGit(true);}
   else if(message.type==='fbrowse-editor-focused')focusTab(tab);
+  else if(message.type==='fbrowse-preview-pointer'&&state.activeTab===tab.id)revealPreviewControls();
   else if(message.type==='fbrowse-editor-ready')syncEditorActivity();
 });
 window.addEventListener('beforeunload',event=>{if(editorDirty()){event.preventDefault();event.returnValue='';}});
@@ -900,6 +902,7 @@ function syncPreviewChrome(tab){
   const kind=previewChromeKind(tab);if(!kind)return;
   try{
     const doc=tab.frame.contentDocument,expanded=state.previewExpanded&&state.viewerMode==='file'&&state.activeTab===tab.id;
+    if(tab.previewPointerDocument!==doc){tab.previewPointerDocument=doc;for(const type of ['pointermove','pointerdown'])doc.defaultView.addEventListener(type,()=>{if(state.activeTab===tab.id)revealPreviewControls();},{passive:true});}
     if(kind==='text'){doc.documentElement.toggleAttribute('data-fbrowse-expanded',expanded);return;}
     // PDF.js disallows inline styles. Its own document realm can adopt an app-owned
     // constructed sheet without changing the viewer's CSP or any vendor asset.
@@ -916,6 +919,13 @@ function syncPreviewChrome(tab){
 // A text shell can become ready before its load event (for example while libraries load).
 window.fbrowseSyncPreviewChrome=source=>{const tab=state.tabs.find(tab=>tab.frame.contentWindow===source);if(tab)syncPreviewChrome(tab);};
 let expandedLayout=null;
+let previewControlsTimer=0;
+function revealPreviewControls(){
+  if(!state.previewExpanded)return;clearTimeout(previewControlsTimer);$('viewer').setAttribute('data-controls-visible','');
+  previewControlsTimer=setTimeout(()=>{previewControlsTimer=0;if(![$('exitExpanded'),$('expandedFullscreen')].some(node=>node.matches(':hover,:focus-visible')))$('viewer').removeAttribute('data-controls-visible');},1800);
+}
+for(const type of ['pointermove','pointerdown'])$('viewer').addEventListener(type,revealPreviewControls,{passive:true});
+for(const id of ['exitExpanded','expandedFullscreen'])for(const type of ['pointerenter','pointerleave','focusin','focusout'])$(id).addEventListener(type,revealPreviewControls);
 function setPreviewExpanded(expanded){
   if(expanded===state.previewExpanded)return;dropExpansionRevision++;finishPointerTabDrag(null,true);endTabDrag();finishWorkspaceResize();closeGroupMenu();
   if(expanded&&state.viewerMode==='file'){
@@ -923,7 +933,7 @@ function setPreviewExpanded(expanded){
   }
   state.previewExpanded=expanded;layoutDirty=true;$('viewer').classList.toggle('is-expanded',expanded);$('expandPreview').textContent=expanded?'↙':'⛶';$('expandPreview').setAttribute('aria-label',expanded?'기본 보기':'크게 보기');$('expandPreview').setAttribute('aria-pressed',String(expanded));$('exitExpanded').hidden=!expanded;$('expandedFullscreen').hidden=!expanded;$('fullscreenNotice').hidden=true;
   if(!expanded&&expandedLayout){const saved=expandedLayout;expandedLayout=null;for(const [id,active]of saved.active){const group=state.groups.get(id);if(group&&state.tabs.some(tab=>tab.id===active&&tab.group===id))group.active=active;}if(state.tabs.some(tab=>tab.id===saved.activeTab))activateTab(saved.activeTab,false,false);}
-  renderWorkspace();
+  renderWorkspace();if(expanded)revealPreviewControls();else{clearTimeout(previewControlsTimer);$('viewer').removeAttribute('data-controls-visible');}
 }
 // Browser fullscreen is temporary; restore the preceding in-app view on every exit.
 let browserFullscreenSession=null,fullscreenBusy=false;
@@ -962,6 +972,7 @@ $('exitExpanded').onclick=closeExpandedPreview;$('expandPreview').onclick=()=>se
 // PDF viewers and nested HTML can focus their iframe without sending editor messages.
 window.addEventListener('blur',()=>setTimeout(()=>{const tab=state.tabs.find(tab=>tab.frame===document.activeElement);if(tab)focusTab(tab);},0));
 function handlePreviewEscape(event){
+  if(event.key==='Tab')revealPreviewControls();
   if(event.key==='Escape'&&(pointerTabDrag||tabDrag)){event.preventDefault();event.stopPropagation();finishPointerTabDrag(null,true);endTabDrag();return true;}
   if(event.key==='Escape'&&document.fullscreenElement){if(browserFullscreenSession){event.preventDefault();event.stopPropagation();document.exitFullscreen().catch(fullscreenFailure);return true;}return false;}
   if(event.key!=='Escape'||!state.previewExpanded)return false;

@@ -41,7 +41,7 @@ cd fbrowse
 npm ci
 mkdir -p dist
 npm pack --pack-destination dist
-npm install --global ./dist/wlalsrne-fbrowse-0.10.0.tgz
+npm install --global ./dist/wlalsrne-fbrowse-0.10.1.tgz
 ```
 
 로컬 개발용 이름 `@fbrowse/cli`로 설치한 이전 버전을 사용 중이면 같은 prefix에서 이전 패키지를
@@ -148,6 +148,8 @@ Ctrl/Cmd+S는 포커스가 있는 창의 파일만 저장합니다. 목록 분�
 탐색 도구와 크게 보기 오른쪽 위에서 실행할 수 있으며, Esc 또는 **전체 화면 종료**로 진입 전 보기로 돌아갑니다.
 크게 보기에서 시작했다면 크게 보기로, 일반 분할 화면에서 시작했다면 원래 분할 배치로 복귀합니다.
 오른쪽 위 ×는 전체 화면과 크게 보기를 함께 종료합니다. 초안·선택·문서 상태는 유지합니다.
+오른쪽 위 버튼은 마우스를 움직이면 나타나고 약 1.8초간 움직임이 없으면 사라집니다.
+버튼 위에 마우스를 두거나 키보드로 선택한 동안에는 계속 표시하며, PDF·HTML·Marp 내부에서도 동작합니다.
 호스트 앱이나 브라우저에서 전체 화면 권한을 막으면 안내를 표시하며 기존 보기를 유지합니다.
 
 Markdown은 0.9.0부터 기본으로 **현재 그룹 전체 너비**를 사용합니다. **읽기 너비** 버튼으로
@@ -228,6 +230,7 @@ Markdown·HTML은 처음에 미리보기를 표시합니다. **원문 보기 / �
 차단합니다. Marp HTML에서 **슬라이드 보기**를 누르면 문서의 프레젠테이션 기능을 켜고 전체 너비로 표시합니다.
 슬라이드를 클릭한 뒤 방향키나 Marp의 화면 버튼으로 넘길 수 있으며, **스크롤 보기**로 돌아갈 수 있습니다.
 슬라이드 스크립트는 편집기·앱 저장소·API에 접근할 수 없는 별도 출처에서 실행하며 팝업과 내장 프레임은 허용하지 않습니다.
+큰 HTML의 원문 문법 색상 안내는 원문 보기에서만 표시하므로 슬라이드 미리보기를 가리지 않습니다.
 Marp 발표자 창은 지원하지 않습니다. 미리보기는 전환할 때 갱신합니다. 마지막으로 고른 탭은 프로젝트·등록 루트·파일별로
 XDG 설정에 보관하여 브라우저나 서버를 다시 열어도 기억합니다. 최근 파일 수에 따른 삭제나
 브라우저 localStorage 용량 제한은 없으며 파일을 열거나 탭을 고를 때 해당 기록만 읽고 씁니다.
@@ -398,13 +401,13 @@ Playwright와 Chromium은 선택적 개발 도구이며 앱 실행에는 필요�
 패키지는 npm 계정 `wlalsrne`의 `@wlalsrne/fbrowse` 이름으로 공개 배포합니다.
 배포 전에 변경 내용을 검증하고 새 버전을 지정하세요. 이미 게시한 버전은 덮어쓸 수 없습니다.
 `package.json`과 `package-lock.json`의 버전을 함께 갱신하고 CLI·서버 버전도 맞춥니다.
-다음은 0.10.0 배포 명령의 예입니다.
+다음은 0.10.1 배포 명령의 예입니다.
 
 ```bash
 npm whoami
 npm test
 npm pack --pack-destination dist
-npm publish ./dist/wlalsrne-fbrowse-0.10.0.tgz --access public
+npm publish ./dist/wlalsrne-fbrowse-0.10.1.tgz --access public
 ```
 
 `npm pack`으로 만든 앱 코드·문서만 게시합니다. 프로젝트 데이터, XDG 설정·상태·캐시와

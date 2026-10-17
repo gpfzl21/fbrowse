@@ -16,7 +16,7 @@ fixture(async ({ ready, page, errors, requests }) => {
       try{parent.document.body.dataset.slideEscaped='true';}catch{window.parentBlocked=true;}
       try{parent.localStorage.setItem('slideEscape','true');}catch{window.storageBlocked=true;}
       fetch('/api/info').catch(()=>{window.apiBlocked=true;document.body.dataset.ready='true';});
-    </script></body></html>`;
+    </script></body></html><!--${'x'.repeat(300001)}-->`;
   fs.writeFileSync(ready.project + '/slides.html', html);
   fs.writeFileSync(ready.project + '/ordinary.html', '<h1>Ordinary HTML</h1><script>window.ran=true</script>');
   fs.writeFileSync(ready.project + '/slide-runtime.js', 'window.relativeScriptRan=true;');
@@ -24,6 +24,8 @@ fixture(async ({ ready, page, errors, requests }) => {
   await page.goto(ready.url + '_preview?root=project&path=slides.html');
   const inner = page.frameLocator('#htmlPreview'), toggle = page.locator('#slideMode');
   await toggle.waitFor();
+  await page.locator('#notice').filter({hasText:'큰 HTML 파일의 원문'}).waitFor({state:'attached'});
+  assert.equal(await page.locator('#notice').isVisible(), false, 'source performance notice never covers HTML preview');
   assert.equal(await page.locator('#htmlPreview').getAttribute('sandbox'), 'allow-same-origin');
   assert.equal(await inner.locator('body').evaluate(() => window.slideIndex), undefined);
   assert.equal(await inner.locator('svg:visible').count(), 2);
@@ -46,8 +48,10 @@ fixture(async ({ ready, page, errors, requests }) => {
   assert.equal(await page.locator('#htmlViewport').evaluate(node => node.clientWidth), await page.locator('body').evaluate(node => node.clientWidth));
 
   await page.locator('#mode').click();
+  assert.equal(await page.locator('#notice').isVisible(), true, 'source performance note belongs to source mode');
   const editor=page.locator('#editor');await editor.fill(html.replace('Second', 'Draft second'));
   await page.locator('#mode').click();await inner.locator('svg[style*="none"]').filter({hasText:'Draft second'}).waitFor({state:'attached'});
+  assert.equal(await page.locator('#notice').isVisible(), false);
   await inner.locator('svg:visible').click();await page.keyboard.press('ArrowRight');
   assert.equal(await inner.locator('svg:visible').textContent(), 'Draft second');
   await toggle.click();await inner.locator('svg').nth(1).waitFor();
