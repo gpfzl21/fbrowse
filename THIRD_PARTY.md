@@ -8,6 +8,14 @@ KaTeX의 JS·CSS·폰트는 설치된 패키지에서 로컬로 제공하며 별
 정확한 버전과 npm 무결성 값은 `package-lock.json`에 기록합니다. KaTeX의 CLI 의존성에 따라
 Node.js 22.12 이상을 사용합니다.
 
+현재 파일의 JS/TS·JSON·YAML 구문 검사는 npm 의존성
+[`@babel/parser` 7.29.9](https://babeljs.io/docs/babel-parser) (MIT),
+[`jsonc-parser` 3.3.1](https://github.com/microsoft/node-jsonc-parser) (MIT),
+[`yaml` 2.9.1](https://github.com/eemeli/yaml) (ISC)를 사용합니다.
+이 파서들은 npm 설치 시 함께 준비되며 프로젝트 설정·사용자 플러그인을 불러오지 않습니다.
+Python·TeX·셸 검사는 사용자가 별도 설치한 선택적 Ruff·ChkTeX·ShellCheck를 호출하며
+해당 실행 파일은 npm 패키지에 재배포하지 않습니다.
+
 다음 브라우저 구성 요소는 고정 버전과 SHA-256 검증을 거쳐 필요할 때 XDG 캐시에 다운로드합니다.
 외부 뷰어 배포 파일을 이 저장소나 npm 패키지에 포함하지 않습니다.
 

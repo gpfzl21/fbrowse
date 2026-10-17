@@ -154,7 +154,8 @@ async function until(check, message) { for (let i = 0; i < 160; i++) { if (await
   await row('delete.py').click({ button: 'right' }); await page.locator('#contextDelete').click();
   await page.locator('#fsSubmit:enabled').click(); await tab('delete.py').waitFor({ state: 'detached' });
   delayed.release.release(); const deleteCount = posts.filter(post => post.body.path === 'delete.py').length; await sleep(1100); assert.equal(posts.filter(post => post.body.path === 'delete.py').length, deleteCount, 'deleted iframe cannot request or apply results');
-  await page.locator('#fsSubmit').waitFor({ state: 'hidden' }); await page.locator('#fsCancel').click();
+  await page.locator('#fsSubmit').waitFor({ state: 'hidden' });
+  if(await page.locator('#fsCancel').isVisible())await page.locator('#fsCancel').click();
   await page.locator('#rootSelect').selectOption('other'); code = await open('detached.py'); await clean(); delayed = await hold();
   await page.locator('#manageRoots').click();
   await page.locator('.root-record').filter({ has: page.locator('strong').filter({ hasText: /^other$/ }) }).getByRole('button', { name: '연결 제거', exact: true }).click();

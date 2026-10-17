@@ -28,6 +28,9 @@ const server=http.createServer((request,response)=>{
       assert.equal(await external.evaluate(()=>window.opener),null);await external.close();
       assert.equal(await page.locator('.file-tab').count(),1);assert.equal(await page.locator('.web-slot').count(),0);
     }
+    await source.locator('#markdown').evaluate(node=>node.addEventListener('contextmenu',event=>{queueMicrotask(()=>{window.lastContextPrevented=event.defaultPrevented;});}));
+    await source.getByRole('link',{name:'External',exact:true}).click({button:'right'});
+    assert.equal(opens.length,0);assert.equal(await source.locator('body').evaluate(()=>window.lastContextPrevented),false,'native host menu also retained without CLI');
     bridge=true;await page.reload();source=await frame('web-links.md');await source.locator('#markdown h1').waitFor();
     assert.equal(await page.evaluate(()=>fbrowseExternalBrowser()),'orca');
     await source.locator('#mode').click();await source.locator('#editor').focus();await source.locator('#editor').press('Control+End');await page.keyboard.insertText('\nretained draft');await source.locator('#mode').click();
@@ -43,18 +46,22 @@ const server=http.createServer((request,response)=>{
     };
     const link=source.getByRole('link',{name:'External',exact:true});
     const requestOpen=async action=>{const response=page.waitForResponse(r=>r.url().endsWith('/api/external-browser')&&r.request().postDataJSON().action==='open');await action();await response;};
-    await requestOpen(()=>link.click());
-    assert.equal(opens.length,1);assert.equal(opens[0].url,origin+'/paper');assert.equal(opens[0].background,false);await intact();
-    await requestOpen(()=>link.click({modifiers:['Control']}));assert.equal(opens.length,2);assert.equal(opens[1].background,true);
-    await requestOpen(()=>link.click({button:'middle'}));assert.equal(opens.length,3);assert.equal(opens[2].background,true);await intact();
-    // Right-click itself does not open anything; selecting our menu sends once.
-    await link.click({button:'right'});await source.getByRole('menuitem',{name:'Orca 브라우저에서 열기',exact:true}).waitFor();assert.equal(opens.length,3);
-    await requestOpen(()=>source.getByRole('menuitem',{name:'Orca 브라우저에서 열기',exact:true}).click());assert.equal(opens.length,4);await intact();
-    assert.equal(new Set(opens.map(data=>data.request_id)).size,4);
-    fail=true;await link.click();await source.locator('#notice').filter({hasText:'Orca 연결을 확인할 수 없습니다.'}).waitFor();assert.equal(opens.length,5);await intact();
+    // Each default click takes the single verified Orca route, preserving drafts.
+    for(const [options,background] of [[{},false],[{modifiers:['Control']},true],[{button:'middle'},true]]){
+      const count=opens.length;await requestOpen(()=>link.click(options));
+      assert.equal(opens.length,count+1);assert.equal(opens.at(-1).url,origin+'/paper');assert.equal(opens.at(-1).background,background);await intact();
+    }
+    assert.equal(new Set(opens.map(data=>data.request_id)).size,3);
+    // Retain the host menu for laptop-default-browser and explicit Orca actions.
+    await source.locator('#markdown').evaluate(node=>node.addEventListener('contextmenu',event=>{queueMicrotask(()=>{window.lastContextPrevented=event.defaultPrevented;});}));
+    await link.click({button:'right'});assert.equal(opens.length,3);
+    assert.equal(await source.locator('#webLinkMenu').count(),0);
+    assert.equal(await source.locator('body').evaluate(()=>window.lastContextPrevented),false,'Orca host menu is not suppressed');
+    fail=true;await requestOpen(()=>link.click());
+    await source.locator('#notice').filter({hasText:'Orca 연결을 확인할 수 없습니다.'}).waitFor();assert.equal(opens.length,4);await intact();
     assert.deepEqual(await page.evaluate(({href})=>{const source=state.tabs[0].frame.contentWindow;return [fbrowseOpenExternal(null,href),fbrowseOpenExternal(source,'javascript:alert(1)'),fbrowseOpenExternal(source,location.origin)];},{href:origin+'/paper'}),[false,false,false]);
     await source.locator('#mode').click();await source.locator('#editor').focus();await page.keyboard.press('Control+z');assert.equal(await source.locator('#editor').inputValue(),'# Web links\n\n[External]('+origin+'/paper)\n');
     assert.deepEqual(errors,[]);
-    console.log('PASS: native top-level pages despite framing denial; one Orca request per left/middle/Ctrl/context-menu action; no retry on error; split/draft/frame/undo retention');
+    console.log('PASS: native browser anchor pages despite framing denial; one verified Orca request per left/Ctrl/middle click; host menu retained; no retries; split/draft/frame/undo retention');
   });}finally{await new Promise(resolve=>server.close(resolve));}
 })().catch(error=>{console.error(error);process.exitCode=1;});

@@ -712,6 +712,26 @@ function closeTab(id,discard=false){
   collapseEmptyGroup(tab.group);
   if(wasActive){const next=state.tabs.find(other=>other.id===group?.active)||state.tabs.find(other=>other.id===state.groups.get(state.activeGroup)?.active)||state.tabs[Math.min(index,state.tabs.length-1)];state.activeTab=next?.id||null;if(next)activateTab(next.id);else resetPreview();}else renderWorkspace();return true;
 }
+function tabClosingBusy(tab){return Boolean(tab.fsBusy||tabEditor(tab)?.busy);}
+function closeWorkspaceTabs(keepId=null){
+  const keep=keepId===null?null:state.tabs.find(tab=>tab.id===keepId);
+  if(keepId!==null&&!keep)return false;
+  const targets=state.tabs.filter(tab=>tab!==keep);
+  // Preflight the complete set before changing drafts, selection or splits.
+  if(!targets.length)return false;
+  if(targets.some(tabClosingBusy)){$('status').textContent='파일 작업이나 저장이 끝난 뒤 탭을 닫으세요.';return false;}
+  const dirty=targets.filter(tabDirty);
+  if(dirty.length&&!confirm('닫을 탭 '+targets.length+'개 중 저장하지 않은 변경사항이 있는 '+dirty.length+'개 파일의 초안을 버리고 닫을까요?\n'+dirty.map(tab=>rootLabel(tab.entry.root_id)+' · '+tab.entry.path).join('\n')))return false;
+  abandonTabs(targets);
+  for(const tab of targets){tab.slot.remove();tab.item?.remove();}
+  state.tabs=keep?[keep]:[];
+  for(const group of state.groups.values())group.active=keep?.group===group.id?keep.id:null;
+  for(const id of [...state.groups.keys()])collapseEmptyGroup(id);
+  state.workspaceRevision++;layoutDirty=true;
+  state.activeTab=keep?.id||null;
+  if(keep)activateTab(keep.id);else{resetPreview();history.replaceState(null,'','/?'+new URLSearchParams({root:state.root}));}
+  return true;
+}
 function renderWorkspaceTabs(){
   for(const group of state.groups.values()){
     const strip=group.strip;strip.dataset.active=String(state.activeGroup===group.id);const tabs=state.tabs.filter(tab=>tab.group===group.id);
@@ -815,13 +835,15 @@ createGroup('group-1');new ResizeObserver(()=>layoutWorkspace()).observe($('work
 function closeGroupMenu(restore=false){const anchor=groupMenuAnchor;groupMenuAnchor=null;$('groupMenu').hidden=true;$('groupMenu').replaceChildren();if(restore&&anchor?.isConnected)anchor.focus({preventScroll:true});}
 function openGroupMenu(groupId,tabId,x,y,anchor){
   const group=state.groups.get(groupId),tab=state.tabs.find(tab=>tab.id===tabId);if(!group)return;closeGroupMenu();groupMenuAnchor=anchor;
-  // Opening a menu selects its target without touching the native clipboard or document focus.
-  if(tab)activateTab(tab.id,false,false);const menu=$('groupMenu');menu.replaceChildren();
+  // Merely inspecting or cancelling a menu must preserve the active tab and drafts.
+  const menu=$('groupMenu');menu.replaceChildren();
   function action(label,handler,disabled=false){const button=make('button','',label);button.type='button';button.setAttribute('role','menuitem');button.disabled=disabled;button.onclick=()=>{closeGroupMenu(true);handler();};menu.append(button);}
-  action(state.previewExpanded?'기본 보기 · Esc':'현재 파일 크게 보기',()=>setPreviewExpanded(!state.previewExpanded),!tab);
-  action('전체 화면',()=>toggleBrowserFullscreen(),!tab);
+  action(state.previewExpanded?'기본 보기 · Esc':'현재 파일 크게 보기',()=>{if(tab)activateTab(tab.id,false,false);setPreviewExpanded(!state.previewExpanded);},!tab);
+  action('전체 화면',()=>{if(tab)activateTab(tab.id,false,false);toggleBrowserFullscreen();},!tab);
   for(const [edge,label]of [['left','왼쪽에 분할'],['right','오른쪽에 분할'],['top','위에 분할'],['bottom','아래에 분할']])action(label,()=>splitTab(tabId,edge,groupId),!tab||tab.fsBusy||state.previewExpanded||groupTabs(groupId).length<2);
   action('이 그룹 합치기',()=>mergeGroup(groupId),state.groups.size<2||state.previewExpanded);if(tab)action('탭 닫기',()=>closeTab(tabId),Boolean(tab.fsBusy));
+  if(tab)action('다른 탭 모두 닫기 (모든 분할)',()=>closeWorkspaceTabs(tabId),!state.tabs.some(other=>other!==tab)||state.tabs.some(other=>other!==tab&&tabClosingBusy(other)));
+  action('모든 탭 닫기 (모든 분할)',()=>closeWorkspaceTabs(),!state.tabs.length||state.tabs.some(tabClosingBusy));
   menu.hidden=false;menu.style.left='0px';menu.style.top='0px';const rect=menu.getBoundingClientRect();menu.style.left=Math.max(8,Math.min(x,innerWidth-rect.width-8))+'px';menu.style.top=Math.max(8,Math.min(y,innerHeight-rect.height-8))+'px';menu.querySelector('button:not(:disabled)')?.focus();
 }
 $('groupMenu').addEventListener('keydown',event=>{const buttons=[...$('groupMenu').querySelectorAll('button:not(:disabled)')],index=buttons.indexOf(document.activeElement);let next;if(event.key==='ArrowDown')next=buttons[(index+1)%buttons.length];if(event.key==='ArrowUp')next=buttons[(index+buttons.length-1)%buttons.length];if(event.key==='Home')next=buttons[0];if(event.key==='End')next=buttons.at(-1);if(next){event.preventDefault();next.focus();}if(event.key==='Escape'){event.preventDefault();event.stopPropagation();closeGroupMenu(true);}if(event.key==='Tab')closeGroupMenu();});
@@ -1225,6 +1247,7 @@ async function runFsOperation(){
     if(action==='rename'||action==='delete')frozen=await freezeFsEditors(target);
     if(action==='rename'&&frozen.filter(item=>item.editor?.editable&&item.binding.version).length>64)throw Error('Close some affected editor tabs before renaming (maximum 64 editor bindings).');
     const payload=action==='mkdir'?{action,root:target.root,parent:target.parent,name}:{action,root:target.root,path:target.path,expected_version:info.version,...(action==='rename'?{name,editors:frozen.filter(item=>item.editor?.editable&&item.binding.version).map(item=>({path:item.binding.path,version:item.binding.version}))}:{}),...(action==='delete'?{confirmed:true}:{})};
+    if(action==='delete'){$('fsTitle').textContent='Deleting…';$('fsDescription').textContent='Deleting the confirmed target. Please wait for the result.';$('fsSubmit').hidden=true;}
     if(action==='duplicate'||(action==='delete'&&target.kind==='directory')){
       fsOperation.background=true;$('fsDialog').close();$('fsDialog').style.cssText='position:fixed;inset:auto 16px 16px auto;margin:0;width:min(440px,calc(100vw - 32px));max-height:45vh;z-index:1050;box-shadow:0 5px 24px #0003';$('fsDialog').show();$('fsCancel').disabled=false;$('fsCancel').textContent='Hide progress';fsMessage('Working… You can browse other files. Hiding progress does not cancel the operation.');
     }
@@ -1236,16 +1259,17 @@ async function runFsOperation(){
     await refreshFsTree(target,action==='mkdir'||action==='rename'?data.path:null);
     fsMessage(action==='delete'?'Deleted permanently: '+absoluteTarget(target):'Completed: '+absoluteTarget(target,data.path));$('status').textContent=$('fsMessage').textContent;
     $('fsSubmit').hidden=true;$('fsCancel').textContent='Close';
-    if(action==='mkdir'||action==='rename'){$('fsDialog').close();fsDialogTarget=null;}
+    if(action==='mkdir'||action==='rename'||action==='delete'){$('fsDialog').close();fsDialogTarget=null;$('fsProgress').hidden=true;}
   }catch(error){
     const unknown=completed||(sent&&error.outcomeUnknown);
+    if(action==='delete'){$('fsTitle').textContent=unknown?'Deletion result unknown':'Delete failed';if(!unknown)$('fsSubmit').hidden=false;}
     if(unknown&&action==='rename')for(const item of frozen){if(item.editor)item.editor.markUncertain({...item.binding,path:item.editor.path,version:item.editor.version,reason:'Rename outcome or editor binding is uncertain. Copy your draft, inspect the target folder, and reload before saving.'});}
     fsMessage((error.name==='AbortError'?'Response timed out.':error.message)+(unknown?' The operation may already have changed disk contents. Refresh and inspect the target before retrying.':''),true);
     if(unknown)$('fsSubmit').hidden=true;
     if(unknown||action==='delete')await refreshFsTree(target).catch(()=>{});
   }finally{
     for(const item of frozen){try{if(!item.released&&item.tab.frame.isConnected)item.editor?.endMutation(item.binding);}catch{}finally{item.tab.fsBusy=false;}}
-    if(fsOperation?.background){$('fsProgress').hidden=$('fsDialog').open;$('fsProgress').textContent='File operation result';$('fsCancel').textContent='Close';}
+    if(fsOperation?.background){$('fsProgress').hidden=!fsDialogTarget||$('fsDialog').open;$('fsProgress').textContent='File operation result';$('fsCancel').textContent='Close';}
     fsOperation=null;$('newFile').disabled=false;fsControls(false);renderWorkspaceTabs();
   }
 }

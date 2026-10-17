@@ -21,7 +21,6 @@ html[data-fbrowse-expanded]>body>#previewHeader{display:none}
 #diagnosticDecorations{position:fixed;z-index:3;overflow:hidden;pointer-events:none;contain:strict}.diagnostic-underline{position:absolute;height:3px;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='3'%3E%3Cpath d='M-1 2L1 0L4 3L7 0' fill='none' stroke='%239a6700' stroke-width='1'/%3E%3C/svg%3E");background-repeat:repeat-x}.diagnostic-underline[data-severity="error"]{z-index:1;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='3'%3E%3Cpath d='M-1 2L1 0L4 3L7 0' fill='none' stroke='%23cf222e' stroke-width='1'/%3E%3C/svg%3E")}
 #diagnosticTooltip{position:fixed;z-index:11;pointer-events:none;max-width:min(440px,calc(100vw - 16px));max-height:min(40vh,240px);overflow:hidden;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);box-shadow:0 4px 16px #0003;white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;line-height:1.5}
 @media(prefers-color-scheme:dark){.diagnostic-underline{filter:brightness(1.6)}}
-#webLinkMenu{position:fixed;z-index:1000;min-width:210px;padding:5px;border:1px solid var(--line);border-radius:6px;background:var(--bg);box-shadow:0 4px 16px #0003}#webLinkMenu[hidden]{display:none}#webLinkMenu button{display:block;width:100%;border:0;text-align:left;padding:8px;background:transparent;color:var(--text)}#webLinkMenu button:hover,#webLinkMenu button:focus{background:var(--soft)}
 </style></head><body data-preview-width="readable">
 <header id="previewHeader"><span id="info">텍스트를 불러오는 중…</span><button id="mode" hidden aria-pressed="false">원문 보기</button><button id="previewWidth" hidden aria-label="미리보기 전체 너비" aria-pressed="false" title="읽기 너비 (최대 1000px) · 전체 너비로 전환">전체 너비</button><button id="wrap" aria-pressed="true" title="긴 줄을 화면 너비에 맞춰 자동 줄바꿈">자동 줄바꿈</button><span id="diagnosticsControls" hidden><button id="diagnosticsEnabled" aria-pressed="true" title="실시간 검사 끄기">검사 켜짐</button><button id="diagnosticsToggle" aria-expanded="false" aria-controls="diagnosticsPanel">문제</button><span id="diagnosticsStatus" role="status" aria-live="polite"></span><button id="diagnosticsRetry" title="현재 파일 다시 검사">재검사</button></span><span id="dirty" role="status"></span><button id="save" disabled title="저장 · Ctrl/Cmd+S">저장</button><button id="reload" hidden>디스크에서 다시 불러오기</button><button id="copy">복사</button><a id="raw" target="_blank" rel="noopener">원본 ↗</a><section id="diagnosticsPanel" aria-label="현재 파일 문제" hidden><ul id="diagnosticsList"></ul></section></header>
 <p id="notice" hidden role="status"></p><div class="source-shell wrap" id="source"><pre class="gutter" id="lines" aria-hidden="true"></pre><div class="source-area"><pre class="source" aria-hidden="true"><code id="code"></code><span id="sourceEnd" aria-hidden="true">&#8203;</span></pre><textarea id="editor" aria-label="파일 원문 편집" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="soft" readonly></textarea></div></div><article id="markdown" hidden></article><div id="htmlViewport" hidden><iframe id="htmlPreview" title="HTML 미리보기" sandbox="allow-same-origin" hidden></iframe></div>
@@ -160,7 +159,16 @@ $('source').addEventListener('scroll',scheduleDiagnosticGeometry,{passive:true})
 window.addEventListener('resize',scheduleDiagnosticGeometry);document.addEventListener('fullscreenchange',scheduleDiagnosticGeometry);
 new ResizeObserver(scheduleDiagnosticGeometry).observe($('previewHeader'));
 new MutationObserver(()=>{if(document.documentElement.hasAttribute('data-fbrowse-expanded'))closeDiagnosticsPanel();scheduleDiagnosticGeometry();}).observe(document.documentElement,{attributes:true,attributeFilter:['data-fbrowse-expanded','style','class']});
-function diagnosticsLanguage(){return /\.(py|pyw)$/i.test(path)?'python':/\.(tex|sty|cls)$/i.test(path)?'latex':null;}
+function diagnosticsLanguage(){
+  const name=path.split('/').pop(),dot=name.lastIndexOf('.'),extension=dot>0?name.slice(dot).toLowerCase():'';
+  if(['.py','.pyw'].includes(extension))return 'python';if(['.tex','.sty','.cls'].includes(extension))return 'latex';
+  if(['.js','.mjs','.cjs','.jsx'].includes(extension))return 'javascript';if(['.ts','.tsx'].includes(extension))return 'typescript';
+  if(extension==='.json')return 'json';if(['.yaml','.yml'].includes(extension))return 'yaml';
+  // The server resolves the actual dialect from the current unsaved shebang.
+  // Keep unsupported .zsh visible so the status explains the limitation.
+  if(['.sh','.bash','.zsh'].includes(extension)||!extension&&editor.value.startsWith('#!'))return 'shell';
+  return null;
+}
 function cancelDiagnostics(){clearTimeout(diagnosticsTimer);diagnosticsTimer=0;diagnosticsGeneration++;diagnosticsController?.abort();diagnosticsController=null;}
 function diagnosticsAllowed(){return Boolean(data?.editable&&data.version&&diagnosticsEnabled&&diagnosticsActive&&!document.hidden&&!diagnosticsComposing&&!mutationLock&&!recoveryBlocked&&!abandoned&&diagnosticsLanguage());}
 function clearDiagnostics(){diagnostics=[];diagnosticRanges=[];diagnosticRects=[];hideDiagnosticTooltip();$('diagnosticDecorations').replaceChildren();closeDiagnosticsPanel();$('diagnosticsList').replaceChildren();applyDiagnosticMarkers();}
@@ -195,7 +203,7 @@ function revealDiagnostic(item){
 function renderDiagnostics(result){
   diagnostics=Array.isArray(result.diagnostics)?result.diagnostics.slice(0,200).filter(item=>Number.isInteger(item.line)&&item.line>0&&Number.isInteger(item.column)&&item.column>0&&['error','warning','info'].includes(item.severity)&&typeof item.message==='string'):[];
   const fragment=document.createDocumentFragment();for(const item of diagnostics){const row=document.createElement('li'),button=document.createElement('button');button.type='button';button.className='diagnostic-'+item.severity;button.textContent=item.line+':'+item.column+' · '+(item.severity==='error'?'오류':item.severity==='warning'?'경고':'정보')+' · '+(item.code?item.code+' · ':'')+item.message;button.onclick=()=>revealDiagnostic(item);row.append(button);fragment.append(row);}$('diagnosticsList').replaceChildren(fragment);applyDiagnosticMarkers();
-  const checker=result.checker|| (diagnosticsLanguage()==='python'?'Ruff':'ChkTeX');
+  const checker=({ruff:'Ruff',chktex:'ChkTeX',shellcheck:'ShellCheck',babel:'Babel parser',json:'JSON parser',yaml:'YAML parser'})[result.checker]||'문법 검사';
   if(result.status==='ok'){const errors=diagnostics.filter(item=>item.severity==='error').length,warnings=diagnostics.filter(item=>item.severity==='warning').length;diagnosticStatus(checker+' · 오류 '+errors+' · 경고 '+warnings+(diagnostics.some(item=>item.severity==='info')?' · 정보 '+diagnostics.filter(item=>item.severity==='info').length:''));}
   else{const statuses={unavailable:'사용 불가',unsupported:'지원하지 않는 파일',skipped:'검사 생략',busy:'검사 중 · 재검사 가능'};diagnosticStatus(checker+' · '+(statuses[result.status]||'검사 실패')+(result.message?' · '+result.message:''));}
   if(!diagnostics.length){const row=document.createElement('li');row.textContent=result.status==='ok'?'발견된 문제가 없습니다.':$('diagnosticsStatus').textContent;$('diagnosticsList').append(row);}cacheDiagnosticRanges();positionDiagnosticsPanel();
@@ -211,7 +219,8 @@ async function runDiagnostics(){
     const response=await fetch('/api/diagnostics',{method:'POST',headers:{'Content-Type':'application/json','X-Fbrowse-Token':token},body:JSON.stringify({root:binding.root,path:binding.path,text:binding.text,expected_version:binding.version,request_id:requestId}),signal:controller.signal});
     const result=await response.json();if(!current())return;
     if(!response.ok)throw Error(result.error||'검사 요청에 실패했습니다.');
-    if(result.root_id!==binding.root||result.path!==binding.path||result.request_id!==requestId||result.language!==diagnosticsLanguage())throw Error('검사 응답이 일치하지 않습니다.');
+    const language=diagnosticsLanguage(),languageMatches=language==='shell'?['shell','sh','bash','dash','ksh'].includes(result.language):result.language===language;
+    if(result.root_id!==binding.root||result.path!==binding.path||result.request_id!==requestId||!languageMatches)throw Error('검사 응답이 일치하지 않습니다.');
     renderDiagnostics(result);
   }catch(error){if(generation===diagnosticsGeneration&&diagnosticsController===controller&&(timedOut||!controller.signal.aborted)){clearDiagnostics();diagnosticStatus(timedOut?'검사 시간 초과 · 재검사 가능':'검사 실패 · '+error.message);}}
   finally{clearTimeout(timeout);if(diagnosticsController===controller)diagnosticsController=null;}
@@ -297,7 +306,7 @@ function reload(){if(mutationLock)return;if(isDirty()&&!confirm('저장하지 �
 $('save').onclick=save;$('reload').onclick=reload;
 function followMarkdownLink(event){
   const link=event.target.closest?.('a[href]'),destination=link&&markdownLinks.get(link);
-  if(!destination||event.defaultPrevented||event.shiftKey||event.altKey||![0,1].includes(event.button))return;
+  if(!destination||event.defaultPrevented||![0,1].includes(event.button)||destination.kind==='file'&&(event.shiftKey||event.altKey))return;
   try{
     if(destination.kind==='file'&&parent!==window&&typeof parent.fbrowseOpenMarkdownFile==='function'){
       event.preventDefault();parent.fbrowseOpenMarkdownFile(window,{...destination,background:event.button===1||event.ctrlKey||event.metaKey}).catch(error=>notice(error.message));
@@ -306,33 +315,10 @@ function followMarkdownLink(event){
     }
   }catch(error){if(event.defaultPrevented)notice(error.message);}
 }
-// Use a single fbrowse-owned menu when the Orca bridge is active. The host's
-// native menu must not also issue its own open request for the same selection.
-const webLinkMenu=document.createElement('div');webLinkMenu.id='webLinkMenu';webLinkMenu.hidden=true;webLinkMenu.setAttribute('role','menu');document.body.append(webLinkMenu);
-let webMenuLink=null;
-function closeWebLinkMenu(restore=false){webLinkMenu.hidden=true;if(restore)webMenuLink?.focus();}
-for(const [label,action] of [['Orca 브라우저에서 열기','open'],['백그라운드 탭에서 열기','background'],['링크 복사','copy']]){
-  const item=document.createElement('button');item.type='button';item.textContent=label;item.setAttribute('role','menuitem');
-  item.onclick=()=>{const link=webMenuLink;closeWebLinkMenu();if(!link)return;
-    if(action==='copy'){Promise.resolve().then(()=>navigator.clipboard.writeText(link.href)).catch(()=>notice('링크를 복사하지 못했습니다.'));return;}
-    parent.fbrowseOpenExternal(window,link.href,action==='background');
-  };webLinkMenu.append(item);
-}
-document.addEventListener('contextmenu',event=>{
-  const link=event.target.closest?.('a[href]');
-  if(markdownLinks.get(link)?.kind!=='web'||parent===window||parent.fbrowseExternalBrowser?.()!=='orca')return;
-  event.preventDefault();event.stopPropagation();webMenuLink=link;webLinkMenu.hidden=false;
-  webLinkMenu.style.left=Math.max(4,Math.min(event.clientX,innerWidth-webLinkMenu.offsetWidth-4))+'px';
-  webLinkMenu.style.top=Math.max(4,Math.min(event.clientY,innerHeight-webLinkMenu.offsetHeight-4))+'px';webLinkMenu.firstElementChild.focus();
-});
-document.addEventListener('pointerdown',event=>{if(!webLinkMenu.contains(event.target))closeWebLinkMenu();},true);
-document.addEventListener('scroll',()=>closeWebLinkMenu(),true);window.addEventListener('blur',()=>closeWebLinkMenu());
-webLinkMenu.addEventListener('keydown',event=>{
-  const items=[...webLinkMenu.children],index=items.indexOf(document.activeElement);
-  if(event.key==='Escape'){event.preventDefault();closeWebLinkMenu(true);}
-  else if(['ArrowDown','ArrowUp','Home','End'].includes(event.key)){event.preventDefault();items[event.key==='Home'?0:event.key==='End'?items.length-1:(index+(event.key==='ArrowDown'?1:items.length-1))%items.length].focus();}
-  else if(event.key==='Tab')closeWebLinkMenu();
-});
+// Preserve the host's native link context menu, including Orca's client-side
+// Open Link In Default Browser / Open Link In Orca Browser actions. A web guest
+// cannot invoke the host IPC directly. Do not layer another menu or open request
+// on top of it, even when the optional server-to-Orca bridge is unavailable.
 window.addEventListener('message',event=>{if(event.origin===location.origin&&event.source===parent&&event.data?.type==='fbrowse-external-error'&&typeof event.data.message==='string')notice(event.data.message);});
 document.addEventListener('click',followMarkdownLink);document.addEventListener('auxclick',followMarkdownLink);
 window.addEventListener('beforeunload',event=>{if(isDirty()&&parent===window){event.preventDefault();event.returnValue='';}});

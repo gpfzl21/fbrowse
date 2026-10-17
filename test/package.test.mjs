@@ -33,6 +33,8 @@ test('packed npm app installs globally and runs without Python, Bash, tmux or fl
     assert.ok(files.includes('bin/fbrowse.mjs'));
     assert.ok(files.includes('public/index.html'));
     assert.ok(files.includes('lib/server.mjs'));
+    assert.ok(files.includes('lib/diagnostics-runner.mjs'));
+    assert.ok(files.includes('lib/diagnostics-parsers.mjs'));
     assert.ok(files.every(file => !/\.(?:py|sh)$/.test(file)), 'legacy runtimes must not ship');
     assert.ok(files.every(file => !/(?:^|\/)(?:\.aws|\.agents|\.codex|test|dist)(?:\/|$)/.test(file)));
     const archive = path.join(temporary, packed.filename);
@@ -48,7 +50,7 @@ test('packed npm app installs globally and runs without Python, Bash, tmux or fl
     assert.equal(await fs.readFile(collision, 'utf8'), 'unrelated command');
     await exec('npm', ['install', '--global', '--prefix', prefix, '--offline', '--ignore-scripts',
       '--no-audit', '--no-fund', '--cache', npmCache, archive], { cwd: temporary, timeout: 30_000 });
-    assert.match((await run('--version')).stdout, /0\.10\.3/);
+    assert.match((await run('--version')).stdout, /0\.11\.0/);
     await run('roots', 'add', 'external', external, '--name', '참고 자료');
     await run('--no-pdfjs');
     started = true;
@@ -70,6 +72,20 @@ test('packed npm app installs globally and runs without Python, Bash, tmux or fl
     assert.equal((await fetch(new URL('_math_assets/katex.min.js', url))).status, 200);
     assert.equal((await fetch(new URL('_math_assets/fonts/KaTeX_Main-Regular.woff2', url))).status, 200);
     assert.equal((await fetch(new URL('_app_assets/markdown-math.js', url))).status, 200);
+    // Bundled parsers must also work after a clean packed install with only Node.
+    for (const [name, text] of [['pack.js', 'const x = ;'], ['pack.ts', 'const x: = 1;'],
+      ['pack.json', '{"x": }'], ['pack.yaml', 'key: 1\nkey: 2\n']]) {
+      await fs.writeFile(path.join(project, name), '');
+      const editor = await (await fetch(new URL('api/editor?' + new URLSearchParams({root:'project',path:name}), url))).json();
+      const diagnostic = await fetch(new URL('api/diagnostics', url), { method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Fbrowse-Token': info.config_token, Origin: new URL(url).origin },
+        body: JSON.stringify({root:'project',path:name,text,expected_version:editor.version,request_id:'pack-parser'}) });
+      assert.equal(diagnostic.status, 200);
+      const result = await diagnostic.json(); assert.equal(result.status, 'ok', result.message);
+      assert.ok(result.diagnostics.some(item => item.severity === 'error'), name);
+      assert.equal(await fs.readFile(path.join(project, name), 'utf8'), '');
+      await fs.rm(path.join(project, name));
+    }
     assert.deepEqual(await fs.readdir(project), [], 'no app/config files in caller project');
     assert.deepEqual(await fs.readdir(external), [], 'selected root contents stay intact');
     await run('stop');

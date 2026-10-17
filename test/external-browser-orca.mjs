@@ -58,25 +58,27 @@ try{
     });
     assert.equal(content.url,url);assert.ok(content.title.includes(title));
     assert.equal((await pages()).length,before+1,'one click creates exactly one top-level page');
-    if(action.name==='middleReAct')assert.equal((await pages()).find(t=>t.browserPageId===source)?.active,true,'background open restores source focus');
+    if(action.name==='backgroundReAct')assert.equal((await pages()).find(t=>t.browserPageId===source)?.active,true,'background open restores source focus');
     await intact();evidence.push({action:action.name,url,title:content.title,newPages:1,draftRetained:true});
     await cli('tab','close','--page',target);owned.delete(target);
   }
   await verify(async function leftChatTS(){await click(source,'ChatTS');},'https://arxiv.org/abs/2412.03104','ChatTS');
   await verify(async function leftReAct(){await click(source,'ReAct');},'https://arxiv.org/abs/2210.03629','ReAct');
-  await verify(async function contextMenuReAct(){
-    const point=await evaluate(source,`(()=>{const f=state.tabs[0].frame,r=f.getBoundingClientRect(),a=[...f.contentDocument.querySelectorAll('#markdown a')].find(a=>a.textContent==='ReAct').getBoundingClientRect();return {x:r.x+a.x+a.width/2,y:r.y+a.y+a.height/2}})()`);
-    const before=(await pages()).length;
-    await cli('mouse','move','--page',source,'--x',String(point.x),'--y',String(point.y));
-    await cli('mouse','down','--page',source,'--button','right');await cli('mouse','up','--page',source,'--button','right');
-    assert.equal((await pages()).length,before,'right-click alone opens nothing');
-    await click(source,'Orca 브라우저에서 열기','menuitem');
-  },'https://arxiv.org/abs/2210.03629','ReAct');
-  await verify(async function middleReAct(){
-    const point=await evaluate(source,`(()=>{const f=state.tabs[0].frame,r=f.getBoundingClientRect(),a=[...f.contentDocument.querySelectorAll('#markdown a')].find(a=>a.textContent==='ReAct').getBoundingClientRect();return {x:r.x+a.x+a.width/2,y:r.y+a.y+a.height/2}})()`);
+  await cli('tab','switch','--page',source);
+  const point=await evaluate(source,`(()=>{const f=state.tabs[0].frame,r=f.getBoundingClientRect(),a=[...f.contentDocument.querySelectorAll('#markdown a')].find(a=>a.textContent==='ReAct').getBoundingClientRect();return {x:r.x+a.x+a.width/2,y:r.y+a.y+a.height/2}})()`);
+  await verify(async function backgroundReAct(){
     await cli('mouse','move','--page',source,'--x',String(point.x),'--y',String(point.y));
     await cli('mouse','down','--page',source,'--button','middle');await cli('mouse','up','--page',source,'--button','middle');
   },'https://arxiv.org/abs/2210.03629','ReAct');
+  await cli('tab','switch','--page',source);
+  const before=(await pages()).length,requests=receipts.length;
+  await evaluate(source,`state.tabs[0].frame.contentDocument.addEventListener('contextmenu',event=>{queueMicrotask(()=>{window.lastContextPrevented=event.defaultPrevented;});})`);
+  await cli('mouse','move','--page',source,'--x',String(point.x),'--y',String(point.y));
+  await cli('mouse','down','--page',source,'--button','right');await cli('mouse','up','--page',source,'--button','right');
+  assert.equal(await evaluate(source,'lastContextPrevented'),false);
+  assert.equal(await evaluate(source,"!state.tabs[0].frame.contentDocument.querySelector('#webLinkMenu')"),true);
+  assert.equal(receipts.length,requests);assert.equal((await pages()).length,before);await intact();
+  evidence.push({action:'nativeContextMenu',newOrcaPages:0,extraRequests:0,contextDefaultPrevented:false,draftRetained:true});
   await writeFile('/tmp/fbrowse-external-real-evidence.json',JSON.stringify({cli:command,runtime:(await cli('status')).runtime.appVersion,evidence},null,2)+'\n');
   console.log(JSON.stringify({passed:true,evidence},null,2));
 }finally{

@@ -35,7 +35,16 @@ test('diagnostics HTTP binds stdin text to a visible current file without modify
       'notes.txt': 'unchanged\n', 'binary.py': Buffer.from([0, 255, 65]), '.hidden.py': 'hidden = 1\n',
       'oversize.py': Buffer.alloc(8 * 1024 * 1024 + 1, 35), 'canary.txt': 'sibling canary\n',
       // If a checker discovers this config, normal diagnostics will fail.
-      'pyproject.toml': '[tool.ruff]\nthis-is-not-a-valid-option = true\n', '.chktexrc': 'invalid checker config canary\n' };
+      'pyproject.toml': '[tool.ruff]\nthis-is-not-a-valid-option = true\n', '.chktexrc': 'invalid checker config canary\n',
+      'script.sh': '#!/bin/sh\nprintf "ok\\n"\n', 'script.bash': '#!/bin/bash\nprintf "ok\\n"\n',
+      'script.zsh': '#!/bin/zsh\necho ok\n', 'run-script': '#!/usr/bin/env bash\necho ok\n',
+      'code.js': 'const value = 1;\n', 'code.ts': 'const value: number = 1;\n',
+      'code.jsx': 'const el = <div />;\n', 'code.tsx': 'const el: JSX.Element = <div />;\n',
+      'code.cjs': 'module.exports = 1;\n', 'code.mjs': 'export const value = 1;\n', 'types.d.ts': 'declare const value: number;\n',
+      'data.json': '{"value": 1}\n', 'data.yaml': 'value: 1\n', 'data.jsonl': '{"value": 1}\n',
+      '.shellcheckrc': 'external-sources=true\ninvalid-option=canary\n',
+      'babel.config.cjs': 'require("fs").writeFileSync("CONFIG_EXECUTED", "bad")',
+      'tsconfig.json': '{"compilerOptions":{"plugins":[{"name":"./babel.config.cjs"}]}}' };
     for (const [file, bytes] of Object.entries(files)) await fs.writeFile(path.join(root, file), bytes);
     await fs.mkdir(path.join(root, 'node_modules'));
     await fs.writeFile(path.join(root, 'node_modules', 'excluded.py'), 'secret = 1\n');
@@ -120,7 +129,63 @@ test('diagnostics HTTP binds stdin text to a visible current file without modify
       assert.ok(included.diagnostics.every(item => !item.message.includes('outside canary')));
       await check('\\immediate\\write18{touch ' + path.join(root, 'TEX_EXECUTED') + '}\n');
     });
-    assert.deepEqual(await snapshot(root), before, 'bytes, mtimes and directory membership unchanged; no .pyc/.aux/cache/output');
+    await t.test('real bundled parsers check only unsaved JS/TS/JSX/TSX/JSON/YAML syntax', async () => {
+      const check = async (file, text) => {
+        const response = await post(await make(file, text)); assert.equal(response.status, 200);
+        const result = await response.json(); assert.equal(result.status, 'ok', result.message); return result.diagnostics;
+      };
+      for (const file of ['code.js', 'code.ts', 'code.jsx', 'code.tsx', 'code.cjs', 'code.mjs', 'types.d.ts', 'data.json', 'data.yaml'])
+        assert.deepEqual(await check(file, files[file]), [], file);
+      for (const [file, text] of [['code.js', 'const broken = ;'], ['code.ts', 'const broken: = 1;'],
+        ['code.jsx', 'const el = <div>;'], ['code.tsx', 'const el: JSX.Element = <div>;'],
+        ['data.json', '{"x": , "y": }'], ['data.yaml', 'a: [1\nb: [2\n']])
+        assert.ok((await check(file, text)).some(item => item.severity === 'error'), file);
+      const unicode = 'const 한글 = "😀";\tconst broken = ;\r\n';
+      const [error] = await check('code.js', unicode);
+      assert.equal(error.column, [...unicode.slice(0, unicode.indexOf(';', unicode.indexOf('broken')))].length + 1);
+      assert.equal(error.end_column, error.column + 1);
+      const json = '{"한글":"😀",\t"a": , "b": }\r\n';
+      const issues = await check('data.json', json); assert.equal(issues.length, 2);
+      assert.equal(issues[0].column, [...json.slice(0, json.indexOf(',', json.indexOf('"a"')))].length + 1);
+      const yaml = '한글: 😀\r\nkey: 1\r\nkey: 2\r\n---\nnext: !custom value\n';
+      const yamlIssues = await check('data.yaml', yaml);
+      assert.ok(yamlIssues.some(item => item.code === 'DUPLICATE_KEY' && item.line === 3 && item.column === 1));
+      assert.ok(yamlIssues.some(item => item.severity === 'warning'));
+      assert.equal((await check('code.js', 'let x; let x; let y; let y;')).length, 2);
+      assert.ok((await check('data.json', '{/*comment*/"x":1,}')).length >= 2);
+      assert.deepEqual(await check('code.ts', 'const value: number = "type errors are outside scope";'), []);
+      const canary = JSON.stringify(path.join(root, 'EXECUTED_JS'));
+      assert.deepEqual(await check('code.js', `import './babel.config.cjs';\nrequire('fs').writeFileSync(${canary},'bad');`), []);
+      assert.deepEqual(await check('data.yaml', 'a: &a [1, 2]\nb: [*a, *a, *a]\n'), []);
+      const capped = await check('data.yaml', Array.from({length: 250}, () => 'key: value').join('\n'));
+      assert.equal(capped.length, 200);
+      assert.equal((await (await post(await make('data.jsonl', '{}\n{}\n'))).json()).status, 'unsupported');
+    });
+    await t.test('real ShellCheck respects dialects, stdin and no external sources or config', async () => {
+      const check = async (file, text) => (await post(await make(file, text))).json();
+      const clean = await check('script.bash', files['script.bash']);
+      if (clean.status === 'unavailable' && !requiredReal) { t.diagnostic('Optional ShellCheck absent; use FBROWSE_SHELLCHECK and FBROWSE_REQUIRE_REAL_DIAGNOSTICS=1 for full QA'); return; }
+      assert.equal(clean.status, 'ok', clean.message); assert.deepEqual(clean.diagnostics, []);
+      const broken = await check('script.bash', '#!/bin/bash\nif then\n');
+      assert.equal(broken.status, 'ok'); assert.ok(broken.diagnostics.some(item => item.severity === 'error'));
+      const text = '#!/bin/bash\necho "한글😀";\techo $missing\n';
+      const warning = await check('script.bash', text);
+      const unassigned = warning.diagnostics.find(item => item.code === 'SC2154');
+      assert.ok(unassigned); assert.equal(unassigned.severity, 'warning');
+      assert.equal(unassigned.column, [...text.split('\n')[1].split('$missing')[0]].length + 1);
+      assert.equal(unassigned.end_column, unassigned.column + '$missing'.length);
+      assert.equal((await check('script.sh', '#!/bin/sh\n[[ x == x ]]\n')).language, 'sh');
+      assert.equal((await check('run-script', '#!/usr/bin/env -S bash -e\nprintf "ok\\n"\n')).language, 'bash');
+      assert.equal((await check('script.sh', '#!/bin/zsh\necho ok\n')).status, 'unsupported');
+      assert.equal((await check('script.zsh', files['script.zsh'])).status, 'unsupported');
+      const crlf = await check('script.bash', '#!/bin/bash\r\necho ok\r\n');
+      assert.ok(crlf.diagnostics.some(item => item.code === 'SC1017'));
+      const source = await check('script.bash', `#!/bin/bash\n# shellcheck external-sources=true\n# shellcheck source=${path.join(other, 'outside.py')}\nsource ${path.join(other, 'outside.py')}\n`);
+      assert.ok(source.diagnostics.some(item => ['SC1144', 'SC1091'].includes(item.code)));
+      assert.ok(source.diagnostics.every(item => !item.message.includes('outside canary')));
+      await check('script.bash', `#!/bin/bash\ntouch ${path.join(root, 'EXECUTED_SHELL')}\n$(touch ${path.join(root, 'EXECUTED_SUBSHELL')})\n`);
+    });
+    assert.deepEqual(await snapshot(root), before, 'bytes, mtimes and directory membership unchanged; no execution/cache/output');
     assert.deepEqual(await snapshot(other), outsideBefore, 'outside root remains unchanged');
     await t.test('disk version mismatch prevents processing another revision', async () => {
       await fs.writeFile(path.join(root, 'code.py'), 'external = 2\n');
