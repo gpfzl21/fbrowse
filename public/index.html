@@ -15,7 +15,7 @@ main{display:flex;min-height:0;flex:1;gap:0;padding:8px}aside{width:330px;min-wi
 @media(max-width:850px){aside{width:260px}main{padding:5px}}
 @media(max-width:560px){main{flex-direction:column;gap:5px}.splitter{display:none}aside{width:100%!important;max-width:none;height:36%;min-height:200px;resize:vertical}.side-foot{display:none}.viewer{min-height:200px}.side-controls{padding:8px}.side-brand{margin-bottom:6px}}
 .root-picker{display:flex;gap:5px;margin-bottom:4px}.root-picker select{flex:1;min-width:0}.root-path{font-size:11px;color:var(--muted);overflow-wrap:anywhere;margin:0 0 10px;max-height:48px;overflow:auto}dialog{background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:10px;width:min(680px,94vw);max-height:85vh;padding:20px}dialog::backdrop{background:#0006}.root-record{padding:10px 0;border-bottom:1px solid var(--line)}.root-record strong,.root-record small{display:block;overflow-wrap:anywhere}.root-record small{color:var(--muted)}.root-record button{margin:5px 5px 0 0}.root-form{display:grid;gap:8px;margin:16px 0}.root-form label{display:grid;gap:3px}.root-form input{padding:7px;background:var(--bg);border:1px solid var(--line);border-radius:5px}.dialog-head{display:flex;align-items:center;justify-content:space-between}.dialog-head h2{margin:0;font-size:18px}
-.primary{background:var(--accent);border-color:var(--accent);color:var(--panel)}.primary:hover{filter:brightness(.94);background:var(--accent)}.add-folder{margin:16px 0}.path-field{display:flex;gap:6px}.path-field input{flex:1;min-width:0}details summary{font-size:12px;color:var(--muted);cursor:pointer}dialog.is-selecting{width:min(760px,96vw)}.folder-hint{font-size:13px;color:var(--muted);margin:12px 0}.folder-places{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.folder-places button{font-size:12px}.folder-location{display:flex;gap:6px}.folder-location input,.folder-options>input,.folder-name input{min-width:0;border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:6px;padding:7px 9px;font:inherit}.folder-location input{flex:1;font-size:13px}.folder-breadcrumbs{display:flex;gap:2px;overflow:auto;align-items:center;padding:7px 0;white-space:nowrap}.folder-breadcrumbs button{border:0;background:none;color:var(--muted);padding:3px 5px;font-size:12px}.folder-breadcrumbs button:last-child{color:var(--text);font-weight:600}.folder-breadcrumbs button:hover{background:var(--hover);border-radius:4px}.folder-options{display:flex;gap:12px;align-items:center;margin:2px 0 8px}.folder-options>input{flex:1;font-size:12px}.folder-options label{font-size:12px;white-space:nowrap;color:var(--muted)}.folder-list{height:clamp(150px,36vh,360px);overflow:auto;border:1px solid var(--line);border-radius:7px;padding:4px}.folder-entry{display:flex;width:100%;gap:10px;align-items:center;text-align:left;border:0;background:none;padding:7px 9px;border-radius:5px;color:var(--text);font-size:13px}.folder-entry:hover{background:var(--hover)}.folder-entry .folder-entry-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.folder-entry small{color:var(--muted);font-size:11px}.folder-entry.is-file{color:var(--muted);cursor:default}.folder-entry.is-file:hover{background:none}.folder-counts,.folder-selection{font-size:12px;color:var(--muted);overflow-wrap:anywhere;margin:7px 0}.folder-name{display:flex;gap:10px;align-items:center;font-size:13px;margin:12px 0 6px}.folder-name input{flex:1}.folder-footer{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}#folderError{font-size:12px;margin:8px 0}@media(max-width:560px){dialog{padding:14px}.folder-options{gap:6px}.folder-location input{width:0}.folder-places{gap:4px}.folder-entry small{display:none}}
+.primary{background:var(--accent);border-color:var(--accent);color:var(--panel)}.primary:hover{filter:brightness(.94);background:var(--accent)}.add-folder{margin:16px 0}.path-field{display:flex;gap:6px}.path-field input{flex:1;min-width:0}details summary{font-size:12px;color:var(--muted);cursor:pointer}dialog.is-selecting{width:min(760px,96vw)}.folder-hint{font-size:13px;color:var(--muted);margin:12px 0}.folder-places{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.folder-places button{font-size:12px}.folder-location{display:flex;gap:6px}.folder-location input,.folder-options>input,.folder-name input{min-width:0;border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:6px;padding:7px 9px;font:inherit}.folder-location input{flex:1;font-size:13px}.folder-breadcrumbs{display:flex;gap:2px;overflow:auto;align-items:center;padding:7px 0;white-space:nowrap}.folder-breadcrumbs button{border:0;background:none;color:var(--muted);padding:3px 5px;font-size:12px}.folder-breadcrumbs button:last-child{color:var(--text);font-weight:600}.folder-breadcrumbs button:hover{background:var(--hover);border-radius:4px}.folder-options{display:flex;gap:12px;align-items:center;margin:2px 0 8px}.folder-options>input{flex:1;font-size:12px}.folder-options label{font-size:12px;white-space:nowrap;color:var(--muted)}.folder-list{height:clamp(150px,36vh,360px);overflow:auto;border:1px solid var(--line);border-radius:7px;padding:4px}.folder-entry{display:flex;width:100%;gap:10px;align-items:center;text-align:left;border:0;background:none;padding:7px 9px;border-radius:5px;color:var(--text);font-size:13px}.folder-entry:hover{background:var(--hover)}.folder-entry .folder-entry-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.folder-entry small{color:var(--muted);font-size:11px}.folder-entry.is-file{color:var(--muted);cursor:default}.folder-entry.is-file:hover{background:var(--hover)}.folder-entry[aria-pressed="true"]{background:var(--selected);outline:1px solid var(--accent);outline-offset:-2px}.folder-entry.is-picker-drop{box-shadow:inset 0 0 0 2px var(--accent)}.folder-entry.is-picker-source{opacity:.45}.folder-tools{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:6px 0}.folder-tools button,.folder-tools span{font-size:12px}#folderSelectedCount{margin-left:auto}.folder-entry[draggable="true"] .folder-entry-name{cursor:grab}#pickerFsName{border:1px solid var(--line);background:var(--bg);border-radius:5px}#pickerFsMessage{max-height:28vh;overflow:auto}.folder-counts,.folder-selection{font-size:12px;color:var(--muted);overflow-wrap:anywhere;margin:7px 0}.folder-name{display:flex;gap:10px;align-items:center;font-size:13px;margin:12px 0 6px}.folder-name input{flex:1}.folder-footer{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}#folderError{font-size:12px;margin:8px 0}@media(max-width:560px){dialog{padding:14px}.folder-options{gap:6px}.folder-location input{width:0}.folder-places{gap:4px}.folder-entry small{display:none}}
 
 :root{--git-modified:#926600;--git-added:#187343;--git-untracked:#23758a;--git-deleted:#bc3544;--git-renamed:#7951ba;--git-conflict:#b33d16;--diff-add:#e6f5eb;--diff-delete:#ffebed}
 @media(prefers-color-scheme:dark){:root{--git-modified:#e3bf65;--git-added:#7ad49d;--git-untracked:#74c7df;--git-deleted:#ff929c;--git-renamed:#c8a4ff;--git-conflict:#ffb08b;--diff-add:#173626;--diff-delete:#40232c}}
@@ -65,11 +65,14 @@ main{display:flex;min-height:0;flex:1;gap:0;padding:8px}aside{width:330px;min-wi
 <form id="folderLocationForm" class="folder-location"><button class="button" id="folderUp" type="button" title="상위 폴더" aria-label="상위 폴더">↑</button><input id="folderLocation" aria-label="서버 폴더 경로" autocomplete="off" spellcheck="false"><button class="button" type="submit">이동</button></form>
 <nav id="folderBreadcrumbs" class="folder-breadcrumbs" aria-label="현재 폴더 경로"></nav>
 <div class="folder-options"><input id="folderFilter" type="search" placeholder="현재 폴더에서 이름 찾기" aria-label="현재 폴더에서 이름 찾기"><label><input id="folderHidden" type="checkbox"> 숨김 표시</label></div>
-<div id="folderEntries" class="folder-list" aria-label="폴더 내용" aria-busy="false"></div>
-<div class="folder-counts" id="folderCounts"></div><p id="folderError" class="error" role="status" hidden></p>
+<div class="folder-tools"><button id="folderNewFile" class="button" type="button">새 파일…</button><button id="folderNewFolder" class="button" type="button">새 폴더…</button><button id="folderRefresh" class="button" type="button">새로고침</button><span id="folderSelectedCount" role="status"></span><button id="folderClearSelection" class="button" type="button" disabled>선택 해제</button></div><p id="folderClipboardStatus" class="folder-counts" role="status" hidden></p><div id="folderEntries" tabindex="0" class="folder-list" aria-label="폴더 내용" aria-busy="false"></div>
+<div class="folder-counts" id="folderCounts"></div><p id="folderActionStatus" class="folder-counts" role="status" hidden></p><p id="folderError" class="error" role="status" hidden></p>
 <label class="folder-name">표시 이름<input id="folderLabel" maxlength="120" placeholder="선택한 폴더 이름"></label>
 <div class="folder-selection" id="folderSelection"></div><div class="folder-footer"><button class="button" id="cancelFolder">취소</button><button class="button primary" id="chooseFolder" disabled>이 폴더 연결</button></div>
+<div id="folderMenu" class="tree-menu" role="menu" aria-label="폴더 선택 창 파일 작업" hidden>
+<button data-picker-action="create" role="menuitem">New File</button><button data-picker-action="mkdir" role="menuitem">New Folder</button><button data-picker-action="path" role="menuitem">Copy Path</button><button data-picker-action="cut" role="menuitem">Cut · Ctrl/Cmd+X</button><button data-picker-action="copy" role="menuitem">Copy · Ctrl/Cmd+C</button><button data-picker-action="paste" role="menuitem">Paste · Ctrl/Cmd+V</button><button data-picker-action="duplicate" role="menuitem">Duplicate</button><button data-picker-action="rename" role="menuitem">Rename</button><button data-picker-action="delete" role="menuitem">Delete</button></div>
 </section></dialog>
+<dialog id="pickerFsDialog" aria-labelledby="pickerFsTitle"><form id="pickerFsForm"><div class="dialog-head"><h2 id="pickerFsTitle"></h2><button id="pickerFsCancel" class="button" type="button">취소</button></div><p id="pickerFsTarget" class="root-path"></p><p id="pickerFsDescription" style="white-space:pre-wrap;overflow-wrap:anywhere"></p><label id="pickerFsNameLabel" for="pickerFsName">이름</label><input id="pickerFsName" autocomplete="off" style="width:100%;padding:8px"><p id="pickerFsMessage" role="status" style="white-space:pre-wrap;overflow-wrap:anywhere"></p><div class="folder-footer"><button id="pickerFsSubmit" class="button primary" type="submit">확인</button></div></form></dialog>
 <dialog id="pushDialog" aria-labelledby="pushTitle"><div class="dialog-head"><h2 id="pushTitle">푸시 내용 검토</h2><button type="button" class="button" id="cancelPush">취소</button></div>
 <form id="pushForm" class="git-review"><p>아래 브랜치와 원격 저장소를 확인한 뒤 푸시하세요.</p><dl><dt>현재 브랜치</dt><dd id="pushBranch"></dd><dt>검토한 HEAD</dt><dd id="pushHead"></dd><dt>대상 브랜치</dt><dd id="pushTarget"></dd></dl><label>설정된 원격 저장소<select id="pushRemote"></select></label><div id="pushURL" class="root-path"></div><label><span><input type="checkbox" id="pushUpstream"> 이 원격 브랜치를 업스트림으로 설정</span></label><p id="pushMessage" role="status"></p><button type="submit" class="button primary" id="confirmPush">확인한 내용으로 푸시</button></form></dialog>
 <script>
@@ -595,34 +598,217 @@ async function saveRoots(data){
 }
 $('rootForm').onsubmit=event=>{event.preventDefault();saveRoots({operation:state.editRoot?'edit':'add',id:state.editRoot,name:$('rootLabel').value,path:$('rootDirectory').value});};
 $('manageRoots').onclick=async()=>{await refreshRoots();drawRootRecords();$('rootMessage').textContent='';$('rootsDialog').showModal();};
-$('closeRoots').onclick=()=>{$('rootsDialog').close();};
+$('closeRoots').onclick=()=>{if(!folderBusy)$('rootsDialog').close();};
 $('rootsDialog').addEventListener('close',()=>{closeFolderPicker();cancelRootEdit();});
 let folderData=null,folderGeneration=0,folderController=null,folderCustomName=false;
+let folderSelected=new Map(),folderAnchor=null,folderClipboard=null,folderBusy=false,folderMenuTarget=null,pickerDialog=null,pickerDialogGeneration=0,folderDrag=null;
 function closeFolderPicker(){
+  if(folderBusy)return;closeFolderMenu();finishFolderDrag();folderSelected.clear();folderClipboard=null;folderAnchor=null;
   folderGeneration++;folderController?.abort();$('folderPicker').hidden=true;$('rootManagement').hidden=false;$('rootsDialog').classList.remove('is-selecting');$('rootsTitle').textContent='루트 폴더 관리';
 }
 function folderFailure(message){$('folderError').textContent=message;$('folderError').hidden=!message;}
+// The picker owns a flat selection and a metadata clipboard. Registered paths
+// share the sidebar's editor mutation protocol; browsing never registers roots.
+function folderAbsolute(parent,name){return parent.replace(/\/$/,'')+'/'+name;}
+function folderTarget(entry,context=folderData.context){return {root:context.root,rootPath:context.rootPath,path:[context.parent,entry.name].filter(Boolean).join('/'),parent:context.parent,kind:entry.kind,object:true,name:entry.name,capability:context.capability,context,entry:{...entry}};}
+function closeFolderMenu(){const menu=$('folderMenu');menu.hidden=true;folderMenuTarget=null;}
+function paintFolderSelection(){
+  for(const node of $('folderEntries').querySelectorAll('.folder-entry'))node.setAttribute('aria-pressed',String(folderSelected.has(node.dataset.name)));
+  $('folderSelectedCount').textContent=folderSelected.size+'개 선택';$('folderClearSelection').disabled=!folderSelected.size;
+  $('folderClipboardStatus').hidden=!folderClipboard;
+  $('folderClipboardStatus').textContent=folderClipboard?(folderClipboard.action==='move'?'잘라내기: ':'복사: ')+folderClipboard.targets.length+'개 · '+folderClipboard.targets[0].rootPath+(folderClipboard.action==='move'?' 안에서 이동':' · 저장된 내용') :'';
+}
+function selectFolderEntry(entry,event={}){
+  const items=[...$('folderEntries').querySelectorAll('.folder-entry')].map(node=>folderData.entriesByName.get(node.dataset.name)),add=event.ctrlKey||event.metaKey;
+  if(event.shiftKey&&items.some(item=>item.name===folderAnchor)){
+    const a=items.findIndex(item=>item.name===folderAnchor),b=items.findIndex(item=>item.name===entry.name);if(!add)folderSelected.clear();
+    for(const item of items.slice(Math.min(a,b),Math.max(a,b)+1))folderSelected.set(item.name,item);
+  }else{if(!add)folderSelected.clear();if(add&&folderSelected.has(entry.name))folderSelected.delete(entry.name);else folderSelected.set(entry.name,entry);folderAnchor=entry.name;}
+  paintFolderSelection();
+}
+function selectedFolderTargets(){return [...folderSelected.values()].map(entry=>folderTarget(entry));}
+function folderMenu(event){
+  event.preventDefault();if(!folderData||folderBusy)return;const row=event.target.closest('.folder-entry'),entry=folderData.entriesByName.get(row?.dataset.name);
+  if(entry){if(!folderSelected.has(entry.name))selectFolderEntry(entry);folderMenuTarget=folderTarget(entry);}else{folderSelected.clear();folderAnchor=null;paintFolderSelection();folderMenuTarget=null;}
+  const menu=$('folderMenu');for(const button of menu.querySelectorAll('button')){const action=button.dataset.pickerAction;button.disabled=['cut','copy','duplicate','rename','delete'].includes(action)&&!folderSelected.size||action==='rename'&&folderSelected.size!==1||action==='paste'&&!folderClipboard;}
+  menu.hidden=false;const box=row?.getBoundingClientRect()||$('folderEntries').getBoundingClientRect();menu.style.left=Math.max(8,Math.min(event.clientX||box.left,innerWidth-menu.offsetWidth-8))+'px';menu.style.top=Math.max(8,Math.min(event.clientY||box.bottom,innerHeight-menu.offsetHeight-8))+'px';menu.querySelector('button:not(:disabled)')?.focus();
+}
+$('folderEntries').addEventListener('contextmenu',folderMenu);
+$('folderEntries').addEventListener('pointerdown',event=>{if(event.button===0&&!event.target.closest('.folder-entry')){folderSelected.clear();folderAnchor=null;paintFolderSelection();}});
+$('folderPicker').addEventListener('pointerdown',event=>{if(!$('folderMenu').contains(event.target)&&!event.target.closest('.folder-entry'))closeFolderMenu();});
+$('folderEntries').addEventListener('scroll',closeFolderMenu,{passive:true});window.addEventListener('resize',()=>{closeFolderMenu();finishFolderDrag();});window.addEventListener('blur',()=>{closeFolderMenu();finishFolderDrag();});
+$('folderClearSelection').onclick=()=>{folderSelected.clear();folderAnchor=null;paintFolderSelection();$('folderEntries').focus();};
+async function pinFolderTargets(targets){
+  if(!targets.length||targets.length>100)throw Error('한 번에 최대 100개 대상을 처리할 수 있습니다.');
+  const infos=new Array(targets.length);let cursor=0;
+  await Promise.all(Array.from({length:Math.min(4,targets.length)},async()=>{while(cursor<targets.length){const i=cursor++,target=targets[i],info=await fsRequest('/api/folder-info',{capability:target.capability,name:target.name});if(info.root_id!==target.root||info.path!==target.path||!info.version)throw Error('대상 정보가 일치하지 않습니다. 다시 선택하세요.');infos[i]=info;}}));return infos;
+}
+async function folderDestination(target){
+  if(target?.kind==='directory'){
+    const listing=await fsRequest('/api/folders',{path:target.entry.path,scope:target.capability,preferred_root:state.root,show_hidden:$('folderHidden').checked});
+    if(listing.path!==target.entry.path)throw Error('대상 폴더가 변경되었습니다.');return listing.context;
+  }
+  return {...folderData.context};
+}
+async function copyFolderTargets(action){
+  if(folderBusy||fsOperation)return;const targets=selectedFolderTargets(),generation=folderGeneration;closeFolderMenu();folderClipboard=null;paintFolderSelection();
+  try{const infos=await pinFolderTargets(targets);if(generation!==folderGeneration||$('folderPicker').hidden)return;folderClipboard={action,targets,infos};paintFolderSelection();folderFailure('');}
+  catch(error){folderFailure(error.message);}
+}
+async function pasteFolderTargets(target){
+  if(!folderClipboard||folderBusy||fsOperation)return;const clipboard=folderClipboard;closeFolderMenu();
+  try{const destination=await folderDestination(target);await runPickerOperations(clipboard.action,clipboard.targets,clipboard.infos,destination);if(clipboard.action==='move'){folderClipboard=null;paintFolderSelection();}}
+  catch(error){folderFailure(error.message);}
+}
+async function showPickerOperation(action,target=null){
+  if(folderBusy||fsOperation||newFileBusy||!folderData)return;
+  const targets=selectedFolderTargets(),generation=++pickerDialogGeneration;closeFolderMenu();
+  const named=['create','mkdir','rename'].includes(action);pickerDialog={action,targets,context:{...folderData.context},infos:null};
+  if($('pickerFsDialog').open)$('pickerFsDialog').close();
+  $('pickerFsTitle').textContent={create:'새 파일',mkdir:'새 폴더',rename:'이름 변경',duplicate:'저장된 내용 복제',delete:'영구 삭제 확인'}[action];
+  $('pickerFsTarget').textContent=targets.length&&!['create','mkdir'].includes(action)?targets.length+'개 대상\n'+targets.map(item=>absoluteTarget(item)).join('\n'):folderData.path;
+  $('pickerFsName').hidden=$('pickerFsNameLabel').hidden=!named;$('pickerFsName').required=named;$('pickerFsName').value=action==='rename'?targets[0]?.name||'':'';
+  const dirty=allPickerAffectedTabs(targets).filter(tabDirty);
+  $('pickerFsDescription').textContent=action==='delete'?'선택한 '+targets.length+'개 대상을 영구 삭제합니다. 폴더의 모든 하위 내용도 삭제합니다. 심볼릭 링크는 링크 자체만 삭제합니다.'+(dirty.length?'\n미저장 초안 '+dirty.length+'개가 삭제됩니다: '+dirty.map(tab=>tab.entry.path).join(', '):''):action==='duplicate'?'디스크에 저장된 내용만 복제합니다. 미저장 초안은 포함하지 않습니다.':'';
+  $('pickerFsMessage').textContent='대상 확인 중…';$('pickerFsSubmit').hidden=false;$('pickerFsSubmit').disabled=true;$('pickerFsCancel').disabled=false;$('pickerFsCancel').textContent='취소';$('pickerFsDialog').showModal();
+  if(named){$('pickerFsName').focus();$('pickerFsName').select();}else $('pickerFsCancel').focus();
+  try{
+    if(['create','mkdir'].includes(action)){const context=await folderDestination(target);if(generation!==pickerDialogGeneration)return;pickerDialog.context=context;$('pickerFsTarget').textContent=folderAbsolute(context.rootPath,context.parent).replace(/\/$/,'')||'/';}
+    else{const infos=await pinFolderTargets(targets);if(generation!==pickerDialogGeneration)return;pickerDialog.infos=infos;}
+    $('pickerFsMessage').textContent='';$('pickerFsSubmit').disabled=false;
+  }catch(error){if(generation===pickerDialogGeneration)$('pickerFsMessage').textContent=error.message;}
+}
+function allPickerAffectedTabs(targets){return state.tabs.filter(tab=>{const root=state.roots.find(root=>root.id===tab.entry.root_id);return root&&targets.some(target=>{const absolute=folderAbsolute(root.path,tab.entry.path),selected=absoluteTarget(target);return absolute===selected||absolute.startsWith(selected+'/');});});}
+function closePickerOperation(){if(folderBusy)return;pickerDialogGeneration++;pickerDialog=null;$('pickerFsDialog').close();}
+$('pickerFsCancel').onclick=closePickerOperation;$('pickerFsDialog').addEventListener('cancel',event=>{event.preventDefault();closePickerOperation();});
+$('pickerFsForm').onsubmit=async event=>{
+  event.preventDefault();if(!pickerDialog||folderBusy||$('pickerFsSubmit').disabled)return;
+  const snapshot=pickerDialog,name=$('pickerFsName').value;
+  if(['create','mkdir','rename'].includes(snapshot.action)&&(!name.trim()||name==='.'||name==='..'||/[\\/\0]/.test(name))){$('pickerFsMessage').textContent='폴더 구분자 없는 이름 하나를 입력하세요.';return;}
+  const targets=['create','mkdir'].includes(snapshot.action)?[{root:snapshot.context.root,rootPath:snapshot.context.rootPath,path:snapshot.context.parent,parent:snapshot.context.parent,capability:snapshot.context.capability,kind:'directory',name,object:false,context:snapshot.context}]:snapshot.targets;
+  await runPickerOperations(snapshot.action,targets,snapshot.infos,null,name);
+};
+async function runPickerOperations(action,targets,infos,destination,name){
+  if(folderBusy||fsOperation||newFileBusy)return;
+  if(!targets.length||targets.length>100){folderFailure('한 번에 최대 100개 대상을 처리할 수 있습니다.');return;}
+  folderBusy=true;fsOperation={action,target:targets[0]};$('newFile').disabled=true;const frozen=[],results=[];let stop=false;
+  if(!$('pickerFsDialog').open){$('pickerFsDialog').showModal();$('pickerFsTarget').textContent=targets.map(target=>absoluteTarget(target)).join('\n');$('pickerFsDescription').textContent='';$('pickerFsName').hidden=$('pickerFsNameLabel').hidden=true;$('pickerFsName').required=false;}
+  $('pickerFsTitle').textContent='파일 작업 중…';$('pickerFsSubmit').hidden=true;$('pickerFsCancel').disabled=true;
+  try{
+    await refreshRoots();
+    for(const target of targets){
+      if(['rename','move','delete'].includes(action)){
+        const absolute=absoluteTarget(target);if(state.roots.some(root=>root.path===absolute||root.path.startsWith(absolute+'/')))throw Error('연결된 루트 자체나 그 상위 폴더는 이동·이름 변경·삭제할 수 없습니다.');
+        const aliases=allPickerAffectedTabs([target]).filter(tab=>tab.entry.root_id!==target.root);
+        if(aliases.length)throw Error('같은 경로를 다른 루트로 연 탭이 있습니다. 해당 초안을 저장하고 탭을 닫은 뒤 다시 시도하세요.');
+        if(target.root!=='@picker'&&!sameRoot(target))throw Error('루트 연결 경로가 변경되었습니다.');
+        const items=await freezeFsEditors(target);frozen.push(items);if(items.filter(item=>item.editor?.editable&&item.binding.version).length>64)throw Error('대상별 편집 탭은 최대 64개까지 유지할 수 있습니다.');
+      }else frozen.push([]);
+    }
+    for(let i=0;i<targets.length;i++){
+      const target=targets[i],items=frozen[i];let sent=false,completed=false;
+      if(stop){results.push({target,message:'앞선 결과가 불명확하여 처리하지 않았습니다.'});continue;}
+      try{
+        fsOperation.target={...target,kind:infos?.[i]?.kind||target.kind};$('pickerFsMessage').textContent=(i+1)+'/'+targets.length+' · '+absoluteTarget(target);
+        const body={action,capability:target.capability,name:['create','mkdir'].includes(action)?name:target.name};
+        if(infos)body.expected_version=infos[i].version;
+        if(action==='rename')body.new_name=name;
+        if(action==='delete')body.confirmed=true;
+        if(['move','copy'].includes(action))body.destination=destination.capability;
+        if(['move','rename'].includes(action))body.editors=items.filter(item=>item.editor?.editable&&item.binding.version).map(item=>({path:item.binding.path,version:item.binding.version}));
+        sent=true;const data=await fsRequest('/api/folder-action',body);completed=true;
+        const context=action==='copy'?destination:target.context,expected=action==='delete'?target.path:['create','mkdir','rename'].includes(action)?[target.parent,name].filter(Boolean).join('/'):action==='move'?[destination.parent,target.name].filter(Boolean).join('/'):null;
+        if(data.root_id!==context.root||!data.path||expected&&data.path!==expected||action==='delete'&&data.deleted!==true||['rename','move'].includes(action)&&data.old_path!==target.path||action!=='delete'&&(data.entry?.path!==data.path||data.entry?.root_id!==context.root))throw Error('작업 결과의 경로가 일치하지 않습니다.');
+        if(['rename','move'].includes(action)&&target.root!=='@picker')await retargetFsTabs(target,data,items);
+        if(action==='delete'){for(const item of items){item.editor?.endMutation(item.binding);item.released=true;item.tab.fsBusy=false;closeTab(item.tab.id,true);}if(state.diff?.root===target.root&&affectedPath(target.root,state.diff.path,target))resetPreview();}
+        results.push({target,ok:true,path:data.path,rootPath:context.rootPath});
+      }catch(error){
+        const unknown=completed||sent&&(error.outcomeUnknown||error.partial);if(unknown){stop=true;for(const item of items)item.editor?.markUncertain({...item.binding,path:item.editor.path,version:item.editor.version,reason:'Folder action result is uncertain. Keep your draft and inspect disk before saving.'});}
+        results.push({target,message:error.message+(unknown?' 일부 변경되었을 수 있습니다. 자동 재시도하지 않습니다.':''),unknown});
+      }
+    }
+  }catch(error){for(const target of targets)results.push({target,message:error.message});}
+  finally{
+    for(const items of frozen)for(const item of items){try{if(!item.released&&item.tab.frame.isConnected)item.editor?.endMutation(item.binding);}catch{}finally{item.tab.fsBusy=false;}}
+    renderWorkspaceTabs();state.cache.clear();
+    const location=folderData?.path,filter=$('folderFilter').value;
+    const reveal=results.find(result=>result.ok&&['create','mkdir','rename'].includes(action)&&(folderAbsolute(result.rootPath,result.path.split('/').slice(0,-1).join('/')).replace(/\/$/,'')||'/')===location);
+    if(location&&!$('folderPicker').hidden){await navigateFolders(location,true);$('folderFilter').value=reveal?'':filter;drawFolderEntries();if(reveal){const entry=folderData.entriesByName.get(reveal.path.split('/').pop());if(entry)selectFolderEntry(entry);}}
+    await update(true).catch(()=>{});
+    const failures=results.filter(result=>!result.ok),message=results.filter(result=>result.ok).length+'개 완료, '+failures.length+'개 실패/미처리\n'+results.map(result=>(result.ok?'완료: ':result.unknown?'결과 불명확: ':'실패: ')+absoluteTarget(result.target)+(result.ok&&action!=='delete'?' → '+folderAbsolute(result.rootPath,result.path):result.ok?'':' · '+result.message)).join('\n');
+    folderBusy=false;fsOperation=null;$('newFile').disabled=false;$('status').textContent=message;$('pickerFsCancel').disabled=false;$('pickerFsCancel').textContent='닫기';
+    $('folderActionStatus').hidden=false;$('folderActionStatus').textContent=results.filter(result=>result.ok).length+'개 완료, '+failures.length+'개 실패/미처리'+(reveal?' · '+folderAbsolute(reveal.rootPath,reveal.path):'');
+    if(!failures.length){closePickerOperation();if(reveal){const row=[...$('folderEntries').querySelectorAll('.folder-entry')].find(node=>node.dataset.name===reveal.path.split('/').pop());row?.focus({preventScroll:true});row?.scrollIntoView({block:'nearest'});}}else{$('pickerFsTitle').textContent='파일 작업 결과';$('pickerFsMessage').textContent=message;}
+  }
+}
+$('folderNewFile').onclick=()=>showPickerOperation('create');$('folderNewFolder').onclick=()=>showPickerOperation('mkdir');$('folderRefresh').onclick=()=>{if(folderData)navigateFolders(folderData.path);};
+$('folderMenu').addEventListener('click',async event=>{
+  const action=event.target.closest('button')?.dataset.pickerAction,target=folderMenuTarget;if(!action)return;
+  if(action==='cut'||action==='copy')return copyFolderTargets(action==='cut'?'move':'copy');
+  if(action==='paste')return pasteFolderTargets(target);
+  if(action==='path'){const value=target?absoluteTarget(target):folderData.path;closeFolderMenu();try{await navigator.clipboard.writeText(value);}catch{folderFailure('클립보드를 사용할 수 없습니다: '+value);}return;}
+  void showPickerOperation(action,target);
+});
+function folderKeyboard(event){
+  const menu=$('folderMenu').contains(event.target),list=$('folderEntries').contains(event.target);if(!menu&&!list)return;
+  if(event.key==='Escape'){event.preventDefault();if(!$('folderMenu').hidden){closeFolderMenu();$('folderEntries').focus();}else{folderSelected.clear();folderAnchor=null;paintFolderSelection();}event.stopPropagation();return;}
+  if(menu&&event.key==='Tab'){closeFolderMenu();return;}
+  if(folderBusy)return;
+  if(event.key==='ContextMenu'||event.shiftKey&&event.key==='F10'){folderMenu(event);return;}
+  if((event.ctrlKey||event.metaKey)&&['a','c','x','v'].includes(event.key.toLowerCase())){
+    if(window.getSelection()?.toString())return;event.preventDefault();const key=event.key.toLowerCase();
+    if(key==='a'){folderSelected=new Map([...$('folderEntries').querySelectorAll('.folder-entry')].map(node=>{const entry=folderData.entriesByName.get(node.dataset.name);return [entry.name,entry];}));paintFolderSelection();}
+    if(key==='c'||key==='x')void copyFolderTargets(key==='x'?'move':'copy');if(key==='v')void pasteFolderTargets();return;
+  }
+  if(event.key==='Delete'&&folderSelected.size){event.preventDefault();void showPickerOperation('delete');}
+  if(event.key==='F2'&&folderSelected.size===1){event.preventDefault();void showPickerOperation('rename');}
+  const peers=[...(menu?$('folderMenu').querySelectorAll('button:not(:disabled)'):$('folderEntries').querySelectorAll('.folder-entry:not(:disabled)'))],index=peers.indexOf(document.activeElement);
+  if(['ArrowDown','ArrowUp','Home','End'].includes(event.key)){
+    event.preventDefault();const next=event.key==='Home'?0:event.key==='End'?peers.length-1:Math.max(0,Math.min(peers.length-1,index+(event.key==='ArrowDown'?1:-1))),node=peers[next];node?.focus();if(node&&!menu){const entry=folderData.entriesByName.get(node.dataset.name);selectFolderEntry(entry,event);}
+  }
+  if(!menu&&event.target.closest('.is-file')&&['Enter',' '].includes(event.key)){event.preventDefault();selectFolderEntry(folderData.entriesByName.get(event.target.closest('.folder-entry').dataset.name),event);}
+}
+$('folderEntries').addEventListener('keydown',folderKeyboard);$('folderMenu').addEventListener('keydown',folderKeyboard);
+function finishFolderDrag(){const drag=folderDrag;folderDrag=null;if(drag){cancelAnimationFrame(drag.frame);drag.ghost?.remove();}for(const node of $('folderEntries').querySelectorAll('.is-picker-drop,.is-picker-source'))node.classList.remove('is-picker-drop','is-picker-source');}
+function scrollFolderDrag(){const drag=folderDrag;if(!drag)return;const box=drag.box,y=drag.y;if(y!=null&&y>=box.top&&y<=box.bottom){const speed=y<box.top+30?-10:y>box.bottom-30?10:0;if(speed)$('folderEntries').scrollTop+=speed;}drag.frame=requestAnimationFrame(scrollFolderDrag);}
+$('folderEntries').addEventListener('dragstart',event=>{
+  const node=event.target.closest('.folder-entry');if(!node||folderBusy||fsOperation||event.ctrlKey||event.metaKey||event.shiftKey){event.preventDefault();return;}
+  const entry=folderData.entriesByName.get(node.dataset.name);if(!folderSelected.has(entry.name))selectFolderEntry(entry);
+  const targets=selectedFolderTargets(),token=browserRequestId();folderDrag={targets,token,pins:pinFolderTargets(targets).catch(error=>({error})),box:$('folderEntries').getBoundingClientRect()};event.dataTransfer.effectAllowed='move';event.dataTransfer.setData('application/x-fbrowse-picker',token);
+  const ghost=make('div','button',targets.length+'개 항목 이동');ghost.style.cssText='position:fixed;left:-1000px;top:0';$('folderPicker').append(ghost);folderDrag.ghost=ghost;event.dataTransfer.setDragImage(ghost,0,0);
+  for(const row of $('folderEntries').querySelectorAll('.folder-entry'))if(folderSelected.has(row.dataset.name))row.classList.add('is-picker-source');folderDrag.frame=requestAnimationFrame(scrollFolderDrag);
+});
+function folderDropEntry(event){const row=event.target.closest('.folder-entry'),entry=folderData?.entriesByName.get(row?.dataset.name);if(entry?.kind!=='directory'||entry.symlink||!entry.readable)return null;const destination=entry.path;if(folderDrag.targets.some(target=>destination===absoluteTarget(target)||destination.startsWith(absoluteTarget(target)+'/')))return null;return {row,target:folderTarget(entry)};}
+$('folderEntries').addEventListener('dragover',event=>{if(!folderDrag)return;folderDrag.y=event.clientY;for(const node of $('folderEntries').querySelectorAll('.is-picker-drop'))node.classList.remove('is-picker-drop');const destination=folderDropEntry(event);if(destination){event.preventDefault();event.dataTransfer.dropEffect='move';destination.row.classList.add('is-picker-drop');}});
+$('folderEntries').addEventListener('drop',async event=>{
+  const drag=folderDrag;if(!drag||event.dataTransfer.getData('application/x-fbrowse-picker')!==drag.token)return;event.preventDefault();const destination=folderDropEntry(event);finishFolderDrag();if(!destination)return;
+  try{const infos=await drag.pins;if(infos.error)throw infos.error;const context=await folderDestination(destination.target);await runPickerOperations('move',drag.targets,infos,context);}catch(error){folderFailure(error.message);}
+});
+$('folderEntries').addEventListener('dragend',finishFolderDrag);
+$('folderEntries').addEventListener('dragleave',event=>{if(folderDrag&&!$('folderEntries').contains(event.relatedTarget))folderDrag.y=null;});
 function drawFolderEntries(){
   const query=$('folderFilter').value.toLocaleLowerCase(),items=folderData.entries.filter(entry=>entry.name.toLocaleLowerCase().includes(query));
   $('folderEntries').replaceChildren(...items.map(entry=>{
     const node=make(entry.kind==='directory'?'button':'div','folder-entry'+(entry.kind==='file'?' is-file':''));
-    node.title=entry.path||entry.name;node.dataset.name=entry.name;
+    node.title=folderAbsolute(folderData.path,entry.name);node.dataset.name=entry.name;node.tabIndex=0;node.draggable=true;node.setAttribute('aria-pressed',String(folderSelected.has(entry.name)));if(entry.kind==='file')node.setAttribute('role','button');
     node.append(icon(entry,'folder-icon'),make('span','folder-entry-name',entry.name));
-    if(entry.kind==='directory'){node.type='button';node.disabled=!entry.readable;node.append(make('small','',entry.readable?(entry.symlink?'연결 폴더 ↗':'열기 →'):'접근 불가'));node.onclick=()=>navigateFolders(entry.path);}
-    else node.append(make('small','','파일 · 참고용'));
+    if(entry.kind==='directory'){node.type='button';node.disabled=!entry.readable;node.append(make('small','',entry.readable?(entry.symlink?'연결 폴더 ↗':'열기 →'):'접근 불가'));node.onclick=event=>{selectFolderEntry(entry,event);if(!event.ctrlKey&&!event.metaKey&&!event.shiftKey)navigateFolders(entry.path);};}
+    else{node.append(make('small','','파일'));node.onclick=event=>selectFolderEntry(entry,event);}
     return node;
   }));
   if(!items.length)$('folderEntries').append(make('div','note',query?'이름이 일치하는 항목이 없습니다.':'빈 폴더입니다. 이 폴더도 연결할 수 있습니다.'));
+  const visible=new Set(items.map(entry=>entry.name));for(const name of folderSelected.keys())if(!visible.has(name))folderSelected.delete(name);if(!visible.has(folderAnchor))folderAnchor=null;paintFolderSelection();
   $('folderCounts').textContent=`폴더 ${folderData.counts.directory}개 · 파일 ${folderData.counts.file}개`+(folderData.truncated?' · 처음 2,000개 표시':'');
 }
-async function navigateFolders(path){
+async function navigateFolders(path,fromOperation=false){
+  if(folderBusy&&!fromOperation)return false;if(!fromOperation)$('folderActionStatus').hidden=true;closeFolderMenu();finishFolderDrag();folderSelected.clear();folderAnchor=null;
   folderController?.abort();const controller=new AbortController();folderController=controller;
   const generation=++folderGeneration;$('folderEntries').setAttribute('aria-busy','true');$('chooseFolder').disabled=true;folderFailure('');
   try{
-    const response=await fetch('/api/folders',{method:'POST',headers:{'Content-Type':'application/json','X-Fbrowse-Token':state.token},body:JSON.stringify({path,show_hidden:$('folderHidden').checked}),signal:controller.signal});
+    const response=await fetch('/api/folders',{method:'POST',headers:{'Content-Type':'application/json','X-Fbrowse-Token':state.token},body:JSON.stringify({path,show_hidden:$('folderHidden').checked,scope:folderData?.context?.capability,preferred_root:state.root}),signal:controller.signal});
     const data=await response.json();if(!response.ok)throw Error(data.error);
     if(generation!==folderGeneration)return false;
-    folderData=data;$('folderLocation').value=data.path;$('folderSelection').textContent='선택할 폴더: '+data.path;
+    folderData=data;folderData.entriesByName=new Map(data.entries.map(entry=>[entry.name,entry]));$('folderLocation').value=data.path;$('folderSelection').textContent='선택할 폴더: '+data.path;
     $('folderUp').disabled=data.path===data.parent;$('folderFilter').value='';
     if(!folderCustomName)$('folderLabel').value=data.name;
     $('folderPlaces').replaceChildren(...data.places.map(place=>{const button=make('button','button',place.name);button.type='button';button.title=place.path;button.onclick=()=>navigateFolders(place.path);return button;}));
@@ -650,12 +836,12 @@ $('folderFilter').oninput=()=>{if(folderData)drawFolderEntries();};
 $('folderLabel').oninput=()=>{folderCustomName=Boolean($('folderLabel').value.trim());};
 $('cancelFolder').onclick=closeFolderPicker;
 $('chooseFolder').onclick=async()=>{
-  if(!folderData)return;
+  if(!folderData||folderBusy)return;
   $('chooseFolder').disabled=true;
   const saved=await saveRoots({operation:state.editRoot?'edit':'add',id:state.editRoot,name:$('folderLabel').value.trim()||folderData.name,path:folderData.path});
   if(saved){closeFolderPicker();$('closeRoots').focus();}else{folderFailure($('rootMessage').textContent);$('chooseFolder').disabled=false;}
 };
-$('rootsDialog').addEventListener('cancel',event=>{if(!$('folderPicker').hidden){event.preventDefault();closeFolderPicker();}});
+$('rootsDialog').addEventListener('cancel',event=>{if(folderBusy){event.preventDefault();return;}if(!$('folderPicker').hidden){event.preventDefault();closeFolderPicker();}});
 async function update(refresh=false){
   clearTimeout(state.timer);state.controller?.abort();const controller=new AbortController();state.controller=controller;
   const generation=++state.generation,query=input.value.trim();entries.setAttribute('aria-busy','true');
