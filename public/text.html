@@ -9,6 +9,7 @@ article .math-display,article .katex-display{max-width:100%;overflow-x:auto;over
 html,body{height:100%;overflow:hidden}body{display:flex;flex-direction:column}header{flex:none}#notice{flex:none;max-height:25vh;overflow:auto}.source-shell{flex:1;min-height:0;isolation:isolate}.source-area{position:relative;flex:1;min-width:0;align-self:stretch}.source{min-width:100%;width:max-content;min-height:100%;pointer-events:none}.source-shell.wrap .source{width:100%}#editor{position:absolute;top:0;left:0;display:block;margin:0;border:0;outline:none;border-radius:0;padding:18px;background:transparent;color:transparent;-webkit-text-fill-color:transparent;caret-color:var(--text);font:13px/1.7 ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;tab-size:4;resize:none;overflow:hidden;white-space:pre;letter-spacing:normal;word-spacing:normal}#editor::selection{background:color-mix(in srgb,var(--accent) 25%,transparent)}.source-shell.wrap #editor{white-space:pre-wrap;overflow-wrap:anywhere}.source .hljs-comment,.source .hljs-quote,.source .hljs-emphasis{font-style:normal}.source .hljs-strong{font-weight:normal}.gutter{z-index:1}#markdown{flex:1;overflow:auto;width:100%;margin:0 auto}#htmlPreview{flex:1;width:100%;min-height:0;border:0;background:white}#dirty{font-size:12px;color:var(--accent)}button:disabled{cursor:default;opacity:.55}@media(max-width:600px){#editor{padding:14px 10px}}
 /* Preview width belongs to the outer viewer, preserving document styles and editor state. */
 #previewWidth{white-space:nowrap}#htmlViewport{flex:1;display:flex;min-height:0;width:100%;max-width:1000px;margin:0 auto;overflow:hidden}body[data-preview-width="full"] #markdown,body[data-preview-width="full"] #htmlViewport{max-width:none}
+body[data-slide-view] #htmlViewport{max-width:none}
 html[data-fbrowse-expanded]>body>#previewHeader{display:none}
 .markdown-code-block{margin:0 0 16px;min-width:0;border-radius:8px;background:var(--soft)}.code-block-tools{display:flex;justify-content:flex-start;align-items:center;gap:10px;padding:8px 12px 0;font-size:11px;color:var(--muted)}.code-block-language{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.code-block-copy{flex:none;padding:3px 8px;font-size:11px}.code-block-copy:focus-visible{outline:2px solid var(--accent);outline-offset:2px}article .markdown-code-block>pre{margin:0;padding-top:10px;border-radius:0 0 8px 8px}
 #diagnosticsControls{display:flex;align-items:center;gap:6px;max-width:100%;min-width:0}#diagnosticsStatus{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:28em}#diagnosticsPanel{flex-basis:100%;max-height:24vh;overflow:auto;border-top:1px solid var(--line);padding-top:6px}#diagnosticsList{list-style:none;margin:0;padding:0}#diagnosticsList button{display:block;width:100%;border:0;text-align:left;white-space:pre-wrap;overflow-wrap:anywhere;padding:4px 6px}.diagnostic-error{color:#cf222e}.diagnostic-warning{color:#9a6700}.gutter>span[data-diagnostic-severity]{position:relative}.gutter>span[data-diagnostic-severity]::before{content:'';position:absolute;left:-8px;top:.55em;width:5px;height:5px;border-radius:50%;background:#9a6700}.gutter>span[data-diagnostic-severity="error"]::before{background:#cf222e}@media(prefers-color-scheme:dark){.diagnostic-error{color:#ff7b72}.diagnostic-warning{color:#e3b341}.gutter>span[data-diagnostic-severity]::before{background:#e3b341}.gutter>span[data-diagnostic-severity="error"]::before{background:#ff7b72}}
@@ -51,7 +52,10 @@ configurePreviewWidth(/\.(md|markdown|mdown)$/i.test(path));
 $('previewWidth').onclick=()=>{previewWidth=previewWidth==='full'?'readable':'full';applyPreviewWidth();try{localStorage.setItem(previewWidthKey,previewWidth);}catch{}};
 const filePrefix='/roots/'+encodeURIComponent(root)+'/files/';
 let fileURL=filePrefix+path.split('/').map(encodeURIComponent).join('/');
-let data=null,rendered=false,sourceMode=false,lineStarts=[],lineNumberFrame=0;
+let data=null,rendered=false,sourceMode=false,lineStarts=[],lineNumberFrame=0,slideView=false,marpDocument=false;
+const slideMode=document.createElement('button');slideMode.id='slideMode';slideMode.textContent='슬라이드 보기';slideMode.hidden=true;slideMode.setAttribute('aria-pressed','false');$('previewWidth').before(slideMode);
+slideMode.onclick=()=>{slideView=!slideView;renderHTML();showMode();if(slideView)$('htmlPreview').focus();};
+window.addEventListener('blur',()=>{if(document.activeElement===$('htmlPreview'))notifyFocus();});
 const session=new URLSearchParams(location.search).get('editorSession')||'',editor=$('editor');
 let savedText='',token=null,saving=false,abandoned=false,mathReady=false,previewReady=false,renderFrame=0,tabWrite=Promise.resolve(),mutationLock=null,recoveryBlocked=false;
 const tokenReady=fetch('/api/info',{cache:'no-store'}).then(response=>response.json()).then(info=>token=info.config_token).catch(()=>null);
@@ -226,6 +230,11 @@ function mutationControls(){
 }
 window.fbrowseEditor={root,get path(){return path;},session,get version(){return data?.version||null;},get editable(){return Boolean(data?.editable);},get busy(){return saving||Boolean(mutationLock);},get dirty(){return isDirty();},
   abandon(){abandoned=true;cancelDiagnostics();clearDiagnostics();updateDirty();},focus(){editor.focus({preventScroll:true});},save:()=>save(),
+  focusPreview(){
+    if(sourceMode)editor.focus({preventScroll:true});
+    else if(data?.html){$('htmlPreview').focus();$('htmlPreview').contentWindow.focus();}
+    else{$('markdown').tabIndex=-1;$('markdown').focus({preventScroll:true});}
+  },
   setDiagnosticsActive(binding){
     if(!binding||binding.root!==root||binding.path!==path||binding.session!==session||typeof binding.active!=='boolean')return false;
     if(diagnosticsActive!==binding.active){diagnosticsActive=binding.active;scheduleDiagnostics();}return true;
@@ -311,6 +320,7 @@ async function mathLibraries(){
 }
 function showMode(){
   const preview=previewReady&&!sourceMode;$('markdown').hidden=!(preview&&data.markdown);$('htmlPreview').hidden=!(preview&&data.html);$('htmlViewport').hidden=!(preview&&data.html);$('previewWidth').hidden=!preview;$('source').hidden=preview;$('wrap').hidden=preview;
+  slideMode.hidden=!(preview&&data.html&&marpDocument);if(preview&&data.html&&slideView)$('previewWidth').hidden=true;
   $('mode').textContent=preview?'원문 보기':'미리보기';$('mode').setAttribute('aria-pressed',String(sourceMode));
   if(!preview){syncEditorSize();scheduleLineNumbers();}scheduleDiagnosticGeometry();
 }
@@ -405,10 +415,16 @@ function renderMarkdown(mathReady){
 }
 function renderHTML(){
   const doc=new DOMParser().parseFromString(currentText(),'text/html');
+  marpDocument=Boolean(doc.querySelector('svg[data-marpit-svg],.marpit>section'));if(!marpDocument)slideView=false;
+  slideMode.textContent=slideView?'스크롤 보기':'슬라이드 보기';slideMode.setAttribute('aria-pressed',String(slideView));document.body.toggleAttribute('data-slide-view',slideView);
+  const frame=$('htmlPreview');
+  // Executable slides have an opaque origin: never combine scripts and same-origin.
+  frame.setAttribute('sandbox',slideView?'allow-scripts':'allow-same-origin');frame.toggleAttribute('allowfullscreen',slideView);
   for(const node of doc.querySelectorAll('base,meta[http-equiv]'))node.remove();
   const base=doc.createElement('base');base.href=new URL(fileURL,location.origin).href;
   const policy=doc.createElement('meta');policy.httpEquiv='Content-Security-Policy';
   policy.content="default-src 'none'; script-src 'none'; object-src 'none'; frame-src 'none'; connect-src 'none'; form-action 'none'; base-uri 'self'; img-src 'self' data: blob: http: https:; style-src 'self' 'unsafe-inline' http: https:; font-src 'self' data: http: https:; media-src 'self' data: blob: http: https:";
+  if(slideView)policy.content=policy.content.replace("script-src 'none'","script-src 'unsafe-inline' http: https:").replace("base-uri 'self'",'base-uri '+location.origin);
   doc.head.prepend(policy,base);$('htmlPreview').srcdoc='<!doctype html>'+doc.documentElement.outerHTML;rendered=true;
 }
 function renderPreview(){data.text=currentText();if(data.html)renderHTML();else if(data.text.length>300000){$('markdown').textContent=data.text;$('markdown').style.whiteSpace='pre-wrap';notice('큰 파일은 전체 원문으로 표시합니다. Markdown 서식은 30만 자 이하에서 적용합니다.');}else{$('markdown').style.whiteSpace='';renderMarkdown(mathReady);}}
@@ -451,7 +467,7 @@ $('copy').onclick=async()=>{if(!data)return;try{await navigator.clipboard.writeT
     if(initialSource)editor.focus({preventScroll:true});
     if(!data.editable&&data.reason)notice('읽기 전용: '+data.reason);
     await preparePreview();
-    if(data.text.length>300000)notice([data.reason,'큰 파일은 전체 원문으로 표시합니다. 문법 색상과 Markdown 서식은 30만 자 이하에서 적용합니다.'].filter(Boolean).join(' · '));
+    if(data.text.length>300000)notice([data.reason,data.html?'큰 HTML 파일의 원문은 문법 색상 없이 표시합니다.':'큰 파일은 전체 원문으로 표시합니다. 문법 색상과 Markdown 서식은 30만 자 이하에서 적용합니다.'].filter(Boolean).join(' · '));
   }catch(error){$('info').textContent=data?.text!==undefined?'원문 보기':'미리보기 불가';notice(error.message+(data?.text!==undefined?' · 원문은 그대로 읽을 수 있습니다.':''));}
 })();
 </script></body></html>
