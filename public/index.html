@@ -33,6 +33,7 @@ main{display:flex;min-height:0;flex:1;gap:0;padding:8px}aside{width:330px;min-wi
 #viewer:fullscreen{width:100%;height:100%;max-width:none;max-height:none;margin:0;background:var(--panel)}#expandedFullscreen{position:absolute;top:14px;right:54px;z-index:20;height:32px;font-size:12px;box-shadow:0 2px 10px #0003}#fullscreenNotice{position:absolute;top:54px;right:14px;z-index:20;max-width:calc(100% - 28px);padding:8px 12px;background:var(--panel);border:1px solid var(--line);border-radius:6px;font-size:12px}#fullscreenPreview svg{width:18px;height:18px}
 #exitExpanded,#expandedFullscreen{transition:opacity .15s}.viewer.is-expanded:not([data-controls-visible])>#exitExpanded,.viewer.is-expanded:not([data-controls-visible])>#expandedFullscreen{opacity:0;pointer-events:none}@media(prefers-reduced-motion:reduce){#exitExpanded,#expandedFullscreen{transition:none}}
 .row[data-draggable-file="true"] .filename,.row[data-draggable-file="true"] .icon{touch-action:none;user-select:none;cursor:grab}.is-drag-source{opacity:.45}.workspace-drag-ghost{position:fixed;z-index:3000;display:flex;align-items:center;gap:8px;max-width:min(380px,75vw);padding:8px 11px;border:1px solid var(--accent);border-radius:7px;background:var(--panel);color:var(--text);box-shadow:0 5px 18px #0003;pointer-events:none;user-select:none;font-size:12px}.workspace-drag-ghost .drag-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.workspace-drag-ghost small{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px}.workspace.is-empty-drop .pane-tabs{display:none!important}.workspace-insertion{position:absolute;z-index:15;width:3px;background:var(--accent);pointer-events:none;border-radius:2px;box-shadow:0 0 0 1px var(--panel)}.workspace-insertion::before,.workspace-insertion::after{content:'';position:absolute;left:-3px;width:9px;height:3px;background:var(--accent)}.workspace-insertion::before{top:0}.workspace-insertion::after{bottom:0}
+.workspace-slot.web-slot{display:flex;flex-direction:column}.web-slot>iframe{flex:1;min-height:0;height:0}.web-toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:7px;padding:8px 12px;border-bottom:1px solid var(--line);background:var(--panel);font-size:12px}.web-toolbar input{flex:1;min-width:100px;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:5px;padding:6px}.web-toolbar details{position:relative}.web-toolbar summary{cursor:pointer;color:var(--muted)}.web-toolbar details[open]>span{display:block;position:absolute;right:0;top:24px;z-index:2;width:260px;padding:12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);box-shadow:0 4px 16px #0003}
 </style></head><body>
 <main><aside id="fileSidebar" aria-label="파일 탐색"><div class="side-controls">
 <div class="side-brand"><strong class="root" id="rootName">프로젝트 파일</strong><button class="plain" id="home" title="검색을 닫고 프로젝트 루트 보기" aria-label="처음으로">⌂</button><button class="plain" id="refresh" title="목록과 선택한 파일 새로고침" aria-label="새로고침">↻</button></div>
@@ -78,6 +79,7 @@ const state={cache:new Map(),expanded:new Set(['']),selected:null,generation:0,t
 Object.assign(state,{gitView:'changes',gitContext:null,gitContextLoading:false,gitReadGeneration:0,gitContextRequest:0,gitReadController:null,gitPages:{},gitBusy:new Map(),gitResults:new Map(),gitDrafts:new Map(),pushReview:null});
 const initial=new URLSearchParams(location.search).get('path');
 const initialRoot=new URLSearchParams(location.search).get('root');
+const initialWeb=new URLSearchParams(location.search).get('web');
 const nodeKey=(root,path)=>JSON.stringify([root,path]);
 const rootLabel=id=>state.roots.find(r=>r.id===id)?.name||id;
 const selectionKey=()=> 'fbrowse-root:'+state.project;
@@ -109,12 +111,11 @@ window.fbrowseConfirmNavigation=source=>{
   if(!canLeaveEditor(state.tabs))return false;abandonTabs(state.tabs);return true;
 };
 function markdownSource(source){const tab=state.tabs.find(tab=>tab.frame.contentWindow===source);return tab&&previewChromeKind(tab)==='text'&&tabEditor(tab)?tab:null;}
-window.fbrowseOpenExternal=(source,href)=>{
-  if(!markdownSource(source))return false;
+window.fbrowseOpenExternal=(source,href,background=false)=>{
+  const origin=markdownSource(source);if(!origin)return false;
   let url;try{url=new URL(href);}catch{return false;}
-  if(!['http:','https:'].includes(url.protocol))return false;
-  // Keep user activation: ask the browser host from the outer page synchronously.
-  window.open(url.href,'_blank','noopener,noreferrer');return true;
+  if(!['http:','https:'].includes(url.protocol)||url.origin===location.origin)return false;
+  select({kind:'web',category:'web',root_id:null,path:url.href,name:url.hostname},false,undefined,{group:origin.group,activate:!background});return true;
 };
 function revealFileAnchor(tab,fragment){
   if(!tab||typeof fragment!=='string'||!fragment.startsWith('#'))return;
@@ -233,7 +234,8 @@ function icon(entry,className='icon',expanded=false){
   }
   node.append(svg);return node;
 }
-const previewURL=entry=>['pdf','media'].includes(entry.category)?fileURL(entry.path,entry.root_id):'/_preview?'+new URLSearchParams({root:entry.root_id,path:entry.path});
+const previewURL=entry=>entry.category==='web'?entry.path:['pdf','media'].includes(entry.category)?fileURL(entry.path,entry.root_id):'/_preview?'+new URLSearchParams({root:entry.root_id,path:entry.path});
+const entryLabel=entry=>entry.category==='web'?'웹 · '+entry.path:rootLabel(entry.root_id)+' · '+entry.path;
 const make=(tag,cls,text)=>{const node=document.createElement(tag);if(cls)node.className=cls;if(text!==undefined)node.textContent=text;return node;};
 async function api(url,signal){const response=await fetch(url,{cache:'no-store',signal});const data=await response.json();if(!response.ok)throw Error(data.error||'요청에 실패했습니다');return data;}
 function note(message,error=false){entries.replaceChildren(make('div',error?'note error':'note',message));}
@@ -659,6 +661,7 @@ function loadPreview(confirmed=false){
 }
 function loadTab(tab,initialTab,pdfPage){
   if(tab.fsBusy){$('status').textContent='파일 작업이 끝난 뒤 다시 불러오세요.';return;}
+  if(tab.entry.category==='web'){tab.pendingWebLoad=true;return;}
   tabEditor(tab)?.abandon();const entry=tab.entry,url=fileURL(entry.path,entry.root_id)+'?v='+Date.now();let viewerURL=previewURL(entry);tab.editor=null;tab.diagnosticsRootPath=state.roots.find(item=>item.id===entry.root_id)?.path;
   if(!['pdf','media'].includes(entry.category)){
     const session=globalThis.crypto?.randomUUID?.()||Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);tab.editor={root:entry.root_id,path:entry.path,session,dirty:false};viewerURL+='&editorSession='+encodeURIComponent(session);if(initialTab)viewerURL+='&initialTab='+encodeURIComponent(initialTab);
@@ -673,12 +676,14 @@ function focusTab(tab){
 }
 function activateTab(id,focus=false,followRoot=true){
   const tab=state.tabs.find(tab=>tab.id===id);if(!tab)return;
+  const web=tab.entry.category==='web';if(web)followRoot=false;
   if(state.activeTab!==id||state.activeGroup!==tab.group||state.viewerMode!=='file'||followRoot&&state.root!==tab.entry.root_id)state.workspaceRevision++;
   if(state.previewExpanded&&state.activeGroup!==tab.group)layoutDirty=true;
-  state.activeTab=id;state.activeGroup=tab.group;state.groups.get(tab.group).active=id;state.selected=tab.entry;state.editor=tab.editor;
+  state.activeTab=id;state.activeGroup=tab.group;state.groups.get(tab.group).active=id;state.selected=web?null:tab.entry;state.editor=tab.editor;
   if(followRoot&&state.root!==tab.entry.root_id){state.root=tab.entry.root_id;input.value='';clearGit();renderRoots();try{localStorage.setItem(selectionKey(),state.root);}catch{}update();}
   state.viewerMode='file';$('workspace').hidden=false;$('empty').hidden=true;$('diffViewer').hidden=true;$('viewerTabs').hidden=!(state.diff?.root===tab.entry.root_id&&state.diff?.path===tab.entry.path);$('diffWrap').hidden=true;$('showFile').setAttribute('aria-pressed','true');$('showDiff').setAttribute('aria-pressed','false');$('open').hidden=false;$('actions').hidden=false;$('open').href=previewURL(tab.entry);
-  $('viewer').setAttribute('aria-label',rootLabel(tab.entry.root_id)+' · '+tab.entry.path+' 미리보기');
+  $('viewer').setAttribute('aria-label',entryLabel(tab.entry)+' 미리보기');
+  if(web)history.replaceState(null,'','/?'+new URLSearchParams({root:state.root,web:tab.entry.path}));
   if(followRoot)history.replaceState(null,'','/?'+new URLSearchParams({root:tab.entry.root_id,path:tab.entry.path}));
   for(const node of entries.querySelectorAll('button[data-path]'))node.classList.toggle('active',node.dataset.path===tab.entry.path&&node.dataset.root===tab.entry.root_id);
   renderWorkspace();if(focus)tabEditor(tab)?.focus?.();
@@ -710,7 +715,7 @@ function renderWorkspaceTabs(){
       }
       item.dataset.root=tab.entry.root_id;item.dataset.path=tab.entry.path;
       const rootName=rootLabel(tab.entry.root_id),identity=rootName+(state.roots.filter(root=>root.name===rootName).length>1?' ['+tab.entry.root_id+']':'');
-      const label=identity+' · '+tab.entry.path;item.title=label+'\n'+(state.roots.find(root=>root.id===tab.entry.root_id)?.path||tab.entry.root_id)+'/'+tab.entry.path;item.setAttribute('aria-selected',String(group.active===tab.id));
+      const label=tab.entry.category==='web'?entryLabel(tab.entry):identity+' · '+tab.entry.path;item.title=tab.entry.category==='web'?tab.entry.path:label+'\n'+(state.roots.find(root=>root.id===tab.entry.root_id)?.path||tab.entry.root_id)+'/'+tab.entry.path;item.setAttribute('aria-selected',String(group.active===tab.id));
       const activate=item.querySelector('.tab-activate');activate.textContent=label;activate.tabIndex=group.active===tab.id?0:-1;activate.setAttribute('aria-label',label);item.querySelector('.tab-close').setAttribute('aria-label',label+' 탭 닫기');item.querySelector('.tab-close').disabled=Boolean(tab.fsBusy);item.querySelector('.tab-dirty').hidden=!tabDirty(tab);
       if(strip.children[index]!==item)strip.insertBefore(item,strip.children[index]||null);
     }
@@ -786,7 +791,7 @@ function layoutWorkspace(){
 }
 function renderWorkspace(){
   const workspace=$('workspace');if(state.previewExpanded&&state.activeTab)workspace.dataset.expandedTab=state.activeTab;else delete workspace.dataset.expandedTab;
-  for(const tab of state.tabs){tab.slot.dataset.group=tab.group;const visible=state.previewExpanded?tab.id===state.activeTab:state.groups.get(tab.group)?.active===tab.id;tab.slot.classList.toggle('is-visible',visible);tab.slot.setAttribute('aria-hidden',String(!visible));tab.frame.tabIndex=visible?0:-1;}
+  for(const tab of state.tabs){tab.slot.dataset.group=tab.group;const visible=state.previewExpanded?tab.id===state.activeTab:state.groups.get(tab.group)?.active===tab.id;tab.slot.classList.toggle('is-visible',visible);tab.slot.setAttribute('aria-hidden',String(!visible));tab.frame.tabIndex=visible?0:-1;if(visible&&state.viewerMode==='file'&&tab.pendingWebLoad){tab.pendingWebLoad=false;tab.frame.src=tab.entry.path;}}
   renderWorkspaceTabs();layoutWorkspace();for(const tab of state.tabs)syncPreviewChrome(tab);syncEditorActivity();
 }
 createGroup('group-1');new ResizeObserver(()=>layoutWorkspace()).observe($('workspace'));
@@ -1012,7 +1017,15 @@ function select(entry,keepDiff=false,initialTab,placement){
   const existing=state.tabs.find(tab=>nodeKey(tab.entry.root_id,tab.entry.path)===nodeKey(entry.root_id,entry.path));if(existing){if(placement?.activate!==false)activateTab(existing.id);return existing;}
   if(placement&&!state.groups.has(placement.group))return;
   if(!keepDiff){state.diffController?.abort();state.diffGeneration++;state.diff=null;}
-  const id='file-tab-'+(++state.nextTab),slot=make('section','workspace-slot'),frame=document.createElement('iframe');slot.id='slot-'+id;slot.setAttribute('role','tabpanel');frame.id=state.tabs.length?'preview-'+state.nextTab:'preview';frame.dataset.tab=id;frame.title=rootLabel(entry.root_id)+' · '+entry.path+' 미리보기';slot.append(frame);$('workspace').append(slot);
+  const id='file-tab-'+(++state.nextTab),slot=make('section','workspace-slot'),frame=document.createElement('iframe');slot.id='slot-'+id;slot.setAttribute('role','tabpanel');frame.id=state.tabs.length?'preview-'+state.nextTab:'preview';frame.dataset.tab=id;frame.title=entryLabel(entry)+' 미리보기';
+  if(entry.category==='web'){
+    slot.classList.add('web-slot');frame.setAttribute('sandbox','allow-scripts allow-same-origin allow-forms');frame.referrerPolicy='no-referrer';frame.allow='fullscreen';
+    const toolbar=make('div','web-toolbar'),address=document.createElement('input'),open=make('a','button','브라우저로 열기'),reload=make('button','button','새로고침'),help=document.createElement('details'),summary=make('summary','','페이지가 안 보이나요?');
+    address.readOnly=true;address.value=entry.path;address.setAttribute('aria-label','원래 웹 주소');address.onclick=()=>address.select();
+    open.href=entry.path;open.target='_blank';open.rel='noopener noreferrer';reload.type='button';reload.onclick=()=>{loadTab(tab);renderWorkspace();};
+    help.append(summary,make('span','','사이트가 다른 앱 안의 표시를 차단할 수 있습니다. 브라우저로 열거나 위 주소를 복사해 사용하세요.'));toolbar.append(address,reload,open,help);slot.append(toolbar);
+  }
+  slot.append(frame);$('workspace').append(slot);
   const tab={id,entry:{...entry},group:placement?.group||state.activeGroup,slot,frame,editor:null};state.tabs.push(tab);layoutDirty=true;
   frame.addEventListener('focus',()=>focusTab(tab));frame.addEventListener('load',()=>{syncPreviewChrome(tab);try{const win=frame.contentWindow;win.addEventListener('keydown',handlePreviewEscape,true);win.addEventListener('focus',()=>focusTab(tab));win.document.addEventListener('pointerdown',()=>{focusTab(tab);queueMicrotask(()=>focusTab(tab));},true);if(initialTab==='source')win.document.querySelector('#editor')?.focus({preventScroll:true});}catch{}});
   loadTab(tab,initialTab);if(placement?.activate!==false)activateTab(id);else renderWorkspace();document.title='fbrowse';return tab;
@@ -1253,7 +1266,7 @@ renderWorkspace();
 input.oninput=()=>{state.controller?.abort();state.generation++;clearTimeout(state.timer);state.timer=setTimeout(()=>update(),200);};
 type.onchange=()=>update();$('refresh').onclick=()=>{if(state.viewerMode==='file'&&!canLeaveEditor())return;state.cache.clear();update(true);if(state.viewerMode==='diff'&&state.diff)selectDiff(state.diff.change,state.diff.group);else loadPreview(true);};
 $('home').onclick=()=>{input.value='';state.expanded=new Set([nodeKey(state.root,'')]);treeSelection=null;update();};
-$('copy').onclick=async()=>{const url=new URL('/?'+new URLSearchParams({root:state.selected?.root_id||state.diff?.root,path:state.selected?.path||state.diff?.path}),location.origin).href;try{await navigator.clipboard.writeText(url);$('copy').textContent='✓';$('copy').title='복사됨';setTimeout(()=>{$('copy').textContent='⧉';$('copy').title='링크 복사';},1500);}catch{window.prompt('미리보기 링크를 복사하세요',url);}};
+$('copy').onclick=async()=>{const active=state.tabs.find(tab=>tab.id===state.activeTab),url=state.viewerMode==='file'&&active?.entry.category==='web'?active.entry.path:new URL('/?'+new URLSearchParams({root:state.selected?.root_id||state.diff?.root,path:state.selected?.path||state.diff?.path}),location.origin).href;try{await navigator.clipboard.writeText(url);$('copy').textContent='✓';$('copy').title='복사됨';setTimeout(()=>{$('copy').textContent='⧉';$('copy').title='링크 복사';},1500);}catch{window.prompt('미리보기 링크를 복사하세요',url);}};
 document.addEventListener('keydown',event=>{
   if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='s'&&activeEditor()){event.preventDefault();activeEditor().save();return;}
   if(handlePreviewEscape(event))return;
@@ -1275,6 +1288,7 @@ document.addEventListener('keydown',event=>{
       for(let i=1;i<=count;i++)state.expanded.add(nodeKey(state.root,parts.slice(0,i).join('/')));
       if(data.entry.kind==='file'&&data.entry.available!==false){const fragment=location.hash;revealFileAnchor(select(data.entry),fragment);}
     }
+    if(initialWeb){const url=new URL(initialWeb);if(['http:','https:'].includes(url.protocol)&&url.origin!==location.origin)select({kind:'web',category:'web',root_id:null,path:url.href,name:url.hostname});}
   }catch(error){$('status').textContent=error.message;}
   await update();
 })();

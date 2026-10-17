@@ -300,8 +300,8 @@ function followMarkdownLink(event){
   try{
     if(destination.kind==='file'&&parent!==window&&typeof parent.fbrowseOpenMarkdownFile==='function'){
       event.preventDefault();parent.fbrowseOpenMarkdownFile(window,{...destination,background:event.button===1||event.ctrlKey||event.metaKey}).catch(error=>notice(error.message));
-    }else if(destination.kind==='web'&&event.button===0&&!event.ctrlKey&&!event.metaKey&&parent!==window&&typeof parent.fbrowseOpenExternal==='function'){
-      event.preventDefault();if(!parent.fbrowseOpenExternal(window,destination.href))notice('웹 링크를 열 수 없습니다. 링크를 다시 확인해 주세요.');
+    }else if(destination.kind==='web'&&parent!==window&&typeof parent.fbrowseOpenExternal==='function'){
+      event.preventDefault();if(!parent.fbrowseOpenExternal(window,destination.href,event.button===1||event.ctrlKey||event.metaKey))notice('웹 링크를 열 수 없습니다. 링크를 다시 확인해 주세요.');
     }
   }catch(error){if(event.defaultPrevented)notice(error.message);}
 }

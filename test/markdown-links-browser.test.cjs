@@ -53,10 +53,12 @@ fixture(async({ready,page,browser,open,tab,frame,register})=>{
   await sourceTab();const priorCount=await count();await source.getByRole('link',{name:'앱 경로',exact:true}).click();await page.waitForFunction(()=>state.selected?.path==='docs/target.md');assert.equal(await count(),priorCount);
 
   await sourceTab();await page.context().route('https://links.example.test/**',route=>route.fulfill({contentType:'text/html',body:'<h1>External site</h1>'}));
-  const popupEvent=page.waitForEvent('popup');await source.getByRole('link',{name:'웹',exact:true}).click();const popup=await popupEvent;
-  await popup.waitForLoadState('domcontentloaded');assert.equal(popup.url(),'https://links.example.test/guide?q=hello#section');
-  assert.equal(await popup.evaluate(()=>opener===null),true);await popup.close();
-  assert.deepEqual(await page.evaluate(()=>openCalls),[{args:['https://links.example.test/guide?q=hello#section','_blank','noopener,noreferrer'],active:true}]);
+  await source.getByRole('link',{name:'웹',exact:true}).click();
+  const web=page.locator('.file-tab[data-path="https://links.example.test/guide?q=hello#section"]');await web.waitFor();
+  const webId=await web.getAttribute('data-tab');await page.frameLocator('iframe[data-tab="'+webId+'"]').getByRole('heading',{name:'External site'}).waitFor();
+  assert.equal(await count(),priorCount+1);assert.equal(await page.evaluate(()=>state.selected),null);
+  assert.deepEqual(await page.evaluate(()=>openCalls),[]);assert.equal(page.context().pages().length,1);
+  await intact();await web.locator('.tab-close').click();await sourceTab();
   assert.equal(await count(),priorCount);await intact();
   await source.getByRole('link',{name:'누락',exact:true}).click();await source.locator('#notice').filter({hasText:'파일이 없습니다'}).waitFor();
   assert.equal(await count(),priorCount);await intact();
@@ -76,5 +78,5 @@ fixture(async({ready,page,browser,open,tab,frame,register})=>{
     await anchored.goto(ready.url+'?root=project&path=docs%2Ftarget.md#'+encodeURIComponent('세부-항목'));
     await anchored.waitForFunction(()=>document.querySelector('.workspace-slot.is-visible iframe')?.contentDocument?.querySelector('#markdown')?.scrollTop>0);
   }finally{await anchorContext.close();}
-  console.log('PASS: internal file/Markdown/anchor/PDF/image/cross-root links retain tabs, groups, drafts and undo; background clicks, missing/slow paths; parent-owned external popup with user activation');
+  console.log('PASS: internal file/Markdown/anchor/PDF/image/cross-root links and external web tabs retain groups, drafts and undo; background clicks, missing/slow paths; no browser popups');
 }).catch(error=>{console.error(error);process.exitCode=1;});

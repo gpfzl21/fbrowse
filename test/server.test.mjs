@@ -66,7 +66,7 @@ test('isolated server and storage integrations', async t => {
     const info = (await request(app, '/api/info')).json();
     assert.equal(info.service, 'project-file-browser');
     assert.equal(info.backend, 'node');
-    assert.equal(info.version, '0.10.2');
+    assert.equal(info.version, '0.10.3');
     assert.equal(info.pid, process.pid);
     assert.equal(info.root, roots.project);
     assert.equal(info.pdfjs, false);
