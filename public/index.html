@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8">
+<html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>fbrowse</title>
 <style>
@@ -28,53 +28,53 @@ main{display:flex;min-height:0;flex:1;gap:0;padding:8px}aside{width:330px;min-wi
 
 .workspace{position:absolute;inset:0;overflow:hidden;--tab-height:38px}.pane-tabs{position:absolute;display:flex;align-items:stretch;overflow:auto;background:var(--panel);border-bottom:1px solid var(--line);z-index:4;outline-offset:-2px}.pane-tabs[data-active="true"]{box-shadow:inset 0 2px var(--accent)}.file-tab{display:flex;align-items:center;flex:none;max-width:280px;border-right:1px solid var(--line);background:var(--bg)}.file-tab[aria-selected="true"]{background:var(--selected);color:var(--accent)}.tab-activate{border:0;background:none;min-width:55px;max-width:230px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:8px 10px;font-size:12px;text-align:left}.tab-name{min-width:0;overflow:hidden;text-overflow:ellipsis}.tab-description{min-width:0;flex:0 8 auto;max-width:130px;overflow:hidden;text-overflow:ellipsis;color:var(--muted);font-size:11px}.tab-activate{display:flex;align-items:baseline;gap:7px}.tab-close{border:0;background:none;color:var(--muted);padding:6px 9px;font-size:17px}.tab-close:hover{background:var(--hover);color:var(--text)}.tab-dirty{color:var(--accent);padding-right:3px}.workspace-slot{position:absolute;overflow:hidden;background:var(--bg);visibility:hidden;pointer-events:none}.workspace-slot.is-visible{visibility:visible;pointer-events:auto;z-index:1}.workspace-slot iframe{height:100%;width:100%}.workspace-separator{position:absolute;z-index:8;background:var(--line);touch-action:none;outline-offset:-2px}.workspace-separator[data-axis="x"]{cursor:col-resize}.workspace-separator[data-axis="y"]{cursor:row-resize}.workspace-separator:hover,.workspace-separator:focus-visible{background:var(--accent)}.workspace-drop{position:absolute;z-index:12;pointer-events:none;background:color-mix(in srgb,var(--accent) 17%,transparent);border:2px solid var(--accent);border-radius:5px;display:grid;place-items:center;color:var(--accent);font-size:12px;font-weight:600;overflow:hidden}.workspace-drag-cover{position:absolute;inset:0;z-index:10;background:transparent}body.is-workspace-resizing{user-select:none}body.is-workspace-resizing::after{content:'';position:fixed;inset:0;z-index:2000;cursor:col-resize}body.is-workspace-resizing[data-split-orientation="vertical"]::after{cursor:row-resize}body.is-workspace-resizing iframe{pointer-events:none}.tree-menu{position:fixed;z-index:1100;min-width:180px;max-width:calc(100vw - 16px);padding:5px;background:var(--panel);border:1px solid var(--line);border-radius:7px;box-shadow:0 5px 24px #0003}.tree-menu button{display:block;width:100%;border:0;background:none;text-align:left;padding:8px;border-radius:4px}.tree-menu button:hover,.tree-menu button:focus-visible{background:var(--hover)}#newFileTarget{overflow-wrap:anywhere;font-size:12px;color:var(--muted)}#newFileName{width:100%;padding:8px;background:var(--bg);border:1px solid var(--line);border-radius:5px}#newFileMessage{min-height:1.5em;font-size:12px}
 .row[aria-disabled="true"]{opacity:.45;cursor:default}.row[aria-disabled="true"]:hover{background:none}
-.row[data-tree-selected="true"]{background:color-mix(in srgb,var(--accent) 14%,var(--panel));outline:1px solid var(--accent);outline-offset:-2px}.row.active .filename{font-weight:700;text-decoration:underline;text-underline-offset:3px}#selectionBar{display:flex;align-items:center;justify-content:space-between;padding:4px 12px;font-size:11px;flex:none}#selectionBar[hidden]{display:none}#entries .caret{display:inline-flex;align-items:center;justify-content:center;min-height:18px}#entries .filename{flex:0 1 auto;min-width:0}#entries .size{margin-left:auto}.tree-marquee{position:fixed;z-index:3001;pointer-events:none;border:1px solid var(--accent);background:color-mix(in srgb,var(--accent) 18%,transparent)}body.is-tree-selecting{user-select:none}body.is-tree-selecting iframe{pointer-events:none}.row[data-file-clipboard="true"] .filename::after{content:' · 복사됨';font-size:10px;color:var(--accent)}#clipboardStatus{padding:4px 12px;font-size:11px;color:var(--muted);overflow-wrap:anywhere}.tab-activate{touch-action:none;user-select:none;cursor:grab}.tab-activate:active{cursor:grabbing}body.is-tab-dragging{user-select:none;cursor:grabbing}body.is-tab-dragging iframe{pointer-events:none}#exitExpanded{z-index:20}
+.row[data-tree-selected="true"]{background:color-mix(in srgb,var(--accent) 14%,var(--panel));outline:1px solid var(--accent);outline-offset:-2px}.row.active .filename{font-weight:700;text-decoration:underline;text-underline-offset:3px}#selectionBar{display:flex;align-items:center;justify-content:space-between;padding:4px 12px;font-size:11px;flex:none}#selectionBar[hidden]{display:none}#entries .caret{display:inline-flex;align-items:center;justify-content:center;min-height:18px}#entries .filename{flex:0 1 auto;min-width:0}#entries .size{margin-left:auto}.tree-marquee{position:fixed;z-index:3001;pointer-events:none;border:1px solid var(--accent);background:color-mix(in srgb,var(--accent) 18%,transparent)}body.is-tree-selecting{user-select:none}body.is-tree-selecting iframe{pointer-events:none}.row[data-file-clipboard="true"] .filename::after{content:' · Copied';font-size:10px;color:var(--accent)}#clipboardStatus{padding:4px 12px;font-size:11px;color:var(--muted);overflow-wrap:anywhere}.tab-activate{touch-action:none;user-select:none;cursor:grab}.tab-activate:active{cursor:grabbing}body.is-tab-dragging{user-select:none;cursor:grabbing}body.is-tab-dragging iframe{pointer-events:none}#exitExpanded{z-index:20}
 .viewer.is-expanded>.viewer-tabs{display:none!important}.viewer.is-expanded .pane-tabs{display:none!important}
 #viewer:fullscreen{width:100%;height:100%;max-width:none;max-height:none;margin:0;background:var(--panel)}#expandedFullscreen{position:absolute;top:14px;right:54px;z-index:20;height:32px;font-size:12px;box-shadow:0 2px 10px #0003}#fullscreenNotice{position:absolute;top:54px;right:14px;z-index:20;max-width:calc(100% - 28px);padding:8px 12px;background:var(--panel);border:1px solid var(--line);border-radius:6px;font-size:12px}#fullscreenPreview svg{width:18px;height:18px}
 #exitExpanded,#expandedFullscreen{transition:opacity .15s}.viewer.is-expanded:not([data-controls-visible])>#exitExpanded,.viewer.is-expanded:not([data-controls-visible])>#expandedFullscreen{opacity:0;pointer-events:none}@media(prefers-reduced-motion:reduce){#exitExpanded,#expandedFullscreen{transition:none}}
 .row[data-draggable-file="true"] .filename,.row[data-draggable-file="true"] .icon{touch-action:none;user-select:none;cursor:grab}.is-drag-source{opacity:.45}.workspace-drag-ghost{position:fixed;z-index:3000;display:flex;align-items:center;gap:8px;max-width:min(380px,75vw);padding:8px 11px;border:1px solid var(--accent);border-radius:7px;background:var(--panel);color:var(--text);box-shadow:0 5px 18px #0003;pointer-events:none;user-select:none;font-size:12px}.workspace-drag-ghost .drag-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.workspace-drag-ghost small{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px}.workspace.is-empty-drop .pane-tabs{display:none!important}.workspace-insertion{position:absolute;z-index:15;width:3px;background:var(--accent);pointer-events:none;border-radius:2px;box-shadow:0 0 0 1px var(--panel)}.workspace-insertion::before,.workspace-insertion::after{content:'';position:absolute;left:-3px;width:9px;height:3px;background:var(--accent)}.workspace-insertion::before{top:0}.workspace-insertion::after{bottom:0}
 .row.is-move-target,#rootPath.is-move-target,#listLabel.is-move-target{background:var(--selected);outline:2px solid var(--accent);outline-offset:-2px}.row{transition:background-color .12s,opacity .12s}#entries.is-move-root{box-shadow:inset 0 0 0 2px var(--accent)}body.is-tree-drop-invalid,body.is-tree-drop-invalid *{cursor:not-allowed!important}.row.is-move-complete{animation:tree-moved .7s ease-out}.workspace-drag-ghost{animation:drag-appear .12s ease-out}.workspace-drag-ghost[data-drop="move"]{border-style:solid;box-shadow:0 5px 18px #0003,0 0 0 2px var(--selected)}.workspace-drag-ghost[data-drop="invalid"]{opacity:.7}@keyframes drag-appear{from{opacity:0}to{opacity:1}}@keyframes tree-moved{from{background:var(--selected);box-shadow:inset 0 0 0 2px var(--accent)}to{box-shadow:inset 0 0 0 0 transparent}}@media(prefers-reduced-motion:reduce){.row,.workspace-drag-ghost{animation:none!important;transition:none!important}}
 </style></head><body>
-<main><aside id="fileSidebar" aria-label="파일 탐색"><div class="side-controls">
-<div class="side-brand"><strong class="root" id="rootName">프로젝트 파일</strong><button class="plain" id="home" title="검색을 닫고 프로젝트 루트 보기" aria-label="처음으로">⌂</button><button class="plain" id="refresh" title="목록과 선택한 파일 새로고침" aria-label="새로고침">↻</button></div>
-<div class="root-picker"><select id="rootSelect" aria-label="루트 폴더 선택"></select><button class="button" id="manageRoots" title="루트 등록·수정·제거">루트 관리</button></div><div class="root-path" id="rootPath"></div>
-<button class="button" id="newFile" type="button" aria-label="새 파일 만들기" style="margin-bottom:8px">새 파일…</button><div class="sidebar-tabs" aria-label="탐색 보기"><button class="button" id="filesTab" aria-pressed="true">파일</button><button class="button" id="gitTab" aria-pressed="false">Git</button></div>
-<div class="search" id="fileSearch"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="파일명·경로 검색" aria-label="파일명 또는 경로 검색" title="하위 폴더 포함 · Ctrl+K / Cmd+K"></div>
-<div id="clipboardStatus" role="status" aria-live="polite" hidden></div><div class="toolbar"><select id="type" aria-label="파일 형식"><option value="all">전체 파일</option><option value="pdf">PDF</option><option value="html">HTML</option><option value="markdown">Markdown</option><option value="code">코드</option></select><div class="actions" id="actions" hidden><button class="button" id="expandPreview" aria-pressed="false" aria-label="크게 보기" title="크게 보기 · Orca 화면 유지 · Esc로 돌아가기">⛶</button><button class="button" id="fullscreenPreview" aria-pressed="false" aria-label="전체 화면" title="전체 화면 · Esc로 돌아가기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></svg></button><button class="button" id="copy" aria-label="링크 복사" title="링크 복사">⧉</button><a class="button" id="open" target="_blank" rel="noopener" aria-label="새 탭에서 열기" title="새 탭에서 열기">↗</a></div></div>
-</div><div class="side-head" id="listLabel">폴더</div><div id="selectionBar" hidden><span id="selectionCount" role="status" aria-live="polite"></span><button id="clearSelection" class="button" type="button">선택 해제</button></div><nav id="entries" aria-label="파일과 폴더" aria-busy="true"></nav><nav id="gitPanel" aria-label="Git 변경사항" aria-busy="false" hidden></nav><div class="side-foot" id="status" role="status">파일 목록을 불러오는 중…</div></aside>
-<div class="splitter" id="sidebarResize" role="separator" aria-label="파일 목록 너비 조절" aria-orientation="vertical" aria-controls="fileSidebar" tabindex="0" title="드래그로 파일 목록 너비 조절 · 방향키로도 조절 가능"></div>
-<section class="viewer" id="viewer" aria-label="파일 미리보기"><div class="viewer-tabs" id="viewerTabs" hidden><span class="diff-path" id="diffPath"></span><button class="button" id="diffWrap" aria-pressed="true" title="긴 diff 줄을 화면 너비에 맞춰 줄바꿈">자동 줄바꿈</button><button class="button" id="showDiff" aria-pressed="true">변경사항</button><button class="button" id="showFile" aria-pressed="false" disabled>파일 열기</button></div><div class="preview"><div class="empty" id="empty"><div><div class="symbol">▤</div><h1>찾고, 바로 열어보세요</h1><p>폴더를 펼치거나 파일명으로 검색하세요.<br>PDF, HTML, Markdown과 코드를 바로 볼 수 있습니다.</p></div></div><section id="diffViewer" aria-label="파일 변경사항" hidden><div id="diffMessage" class="diff-message" role="status"></div><pre id="diffContent" class="wrap"></pre></section><div id="workspace" class="workspace" hidden><div id="workspaceDragCover" class="workspace-drag-cover" hidden></div><div id="workspaceDrop" class="workspace-drop" aria-hidden="true" hidden></div><div id="workspaceInsertion" class="workspace-insertion" aria-hidden="true" hidden></div></div></div><p id="fullscreenNotice" role="status" hidden></p><button class="button" id="expandedFullscreen" hidden aria-pressed="false" aria-label="전체 화면" title="전체 화면 · Esc로 돌아가기">전체 화면</button><button class="button" id="exitExpanded" hidden title="크게 보기 종료 · Esc" aria-label="크게 보기 종료 · Esc">×</button></section></main>
-<div id="groupMenu" class="tree-menu" role="menu" aria-label="편집 그룹 작업" hidden></div>
-<div id="treeMenu" class="tree-menu" role="menu" aria-label="파일 작업" hidden><button id="contextNewFile" type="button" role="menuitem">New File</button><button id="contextNewFolder" type="button" role="menuitem">New Folder</button><button id="contextCopyPath" type="button" role="menuitem">Copy Path</button><button id="contextCopyRelativePath" type="button" role="menuitem">Copy Relative Path</button><button id="contextCopyFile" type="button" role="menuitem">Copy · Ctrl/Cmd+C</button><button id="contextPasteFile" type="button" role="menuitem" disabled>Paste · Ctrl/Cmd+V</button><button id="contextDuplicate" type="button" role="menuitem">Duplicate</button><button id="contextRename" type="button" role="menuitem">Rename</button><button id="contextDelete" type="button" role="menuitem">Delete</button></div>
+<main><aside id="fileSidebar" aria-label="File Explorer"><div class="side-controls">
+<div class="side-brand"><strong class="root" id="rootName">Project Files</strong><button class="plain" id="home" title="Clear search and show the project root" aria-label="Home">⌂</button><button class="plain" id="refresh" title="Refresh the list and selected file" aria-label="Refresh">↻</button></div>
+<div class="root-picker"><select id="rootSelect" aria-label="Select root folder"></select><button class="button" id="manageRoots" title="Add, edit or remove roots">Manage Roots</button></div><div class="root-path" id="rootPath"></div>
+<button class="button" id="newFile" type="button" aria-label="New File" style="margin-bottom:8px">New File…</button><div class="sidebar-tabs" aria-label="Explorer views"><button class="button" id="filesTab" aria-pressed="true">Files</button><button class="button" id="gitTab" aria-pressed="false">Git</button></div>
+<div class="search" id="fileSearch"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="Search filenames and paths" aria-label="Search by filename or path" title="Includes subfolders · Ctrl+K / Cmd+K"></div>
+<div id="clipboardStatus" role="status" aria-live="polite" hidden></div><div class="toolbar"><select id="type" aria-label="File type"><option value="all">All Files</option><option value="pdf">PDF</option><option value="html">HTML</option><option value="markdown">Markdown</option><option value="code">Code</option></select><div class="actions" id="actions" hidden><button class="button" id="expandPreview" aria-pressed="false" aria-label="Expand Preview" title="Expand preview · Stay in Orca · Esc to return">⛶</button><button class="button" id="fullscreenPreview" aria-pressed="false" aria-label="Full Screen" title="Full screen · Esc to return"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></svg></button><button class="button" id="copy" aria-label="Copy Link" title="Copy Link">⧉</button><a class="button" id="open" target="_blank" rel="noopener" aria-label="Open in New Tab" title="Open in New Tab">↗</a></div></div>
+</div><div class="side-head" id="listLabel">Folders</div><div id="selectionBar" hidden><span id="selectionCount" role="status" aria-live="polite"></span><button id="clearSelection" class="button" type="button">Clear Selection</button></div><nav id="entries" aria-label="Files and folders" aria-busy="true"></nav><nav id="gitPanel" aria-label="Git changes" aria-busy="false" hidden></nav><div class="side-foot" id="status" role="status">Loading files…</div></aside>
+<div class="splitter" id="sidebarResize" role="separator" aria-label="Resize file list" aria-orientation="vertical" aria-controls="fileSidebar" tabindex="0" title="Drag or use arrow keys to resize the file list"></div>
+<section class="viewer" id="viewer" aria-label="File preview"><div class="viewer-tabs" id="viewerTabs" hidden><span class="diff-path" id="diffPath"></span><button class="button" id="diffWrap" aria-pressed="true" title="Wrap long diff lines to the viewport width">Word Wrap</button><button class="button" id="showDiff" aria-pressed="true">Changes</button><button class="button" id="showFile" aria-pressed="false" disabled>Open File</button></div><div class="preview"><div class="empty" id="empty"><div><div class="symbol">▤</div><h1>Find a file and open it</h1><p>Expand a folder or search by filename.<br>Preview PDF, HTML, Markdown and code files.</p></div></div><section id="diffViewer" aria-label="File changes" hidden><div id="diffMessage" class="diff-message" role="status"></div><pre id="diffContent" class="wrap"></pre></section><div id="workspace" class="workspace" hidden><div id="workspaceDragCover" class="workspace-drag-cover" hidden></div><div id="workspaceDrop" class="workspace-drop" aria-hidden="true" hidden></div><div id="workspaceInsertion" class="workspace-insertion" aria-hidden="true" hidden></div></div></div><p id="fullscreenNotice" role="status" hidden></p><button class="button" id="expandedFullscreen" hidden aria-pressed="false" aria-label="Full Screen" title="Full screen · Esc to return">Full Screen</button><button class="button" id="exitExpanded" hidden title="Exit expanded preview · Esc" aria-label="Exit expanded preview · Esc">×</button></section></main>
+<div id="groupMenu" class="tree-menu" role="menu" aria-label="Editor group actions" hidden></div>
+<div id="treeMenu" class="tree-menu" role="menu" aria-label="File actions" hidden><button id="contextNewFile" type="button" role="menuitem">New File</button><button id="contextNewFolder" type="button" role="menuitem">New Folder</button><button id="contextCopyPath" type="button" role="menuitem">Copy Path</button><button id="contextCopyRelativePath" type="button" role="menuitem">Copy Relative Path</button><button id="contextCopyFile" type="button" role="menuitem">Copy · Ctrl/Cmd+C</button><button id="contextPasteFile" type="button" role="menuitem" disabled>Paste · Ctrl/Cmd+V</button><button id="contextDuplicate" type="button" role="menuitem">Duplicate</button><button id="contextRename" type="button" role="menuitem">Rename</button><button id="contextDelete" type="button" role="menuitem">Delete</button></div>
 <dialog id="fsDialog" aria-labelledby="fsTitle"><form id="fsForm"><div class="dialog-head"><h2 id="fsTitle"></h2><button id="fsCancel" class="button" type="button">Cancel</button></div><p id="fsTarget" class="root-path"></p><p id="fsDescription"></p><label id="fsNameLabel" for="fsName">Name</label><input id="fsName" autocomplete="off" spellcheck="false" style="width:100%;padding:8px"><p id="fsMessage" role="status" style="white-space:pre-wrap;overflow-wrap:anywhere"></p><div class="folder-footer"><button id="fsSubmit" class="button primary" type="submit"></button></div></form></dialog>
 <dialog id="copyPathDialog" aria-labelledby="copyPathTitle"><div class="dialog-head"><h2 id="copyPathTitle">Copy path</h2><button id="copyPathClose" class="button" type="button">Close</button></div><p>Clipboard unavailable. Select this path and copy it with Ctrl/Cmd+C.</p><input id="copyPathValue" aria-label="Path to copy" readonly style="width:100%;padding:8px"></dialog>
 <button id="fsProgress" class="button" type="button" hidden style="position:fixed;right:18px;bottom:18px;z-index:1040">File operation progress</button>
-<dialog id="newFileDialog" aria-labelledby="newFileTitle"><form id="newFileForm"><div class="dialog-head"><h2 id="newFileTitle">새 파일 만들기</h2><button id="cancelNewFile" class="button" type="button">취소</button></div><p id="newFileTarget"></p><label for="newFileName">파일 이름</label><input id="newFileName" required autocomplete="off" spellcheck="false" placeholder="notes.md"><p id="newFileMessage" class="error" role="status"></p><div class="folder-footer"><button class="button primary" id="createNewFile" type="submit">빈 파일 만들기</button></div></form></dialog>
+<dialog id="newFileDialog" aria-labelledby="newFileTitle"><form id="newFileForm"><div class="dialog-head"><h2 id="newFileTitle">New File</h2><button id="cancelNewFile" class="button" type="button">Cancel</button></div><p id="newFileTarget"></p><label for="newFileName">File name</label><input id="newFileName" required autocomplete="off" spellcheck="false" placeholder="notes.md"><p id="newFileMessage" class="error" role="status"></p><div class="folder-footer"><button class="button primary" id="createNewFile" type="submit">Create Empty File</button></div></form></dialog>
 <dialog id="rootsDialog" aria-labelledby="rootsTitle">
-<div class="dialog-head"><h2 id="rootsTitle">루트 폴더 관리</h2><button class="button" id="closeRoots">닫기</button></div>
-<div id="rootManagement"><p>이 서버의 폴더를 찾아 연결하세요. 연결을 제거해도 원본 파일은 유지됩니다.</p>
-<div id="rootRecords"></div><button class="button primary add-folder" id="browseFolder">＋ 폴더 찾아 연결…</button>
-<details id="manualRoot"><summary>경로 직접 입력</summary><form class="root-form" id="rootForm">
-<label>이름<input id="rootLabel" required maxlength="120" placeholder="논문"></label>
-<label>서버 경로<span class="path-field"><input id="rootDirectory" required placeholder="/mnt/data/papers"><button class="button" type="button" id="browseRootDirectory">찾아보기…</button></span></label>
-<div><button class="button" type="submit" id="saveRoot">등록</button> <button class="button" type="button" id="cancelRootEdit" hidden>수정 취소</button></div></form></details>
+<div class="dialog-head"><h2 id="rootsTitle">Manage Root Folders</h2><button class="button" id="closeRoots">Close</button></div>
+<div id="rootManagement"><p>Browse and connect folders on this server. Disconnecting a folder preserves its files.</p>
+<div id="rootRecords"></div><button class="button primary add-folder" id="browseFolder">＋ Browse and Connect Folder…</button>
+<details id="manualRoot"><summary>Enter Path Manually</summary><form class="root-form" id="rootForm">
+<label>Name<input id="rootLabel" required maxlength="120" placeholder="Papers"></label>
+<label>Server path<span class="path-field"><input id="rootDirectory" required placeholder="/mnt/data/papers"><button class="button" type="button" id="browseRootDirectory">Browse…</button></span></label>
+<div><button class="button" type="submit" id="saveRoot">Add</button> <button class="button" type="button" id="cancelRootEdit" hidden>Cancel Edit</button></div></form></details>
 <p id="rootMessage" role="status"></p></div>
-<section id="folderPicker" hidden aria-label="서버 폴더 선택">
-<p class="folder-hint">폴더를 열어 내용을 확인한 뒤 연결하세요.</p>
-<div class="folder-places" id="folderPlaces" aria-label="자주 쓰는 위치"></div>
-<form id="folderLocationForm" class="folder-location"><button class="button" id="folderUp" type="button" title="상위 폴더" aria-label="상위 폴더">↑</button><input id="folderLocation" aria-label="서버 폴더 경로" autocomplete="off" spellcheck="false"><button class="button" type="submit">이동</button></form>
-<nav id="folderBreadcrumbs" class="folder-breadcrumbs" aria-label="현재 폴더 경로"></nav>
-<div class="folder-options"><input id="folderFilter" type="search" placeholder="현재 폴더에서 이름 찾기" aria-label="현재 폴더에서 이름 찾기"><label><input id="folderHidden" type="checkbox"> 숨김 표시</label></div>
-<div class="folder-tools"><button id="folderNewFile" class="button" type="button">새 파일…</button><button id="folderNewFolder" class="button" type="button">새 폴더…</button><button id="folderRefresh" class="button" type="button">새로고침</button><span id="folderSelectedCount" role="status"></span><button id="folderClearSelection" class="button" type="button" disabled>선택 해제</button></div><p id="folderClipboardStatus" class="folder-counts" role="status" hidden></p><div id="folderEntries" tabindex="0" class="folder-list" aria-label="폴더 내용" aria-busy="false"></div>
+<section id="folderPicker" hidden aria-label="Select server folder">
+<p class="folder-hint">Open a folder to review its contents before connecting it.</p>
+<div class="folder-places" id="folderPlaces" aria-label="Places"></div>
+<form id="folderLocationForm" class="folder-location"><button class="button" id="folderUp" type="button" title="Parent folder" aria-label="Parent folder">↑</button><input id="folderLocation" aria-label="Server folder path" autocomplete="off" spellcheck="false"><button class="button" type="submit">Go</button></form>
+<nav id="folderBreadcrumbs" class="folder-breadcrumbs" aria-label="Current folder path"></nav>
+<div class="folder-options"><input id="folderFilter" type="search" placeholder="Find a name in this folder" aria-label="Find a name in this folder"><label><input id="folderHidden" type="checkbox"> Show hidden files</label></div>
+<div class="folder-tools"><button id="folderNewFile" class="button" type="button">New File…</button><button id="folderNewFolder" class="button" type="button">New Folder…</button><button id="folderRefresh" class="button" type="button">Refresh</button><span id="folderSelectedCount" role="status"></span><button id="folderClearSelection" class="button" type="button" disabled>Clear Selection</button></div><p id="folderClipboardStatus" class="folder-counts" role="status" hidden></p><div id="folderEntries" tabindex="0" class="folder-list" aria-label="Folder contents" aria-busy="false"></div>
 <div class="folder-counts" id="folderCounts"></div><p id="folderActionStatus" class="folder-counts" role="status" hidden></p><p id="folderError" class="error" role="status" hidden></p>
-<label class="folder-name">표시 이름<input id="folderLabel" maxlength="120" placeholder="선택한 폴더 이름"></label>
-<div class="folder-selection" id="folderSelection"></div><div class="folder-footer"><button class="button" id="cancelFolder">취소</button><button class="button primary" id="chooseFolder" disabled>이 폴더 연결</button></div>
-<div id="folderMenu" class="tree-menu" role="menu" aria-label="폴더 선택 창 파일 작업" hidden>
+<label class="folder-name">Display name<input id="folderLabel" maxlength="120" placeholder="Selected folder name"></label>
+<div class="folder-selection" id="folderSelection"></div><div class="folder-footer"><button class="button" id="cancelFolder">Cancel</button><button class="button primary" id="chooseFolder" disabled>Connect This Folder</button></div>
+<div id="folderMenu" class="tree-menu" role="menu" aria-label="Folder picker file actions" hidden>
 <button data-picker-action="create" role="menuitem">New File</button><button data-picker-action="mkdir" role="menuitem">New Folder</button><button data-picker-action="path" role="menuitem">Copy Path</button><button data-picker-action="cut" role="menuitem">Cut · Ctrl/Cmd+X</button><button data-picker-action="copy" role="menuitem">Copy · Ctrl/Cmd+C</button><button data-picker-action="paste" role="menuitem">Paste · Ctrl/Cmd+V</button><button data-picker-action="duplicate" role="menuitem">Duplicate</button><button data-picker-action="rename" role="menuitem">Rename</button><button data-picker-action="delete" role="menuitem">Delete</button></div>
 </section></dialog>
-<dialog id="pickerFsDialog" aria-labelledby="pickerFsTitle"><form id="pickerFsForm"><div class="dialog-head"><h2 id="pickerFsTitle"></h2><button id="pickerFsCancel" class="button" type="button">취소</button></div><p id="pickerFsTarget" class="root-path"></p><p id="pickerFsDescription" style="white-space:pre-wrap;overflow-wrap:anywhere"></p><label id="pickerFsNameLabel" for="pickerFsName">이름</label><input id="pickerFsName" autocomplete="off" style="width:100%;padding:8px"><p id="pickerFsMessage" role="status" style="white-space:pre-wrap;overflow-wrap:anywhere"></p><div class="folder-footer"><button id="pickerFsSubmit" class="button primary" type="submit">확인</button></div></form></dialog>
-<dialog id="pushDialog" aria-labelledby="pushTitle"><div class="dialog-head"><h2 id="pushTitle">푸시 내용 검토</h2><button type="button" class="button" id="cancelPush">취소</button></div>
-<form id="pushForm" class="git-review"><p>아래 브랜치와 원격 저장소를 확인한 뒤 푸시하세요.</p><dl><dt>현재 브랜치</dt><dd id="pushBranch"></dd><dt>검토한 HEAD</dt><dd id="pushHead"></dd><dt>대상 브랜치</dt><dd id="pushTarget"></dd></dl><label>설정된 원격 저장소<select id="pushRemote"></select></label><div id="pushURL" class="root-path"></div><label><span><input type="checkbox" id="pushUpstream"> 이 원격 브랜치를 업스트림으로 설정</span></label><p id="pushMessage" role="status"></p><button type="submit" class="button primary" id="confirmPush">확인한 내용으로 푸시</button></form></dialog>
+<dialog id="pickerFsDialog" aria-labelledby="pickerFsTitle"><form id="pickerFsForm"><div class="dialog-head"><h2 id="pickerFsTitle"></h2><button id="pickerFsCancel" class="button" type="button">Cancel</button></div><p id="pickerFsTarget" class="root-path"></p><p id="pickerFsDescription" style="white-space:pre-wrap;overflow-wrap:anywhere"></p><label id="pickerFsNameLabel" for="pickerFsName">Name</label><input id="pickerFsName" autocomplete="off" style="width:100%;padding:8px"><p id="pickerFsMessage" role="status" style="white-space:pre-wrap;overflow-wrap:anywhere"></p><div class="folder-footer"><button id="pickerFsSubmit" class="button primary" type="submit">Confirm</button></div></form></dialog>
+<dialog id="pushDialog" aria-labelledby="pushTitle"><div class="dialog-head"><h2 id="pushTitle">Review Push</h2><button type="button" class="button" id="cancelPush">Cancel</button></div>
+<form id="pushForm" class="git-review"><p>Review the branch and remote below before pushing.</p><dl><dt>Current branch</dt><dd id="pushBranch"></dd><dt>Reviewed HEAD</dt><dd id="pushHead"></dd><dt>Target branch</dt><dd id="pushTarget"></dd></dl><label>Configured remote<select id="pushRemote"></select></label><div id="pushURL" class="root-path"></div><label><span><input type="checkbox" id="pushUpstream"> Set this remote branch as upstream</span></label><p id="pushMessage" role="status"></p><button type="submit" class="button primary" id="confirmPush">Push Reviewed Changes</button></form></dialog>
 <script>
 'use strict';
 const $=id=>document.getElementById(id), entries=$('entries'), input=$('search'), type=$('type');
@@ -104,7 +104,7 @@ function focusedTab(){return state.tabs.find(tab=>tab.frame===document.activeEle
 function activeEditor(){return tabEditor(focusedTab());}
 function tabDirty(tab){const editor=tabEditor(tab);return editor?editor.dirty:Boolean(tab?.editor?.dirty);}
 function editorDirty(){return state.tabs.some(tabDirty);}
-function canLeaveEditor(tabs=state.tabs.filter(tab=>tab.id===state.activeTab)){return !tabs.some(tabDirty)||confirm('저장하지 않은 변경사항을 버리고 이동할까요?');}
+function canLeaveEditor(tabs=state.tabs.filter(tab=>tab.id===state.activeTab)){return !tabs.some(tabDirty)||confirm('Discard unsaved changes and continue?');}
 function forgetEditor(){state.editor=null;}
 function abandonTabs(tabs){for(const tab of tabs)tabEditor(tab)?.abandon();}
 window.fbrowseConfirmNavigation=source=>{
@@ -121,7 +121,7 @@ window.fbrowseBrowserClientId=browserRequestId();
 let externalBrowserMode='checking';
 async function externalBrowserRequest(data){
   const response=await fetch('/api/external-browser',{method:'POST',headers:{'Content-Type':'application/json','X-Fbrowse-Token':state.token},body:JSON.stringify({client_id:fbrowseBrowserClientId,...data}),signal:AbortSignal.timeout(35000)});
-  const result=await response.json();if(!response.ok)throw Error(result.error||'웹 링크를 열지 못했습니다.');return result;
+  const result=await response.json();if(!response.ok)throw Error(result.error||'Could not open the web link.');return result;
 }
 async function connectExternalBrowser(){
   try{const result=await externalBrowserRequest({action:'connect',source_url:location.href});externalBrowserMode=result.connected?'orca':'native';}
@@ -149,12 +149,12 @@ function revealFileAnchor(tab,fragment){
 }
 window.fbrowseOpenMarkdownFile=async(source,destination)=>{
   const origin=markdownSource(source);
-  if(!origin||typeof destination.href!=='string')throw Error('문서 링크의 루트 또는 경로를 확인해 주세요.');
+  if(!origin||typeof destination.href!=='string')throw Error('Check the document link root and path.');
   const binding={...origin.editor},revision=state.workspaceRevision;
   const response=await api('/api/resolve-link?'+new URLSearchParams({root:binding.root,path:binding.path,href:destination.href})),entry=response.entry;
   if(markdownSource(source)!==origin||origin.editor.root!==binding.root||origin.editor.path!==binding.path||origin.editor.session!==binding.session)return;
-  if(!state.roots.some(item=>item.id===binding.root&&item.path===response.source_root_path&&item.connected)||!state.roots.some(item=>item.id===entry?.root_id&&item.path===response.root_path&&item.connected))throw Error('링크의 루트 연결이 변경되었습니다. 다시 확인해 주세요.');
-  if(!entry||entry.available===false)throw Error(entry?.unavailable_reason||'링크의 파일을 열 수 없습니다.');
+  if(!state.roots.some(item=>item.id===binding.root&&item.path===response.source_root_path&&item.connected)||!state.roots.some(item=>item.id===entry?.root_id&&item.path===response.root_path&&item.connected))throw Error('The link root connection changed. Check it again.');
+  if(!entry||entry.available===false)throw Error(entry?.unavailable_reason||'Could not open the linked file.');
   const foreground=!destination.background&&state.workspaceRevision===revision;
   if(foreground){
     input.value='';type.value='all';setSidebarMode('files');clearTreeSelection();
@@ -243,7 +243,7 @@ const iconExtensions={
   text:'txt text log csv tsv rst',
   media:'svg png jpg jpeg gif webp avif ico bmp tif tiff apng mp3 wav ogg flac m4a aac opus mp4 webm mov avi',
 };
-const iconTypeLabels={directory:'폴더',pdf:'PDF 문서',code:'코드 파일',markdown:'Markdown 문서',text:'텍스트 파일',html:'HTML 문서',media:'미디어 파일',file:'파일'};
+const iconTypeLabels={directory:'Folder',pdf:'PDF document',code:'Code file',markdown:'Markdown document',text:'Text file',html:'HTML document',media:'Media file',file:'File'};
 function fileIconType(entry){
   if(entry.kind==='directory')return 'directory';
   if(['pdf','html','markdown','code','media'].includes(entry.category))return entry.category;
@@ -266,10 +266,11 @@ function icon(entry,className='icon',expanded=false){
   node.append(svg);return node;
 }
 const previewURL=entry=>['pdf','media'].includes(entry.category)?fileURL(entry.path,entry.root_id):'/_preview?'+new URLSearchParams({root:entry.root_id,path:entry.path});
+const counted=(count,singular)=>count+' '+singular+(count===1?'':'s');
 const make=(tag,cls,text)=>{const node=document.createElement(tag);if(cls)node.className=cls;if(text!==undefined)node.textContent=text;return node;};
-async function api(url,signal){const response=await fetch(url,{cache:'no-store',signal});const data=await response.json();if(!response.ok)throw Error(data.error||'요청에 실패했습니다');return data;}
+async function api(url,signal){const response=await fetch(url,{cache:'no-store',signal});const data=await response.json();if(!response.ok)throw Error(data.error||'Request failed');return data;}
 function note(message,error=false){entries.replaceChildren(make('div',error?'note error':'note',message));reconcileTreeSelection();}
-const gitLabels={M:'수정됨',U:'추적되지 않음',A:'추가됨',R:'이름 변경됨',D:'삭제됨',C:'복사됨',T:'파일 형식 변경됨','!':'충돌'};
+const gitLabels={M:'Modified',U:'Untracked',A:'Added',R:'Renamed',D:'Deleted',C:'Copied',T:'File type changed','!':'Conflict'};
 const gitPriority=['!','D','R','M','T','A','C','U'];
 function strongest(codes){return gitPriority.find(code=>codes.has(code));}
 function gitCode(change){return change.conflict?'!':change.untracked?'U':change.status;}
@@ -298,7 +299,7 @@ function decorateRow(button,entry){
   const code=strongest(codes);if(!code)return;
   button.dataset.gitStatus=code;
   const summary=gitPriority.filter(c=>codes.has(c)).map(c=>c+' · '+gitLabels[c]).join(', ');
-  const badge=make('span','git-badge',code);badge.title=(entry.kind==='directory'?'하위 변경사항: ':'')+summary;
+  const badge=make('span','git-badge',code);badge.title=(entry.kind==='directory'?'Changes in subfolders: ':'')+summary;
   badge.setAttribute('aria-label',badge.title);(button.querySelector('.result-name')||button).append(badge);
   button.title+='\n'+badge.title;
 }
@@ -309,12 +310,12 @@ function row(entry,result=false){
   button.dataset.symlink=String(Boolean(entry.symlink));
   if(tabDrag?.source==='tree'&&(tabDrag.files||[tabDrag.file]).some(file=>file.root===entry.root_id&&(file.path===entry.path||entry.path.startsWith(file.path+'/'))))button.classList.add('is-drag-source');
   button.title=rootLabel(entry.root_id)+' · '+(state.roots.find(r=>r.id===entry.root_id)?.path||'')+'/'+entry.path;
-  if(entry.symlink)button.title+='\n↗ '+(entry.link_target||'심볼릭 링크')+(entry.available===false?' · '+(entry.unavailable_reason||'접근 불가'):'');
+  if(entry.symlink)button.title+='\n↗ '+(entry.link_target||'Symbolic link')+(entry.available===false?' · '+(entry.unavailable_reason||'Inaccessible'):'');
   button.dataset.baseTitle=button.title;if(entry.available===false)button.setAttribute('aria-disabled','true');
   const line=result?make('span','result-name'):button;
   if(!result)line.append(make('span','caret',entry.kind==='directory'?(state.expanded.has(nodeKey(entry.root_id,entry.path))?'▾':'▸'):''));
   line.append(icon(entry,'icon',state.expanded.has(nodeKey(entry.root_id,entry.path))),make('span','filename',entry.name));
-  if(entry.symlink){const link=make('span','symlink','↗');link.setAttribute('aria-label','심볼릭 링크');line.append(link);}
+  if(entry.symlink){const link=make('span','symlink','↗');link.setAttribute('aria-label','Symbolic link');line.append(link);}
   if(entry.kind==='directory')button.setAttribute('aria-expanded',String(state.expanded.has(nodeKey(entry.root_id,entry.path))));
   else line.append(make('span','size',entry.available===false?'—':bytes(entry.size||0)));
   if(result)button.append(line,make('span','result-path',rootLabel(entry.root_id)+' · '+entry.path));
@@ -326,7 +327,7 @@ function row(entry,result=false){
 function clearGit(){
   state.gitReadController?.abort();state.gitReadGeneration++;state.gitContext=null;state.gitContextLoading=false;state.gitPages={};state.gitView='changes';state.pushReview=null;if($('pushDialog').open)$('pushDialog').close();
   state.gitController?.abort();state.gitGeneration++;state.git=null;state.gitRoot=null;state.gitMarkers.clear();
-  $('gitPanel').replaceChildren(make('div','note','Git 상태를 불러오는 중…'));repaintGitMarkers();
+  $('gitPanel').replaceChildren(make('div','note','Loading Git status…'));repaintGitMarkers();
   state.diffController?.abort();state.diffGeneration++;state.diff=null;$('viewerTabs').hidden=true;$('diffViewer').hidden=true;
 }
 function setSidebarMode(mode){
@@ -342,23 +343,23 @@ function gitButton(text,handler,disabled=false,className='button'){
 function gitWritable(){return Boolean(state.gitContext?.canWrite&&!state.gitContextLoading&&state.git&&state.gitRoot===state.root&&state.roots.find(root=>root.id===state.root)?.connected&&!state.gitBusy.has(state.root));}
 function drawGit(){
   const panel=$('gitPanel');panel.replaceChildren();
-  const nav=make('div','git-nav');nav.setAttribute('aria-label','Git 보기');
-  for(const [view,label] of [['changes','변경사항'],['branches','브랜치'],['history','기록']]){
+  const nav=make('div','git-nav');nav.setAttribute('aria-label','Git views');
+  for(const [view,label] of [['changes','Changes'],['branches','Branches'],['history','History']]){
     const button=gitButton(label,()=>{state.gitView=view;drawGit();if(view!=='changes'&&!state.gitPages[view])loadGitPage(view,0);});button.id='gitView-'+view;button.setAttribute('aria-pressed',String(state.gitView===view));nav.append(button);
   }
   panel.append(nav);
   const result=state.gitResults.get(state.root),busy=state.gitBusy.has(state.root);
-  if(busy||result){const message=make('div','git-result'+(result?.error&&!busy?' error':''),busy?'Git 작업 중… 완료될 때까지 기다려 주세요.':result.text);message.id='gitActionResult';message.setAttribute('role','status');panel.append(message);}
-  if(state.gitRoot!==state.root||!state.git){panel.append(make('div','note','Git 상태를 불러오는 중…'));return;}
+  if(busy||result){const message=make('div','git-result'+(result?.error&&!busy?' error':''),busy?'Git operation in progress… Please wait for it to finish.':result.text);message.id='gitActionResult';message.setAttribute('role','status');panel.append(message);}
+  if(state.gitRoot!==state.root||!state.git){panel.append(make('div','note','Loading Git status…'));return;}
   const data=state.git;
-  if(!data.available){panel.append(make('div','note',({not_repository:'Git 저장소가 아닙니다. 파일을 계속 탐색할 수 있습니다.',git_unavailable:'Git을 사용할 수 없습니다. 파일을 계속 탐색할 수 있습니다.'})[data.reason]||data.message||'Git 상태를 가져올 수 없습니다.'));return;}
-  panel.append(make('div','git-branch','⑂ '+(data.branch||(data.detached?'분리된 HEAD':'새 저장소'))));
+  if(!data.available){panel.append(make('div','note',({not_repository:'This is not a Git repository. You can continue browsing files.',git_unavailable:'Git is unavailable. You can continue browsing files.'})[data.reason]||data.message||'Could not load Git status.'));return;}
+  panel.append(make('div','git-branch','⑂ '+(data.branch||(data.detached?'Detached HEAD':'New repository'))));
   if(data.message)panel.append(make('div','note',data.message));
   if(state.gitView!=='changes'){drawGitPage(panel,state.gitView);return;}
   const context=state.gitContext;
-  if(!context)panel.append(make('div','note',state.gitContextLoading?'Git 작업 정보를 불러오는 중…':'Git 작업 정보를 가져올 수 없습니다. 새로고침하세요.'));
-  else{if(context.message)panel.append(make('div','note',context.message));if(!context.canWrite)panel.append(make('div','note',context.commitReason||'이 루트에서는 읽기만 가능합니다. 저장소 최상위 폴더를 연결하면 Git 작업을 사용할 수 있습니다.'));}
-  const groups=[['staged','스테이징된 변경사항',e=>!e.untracked&&e.index&&e.index!==' '],['unstaged','스테이징되지 않은 변경사항',e=>!e.untracked&&e.worktree&&e.worktree!==' '],['untracked','추적되지 않은 파일',e=>e.untracked]];
+  if(!context)panel.append(make('div','note',state.gitContextLoading?'Loading Git operation details…':'Could not load Git operation details. Refresh to try again.'));
+  else{if(context.message)panel.append(make('div','note',context.message));if(!context.canWrite)panel.append(make('div','note',context.commitReason||'This root is read only. Connect the repository top-level folder to enable Git operations.'));}
+  const groups=[['staged','Staged Changes',e=>!e.untracked&&e.index&&e.index!==' '],['unstaged','Unstaged Changes',e=>!e.untracked&&e.worktree&&e.worktree!==' '],['untracked','Untracked Files',e=>e.untracked]];
   for(const [group,label,filter] of groups){
     const changes=(data.entries||[]).filter(filter),section=make('section','git-group');section.dataset.group=group;
     section.append(make('h2','',label+' · '+changes.length));
@@ -366,38 +367,38 @@ function drawGit(){
     const eligible=changes.filter(change=>!change.conflict&&!change.path.endsWith('/'));
     const paths=[...new Set(eligible.flatMap(change=>change.original_path?[change.original_path,change.path]:[change.path]))];
     const withinBounds=paths.length>0&&paths.length<=500&&new TextEncoder().encode(paths.join('\0')).length<=65536;
-    if(changes.length){const batch=gitButton('표시된 작업 가능 파일 '+eligible.length+'개 '+(group==='staged'?'스테이징 해제':'스테이징'),()=>runGitAction(group==='staged'?'unstage':'stage',{paths}),!gitWritable()||!withinBounds,'button git-action');batch.dataset.batch=group;section.append(batch);}
+    if(changes.length){const batch=gitButton('Eligible visible files: '+eligible.length+' · '+(group==='staged'?'Unstage':'Stage'),()=>runGitAction(group==='staged'?'unstage':'stage',{paths}),!gitWritable()||!withinBounds,'button git-action');batch.dataset.batch=group;section.append(batch);}
     for(const change of changes){
       const row=make('div','git-change'),button=make('button','row git-row');button.type='button';button.dataset.path=change.path;button.dataset.group=group;
       button.dataset.gitStatus=change.conflict?'!':group==='untracked'?'U':(group==='staged'?change.index:change.worktree);
       button.classList.toggle('active',state.diff?.root===state.root&&state.diff?.path===change.path&&state.diff?.group===group);
-      button.title=rootLabel(state.root)+' · '+state.roots.find(r=>r.id===state.root)?.path+'/'+change.path+'\n'+(gitLabels[button.dataset.gitStatus]||'변경됨');
+      button.title=rootLabel(state.root)+' · '+state.roots.find(r=>r.id===state.root)?.path+'/'+change.path+'\n'+(gitLabels[button.dataset.gitStatus]||'Changed');
       button.append(make('span','git-badge',button.dataset.gitStatus),make('span','filename',change.original_path?change.original_path+' → '+change.path:change.path));
       button.onclick=()=>selectDiff(change,group);row.append(button);
       const action=group==='staged'?'unstage':'stage',actionPaths=change.original_path?[change.original_path,change.path]:[change.path];
-      const control=gitButton(group==='staged'?'해제':'스테이징',()=>runGitAction(action,{paths:actionPaths}),!gitWritable()||change.conflict||change.path.endsWith('/'),'button git-action');control.dataset.action=action;control.dataset.path=change.path;control.setAttribute('aria-label',change.path+(action==='stage'?' 스테이징':' 스테이징 해제'));row.append(control);section.append(row);
+      const control=gitButton(group==='staged'?'Unstage':'Stage',()=>runGitAction(action,{paths:actionPaths}),!gitWritable()||change.conflict||change.path.endsWith('/'),'button git-action');control.dataset.action=action;control.dataset.path=change.path;control.setAttribute('aria-label',change.path+(action==='stage'?' Stage':' Unstage'));row.append(control);section.append(row);
     }
     panel.append(section);
   }
-  if(!(data.entries||[]).length)panel.append(make('div','note','변경사항이 없습니다.'));
-  if(data.truncated)panel.append(make('div','note','변경사항이 많아 일부만 표시합니다. 일괄 작업은 표시된 파일에만 적용됩니다.'));
+  if(!(data.entries||[]).length)panel.append(make('div','note','No changes.'));
+  if(data.truncated)panel.append(make('div','note','Only some changes are shown. Batch actions apply only to visible files.'));
   const staged=(data.entries||[]).filter(e=>!e.untracked&&e.index&&e.index!==' '),form=make('form','git-commit');form.id='gitCommitForm';
-  const scope=make('div','','커밋 범위: 스테이징된 파일 '+staged.length+'개'+(data.truncated?' (표시 범위)':''));scope.id='gitCommitScope';
-  const label=make('label','','커밋 메시지'),message=make('textarea');message.id='gitCommitMessage';message.maxLength=16000;message.value=state.gitDrafts.get(state.root)||'';label.htmlFor=message.id;
-  const submit=make('button','button primary','스테이징된 변경사항 커밋');submit.type='submit';submit.id='gitCommit';
+  const scope=make('div','','Commit scope · Staged files: '+staged.length+(data.truncated?' (visible range)':''));scope.id='gitCommitScope';
+  const label=make('label','','Commit message'),message=make('textarea');message.id='gitCommitMessage';message.maxLength=16000;message.value=state.gitDrafts.get(state.root)||'';label.htmlFor=message.id;
+  const submit=make('button','button primary','Commit Staged Changes');submit.type='submit';submit.id='gitCommit';
   const allowed=gitWritable()&&context?.commitAllowed&&!data.truncated;submit.disabled=!allowed||!message.value.trim();message.disabled=busy;
   message.oninput=()=>{state.gitDrafts.set(state.root,message.value);submit.disabled=!allowed||!message.value.trim();};
   form.onsubmit=event=>{event.preventDefault();if(!submit.disabled)runGitAction('commit',{message:message.value});};form.append(scope,label,message,submit);
-  if(data.truncated)form.append(make('div','note','전체 스테이징 범위를 표시할 수 없어 커밋할 수 없습니다. 터미널에서 전체 변경사항을 확인하세요.'));
-  if(context&&!context.commitAllowed)form.append(make('div','note',context.commitReason||'현재 상태에서는 커밋할 수 없습니다.'));panel.append(form);
-  const tools=make('div','git-tools'),push=gitButton('푸시 내용 검토…',openPushReview,!gitWritable()||!context?.pushAllowed);push.id='gitPush';tools.append(push);
-  if(context&&!context.pushAllowed)tools.append(make('div','note',context.pushReason||'현재 상태에서는 푸시할 수 없습니다.'));panel.append(tools);
+  if(data.truncated)form.append(make('div','note','Cannot commit because the full staged scope cannot be displayed. Review all changes in a terminal.'));
+  if(context&&!context.commitAllowed)form.append(make('div','note',context.commitReason||'Cannot commit in the current state.'));panel.append(form);
+  const tools=make('div','git-tools'),push=gitButton('Review Push…',openPushReview,!gitWritable()||!context?.pushAllowed);push.id='gitPush';tools.append(push);
+  if(context&&!context.pushAllowed)tools.append(make('div','note',context.pushReason||'Cannot push in the current state.'));panel.append(tools);
 }
 async function ensureGitContext(refresh=false){
   if(state.sidebarMode!=='git'||(!refresh&&(state.gitContext||state.gitContextLoading)))return;
   const root=state.root,generation=state.gitReadGeneration,request=++state.gitContextRequest;state.gitContextLoading=true;drawGit();
   try{const data=await api('/api/git/context?'+new URLSearchParams({root}));if(root!==state.root||generation!==state.gitReadGeneration||request!==state.gitContextRequest||data.root_id!==root)return;state.gitContext=data;}
-  catch(error){if(root!==state.root||generation!==state.gitReadGeneration||request!==state.gitContextRequest)return;state.gitContext=null;state.gitResults.set(root,{error:true,text:'Git 작업 정보: '+error.message});}
+  catch(error){if(root!==state.root||generation!==state.gitReadGeneration||request!==state.gitContextRequest)return;state.gitContext=null;state.gitResults.set(root,{error:true,text:'Git operation details: '+error.message});}
   finally{if(root===state.root&&generation===state.gitReadGeneration&&request===state.gitContextRequest){state.gitContextLoading=false;drawGit();}}
 }
 async function loadGitPage(view,offset=0,refresh=false){
@@ -410,14 +411,14 @@ async function loadGitPage(view,offset=0,refresh=false){
 }
 function drawGitPage(panel,view){
   const page=state.gitPages[view],limit=view==='branches'?50:30;
-  if(!page||page.loading){panel.append(make('div','note','불러오는 중…'));return;}
-  if(page.error){panel.append(make('div','note error',page.error),gitButton('다시 시도',()=>loadGitPage(view,page.offset,true)));return;}
+  if(!page||page.loading){panel.append(make('div','note','Loading…'));return;}
+  if(page.error){panel.append(make('div','note error',page.error),gitButton('Retry',()=>loadGitPage(view,page.offset,true)));return;}
   for(const entry of page.entries||[]){const row=make('div','git-meta');row.dataset.hash=entry.hash||'';
-    if(view==='branches'){row.append(make('div','',(entry.current?'● ':'')+entry.name+(entry.remote?' · 원격':'')),make('small','',[entry.upstream,entry.hash?.slice(0,12),entry.subject].filter(Boolean).join(' · ')));}
+    if(view==='branches'){row.append(make('div','',(entry.current?'● ':'')+entry.name+(entry.remote?' · Remote':'')),make('small','',[entry.upstream,entry.hash?.slice(0,12),entry.subject].filter(Boolean).join(' · ')));}
     else row.append(make('div','',entry.subject),make('small','',[entry.shortHash,entry.author,entry.date].filter(Boolean).join(' · ')));panel.append(row);
   }
-  if(!page.entries?.length)panel.append(make('div','note',page.message||'표시할 항목이 없습니다.'));
-  const pages=make('div','git-pages');pages.append(gitButton('이전',()=>loadGitPage(view,Math.max(0,page.offset-limit)),page.offset===0),make('span','',String(page.offset+1)+'–'+String(page.offset+(page.entries?.length||0))),gitButton('다음',()=>loadGitPage(view,page.offset+limit),!page.more||page.offset+limit>10000));panel.append(pages);if(page.more&&page.offset+limit>10000)panel.append(make('div','note','조회 범위 제한에 도달했습니다.'));
+  if(!page.entries?.length)panel.append(make('div','note',page.message||'No items to display.'));
+  const pages=make('div','git-pages');pages.append(gitButton('Previous',()=>loadGitPage(view,Math.max(0,page.offset-limit)),page.offset===0),make('span','',String(page.offset+1)+'–'+String(page.offset+(page.entries?.length||0))),gitButton('Next',()=>loadGitPage(view,page.offset+limit),!page.more||page.offset+limit>10000));panel.append(pages);if(page.more&&page.offset+limit>10000)panel.append(make('div','note','The query range limit has been reached.'));
 }
 function ensureGit(refresh=false){
   const root=state.root;
@@ -430,7 +431,7 @@ function ensureGit(refresh=false){
     state.git=data;buildGitMarkers(data);repaintGitMarkers();drawGit();
   }).catch(error=>{
     if(error.name==='AbortError'||generation!==state.gitGeneration||root!==state.root)return;
-    state.git={available:false,reason:'error',message:'Git 상태를 가져올 수 없습니다. 파일을 계속 탐색할 수 있습니다.'};drawGit();
+    state.git={available:false,reason:'error',message:'Could not load Git status. You can continue browsing files.'};drawGit();
   }).finally(()=>{if(generation===state.gitGeneration)$('gitPanel').setAttribute('aria-busy','false');});
 }
 async function runGitAction(action,input,review=null){
@@ -440,9 +441,9 @@ async function runGitAction(action,input,review=null){
   state.gitBusy.set(root,true);state.gitResults.delete(root);drawGit();if(action==='push'){$('pushDialog').close();state.pushReview=null;}
   try{
     const response=await fetch('/api/git/'+action,{method:'POST',headers:{'Content-Type':'application/json','X-Fbrowse-Token':state.token},body:JSON.stringify(payload)}),data=await response.json();
-    if(!response.ok)throw Error(data.error||'Git 작업에 실패했습니다.');if(data.root_id!==root)throw Error('응답 루트가 일치하지 않습니다. 새로고침하여 상태를 확인하세요.');
-    state.gitResults.set(root,{text:'완료: '+(data.message||'Git 작업을 마쳤습니다.')});if(action==='commit')state.gitDrafts.delete(root);
-  }catch(error){state.gitResults.set(root,{error:true,text:'Git 작업 실패: '+error.message+' 상태를 새로고침한 뒤 확인하세요.'});}
+    if(!response.ok)throw Error(data.error||'Git operation failed.');if(data.root_id!==root)throw Error('Response root does not match. Refresh and check the status.');
+    state.gitResults.set(root,{text:'Completed: '+(data.message||'Git operation completed.')});if(action==='commit')state.gitDrafts.delete(root);
+  }catch(error){state.gitResults.set(root,{error:true,text:'Git operation failed: '+error.message+' Refresh and check the status.'});}
   finally{
     state.gitBusy.delete(root);
     if(root===state.root){state.gitPages={};ensureGit(true);if(state.viewerMode==='diff'&&state.diff)selectDiff(state.diff.change,state.diff.group);else if(!state.editor)loadPreview();drawGit();}
@@ -451,21 +452,21 @@ async function runGitAction(action,input,review=null){
 function openPushReview(){
   const context=state.gitContext;if(!gitWritable()||!context?.pushAllowed)return;
   state.pushReview={root:state.root,generation:state.gitReadGeneration,context:structuredClone(context)};
-  $('pushBranch').textContent=context.branch;$('pushHead').textContent=context.head||'커밋 없음';$('pushTarget').textContent='refs/heads/'+context.branch;
+  $('pushBranch').textContent=context.branch;$('pushHead').textContent=context.head||'No commits';$('pushTarget').textContent='refs/heads/'+context.branch;
   $('pushRemote').replaceChildren(...context.remotes.map(remote=>{const option=make('option','',remote.name);option.value=remote.name;return option;}));
   if(context.upstream?.remote&&context.remotes.some(remote=>remote.name===context.upstream.remote))$('pushRemote').value=context.upstream.remote;
   $('pushUpstream').checked=!context.upstream;$('pushMessage').textContent='';$('confirmPush').disabled=false;updatePushURL();$('pushDialog').showModal();
 }
-function updatePushURL(){const review=state.pushReview;const remote=review?.context.remotes.find(remote=>remote.name===$('pushRemote').value);$('pushURL').textContent=remote?.url||'푸시 URL을 확인할 수 없습니다.';}
+function updatePushURL(){const review=state.pushReview;const remote=review?.context.remotes.find(remote=>remote.name===$('pushRemote').value);$('pushURL').textContent=remote?.url||'Could not verify the push URL.';}
 $('pushRemote').onchange=updatePushURL;$('cancelPush').onclick=()=>$('pushDialog').close();
 $('pushDialog').addEventListener('close',()=>{state.pushReview=null;});
 $('pushForm').onsubmit=event=>{event.preventDefault();const review=state.pushReview;if(!review||review.root!==state.root||review.generation!==state.gitReadGeneration||state.gitBusy.has(review.root))return;$('confirmPush').disabled=true;runGitAction('push',{remote:$('pushRemote').value,branch:review.context.branch,confirmed:true,setUpstream:$('pushUpstream').checked},review);};
 function renderDiff(data){
   $('diffContent').replaceChildren();
-  const messages={binary:'바이너리 파일의 변경사항입니다.',empty:'표시할 변경사항이 없습니다.',unavailable:'이 파일의 변경사항을 표시할 수 없습니다.'};
+  const messages={binary:'Binary file changes.',empty:'No changes to display.',unavailable:'Could not display changes for this file.'};
   // Bound DOM work as well as response bytes: a newline-heavy patch can be tiny.
   const lines=['diff','text'].includes(data.kind)?(data.text||'').split('\n',20001):[];
-  $('diffMessage').textContent=[messages[data.kind],data.message,(data.truncated||lines.length>20000)?'크기 제한으로 일부만 표시합니다.':'',data.kind==='text'?'추적되지 않은 파일의 내용':''].filter(Boolean).join(' · ');
+  $('diffMessage').textContent=[messages[data.kind],data.message,(data.truncated||lines.length>20000)?'Only part of the content is shown due to the size limit.':'',data.kind==='text'?'Untracked file contents':''].filter(Boolean).join(' · ');
   let oldLine=0,newLine=0,oldLeft=0,newLeft=0,inHunk=false,maxLine=1;
   const rows=lines.slice(0,20000).map((line,i)=>{
     let style='',oldNumber='',newNumber='';
@@ -486,12 +487,12 @@ function renderDiff(data){
     const row=make('span','diff-line'+style),gutter=make('span','diff-gutter');gutter.setAttribute('aria-hidden','true');
     row.dataset.oldLine=String(oldNumber);row.dataset.newLine=String(newNumber);
     const old=make('span','diff-number diff-old',oldNumber),next=make('span','diff-number diff-new',newNumber);
-    old.title='원본 줄번호';next.title='변경 후 줄번호';gutter.append(old,next);
+    old.title='Original line number';next.title='New line number';gutter.append(old,next);
     row.append(gutter,make('span','diff-code',line+(i<lines.length-1?'\n':'')));return row;
   });
   $('diffContent').style.setProperty('--diff-digits',String(Math.max(4,String(maxLine).length)));
   const heading=make('span','diff-columns'),labels=make('span','diff-gutter');heading.setAttribute('aria-hidden','true');
-  labels.append(make('span','diff-number','원본'),make('span','diff-number','변경'));heading.append(labels);
+  labels.append(make('span','diff-number','Original'),make('span','diff-number','Changed'));heading.append(labels);
   $('diffContent').replaceChildren(...(rows.length?[heading,...rows]:[]));
 }
 $('diffWrap').onclick=()=>{
@@ -504,17 +505,17 @@ async function selectDiff(change,group){
   const root=state.root,path=change.path;state.diffController?.abort();
   const controller=new AbortController(),generation=++state.diffGeneration;state.diffController=controller;
   state.diff={root,path,group,change};state.viewerMode='diff';state.selected=null;syncEditorActivity();
-  $('viewerTabs').hidden=false;$('diffWrap').hidden=false;$('diffPath').textContent=rootLabel(root)+' · '+path+' · '+(group==='staged'?'스테이징됨':group==='untracked'?'추적되지 않음':'작업 폴더');
-  $('showDiff').setAttribute('aria-pressed','true');$('showFile').setAttribute('aria-pressed','false');$('showFile').disabled=true;$('showFile').title='파일 확인 중…';
+  $('viewerTabs').hidden=false;$('diffWrap').hidden=false;$('diffPath').textContent=rootLabel(root)+' · '+path+' · '+(group==='staged'?'Staged':group==='untracked'?'Untracked':'Working Tree');
+  $('showDiff').setAttribute('aria-pressed','true');$('showFile').setAttribute('aria-pressed','false');$('showFile').disabled=true;$('showFile').title='Checking file…';
   $('empty').hidden=true;$('workspace').hidden=true;$('diffViewer').hidden=false;$('actions').hidden=false;$('open').hidden=true;
-  $('viewer').setAttribute('aria-label',path+' 변경사항');$('diffMessage').textContent='변경사항을 불러오는 중…';$('diffContent').replaceChildren();drawGit();
+  $('viewer').setAttribute('aria-label',path+' changes');$('diffMessage').textContent='Loading changes…';$('diffContent').replaceChildren();drawGit();
   const current=()=>generation===state.diffGeneration&&root===state.root;
   api('/api/entry?'+new URLSearchParams({root,path}),controller.signal).then(data=>{
     if(!current())return;
     state.diff.entry=data.entry;const available=data.entry.kind==='file'&&data.entry.available!==false;
-    $('showFile').disabled=!available;$('showFile').title=available?'현재 파일 미리보기':data.entry.unavailable_reason||'파일을 열 수 없습니다.';
+    $('showFile').disabled=!available;$('showFile').title=available?'Current file preview':data.entry.unavailable_reason||'Could not open the file.';
     if(available){$('open').href=previewURL(data.entry);$('open').hidden=false;}
-  }).catch(error=>{if(current()&&error.name!=='AbortError')$('showFile').title='삭제되었거나 열 수 없는 파일입니다.';});
+  }).catch(error=>{if(current()&&error.name!=='AbortError')$('showFile').title='The file was deleted or cannot be opened.';});
   try{
     const data=await api('/api/git/diff?'+new URLSearchParams({root,path,...(group==='staged'?{staged:'1'}:{})}),controller.signal);
     if(!current()||data.root_id!==root||state.viewerMode!=='diff')return;
@@ -532,17 +533,17 @@ function drawTree(){
   function branch(path,container){
     const data=state.cache.get(nodeKey(state.root,path));
     if(data?.error){container.append(make('div','note error',data.error));return;}
-    if(!data){container.append(make('div','note','불러오는 중…'));return;}
+    if(!data){container.append(make('div','note','Loading…'));return;}
     const visible=data.entries.filter(e=>e.kind==='directory'||type.value==='all'||e.category===type.value);
-    if(!visible.length)container.append(make('div','note','표시할 파일이 없습니다'));
+    if(!visible.length)container.append(make('div','note','No files to display'));
     for(const entry of visible){
       container.append(row(entry));if(entry.kind!=='directory')files++;
       if(entry.kind==='directory'&&state.expanded.has(nodeKey(entry.root_id,entry.path))){const children=make('div','children');children.dataset.path=entry.path;container.append(children);branch(entry.path,children);}
     }
   }
   const root=state.roots.find(r=>r.id===state.root);
-  if(!root?.connected){note('연결 안 됨 · 서버 경로를 확인한 뒤 새로고침하세요.');$('status').textContent='연결 안 됨';return;}
-  branch('',entries);reconcileTreeSelection();restoreTreeFocus(focus);$('listLabel').textContent='폴더';$('status').textContent=`표시된 파일 ${files}개`;if(tabDrag?.lastPoint)showTreeMove(tabDrag.lastPoint);
+  if(!root?.connected){note('Disconnected · Check the server path, then refresh.');$('status').textContent='Disconnected';return;}
+  branch('',entries);reconcileTreeSelection();restoreTreeFocus(focus);$('listLabel').textContent='Folders';$('status').textContent=`Visible files: ${files}`;if(tabDrag?.lastPoint)showTreeMove(tabDrag.lastPoint);
 }
 async function toggle(path,root){
   const key=nodeKey(root,path),generation=state.generation;
@@ -552,7 +553,7 @@ async function toggle(path,root){
   catch(error){if(root!==state.root||generation!==state.generation)return;state.expanded.delete(key);$('status').textContent=error.message;if(!input.value.trim())drawTree();}
 }
 function renderRoots(){
-  $('rootSelect').replaceChildren(...state.roots.map(root=>{const option=make('option','',root.name+(root.connected?'':' · 연결 안 됨'));option.value=root.id;option.title=root.path;return option;}));
+  $('rootSelect').replaceChildren(...state.roots.map(root=>{const option=make('option','',root.name+(root.connected?'':' · Disconnected'));option.value=root.id;option.title=root.path;return option;}));
   $('rootSelect').value=state.root;
   const root=state.roots.find(r=>r.id===state.root);$('rootPath').textContent=root?.path||'';$('rootPath').title=root?.path||'';
 }
@@ -569,23 +570,23 @@ function resetPreview(){
 }
 $('rootSelect').onchange=()=>{switchRoot($('rootSelect').value);};
 function switchRoot(root){
-  if(root===state.root)return;state.workspaceRevision++;clearTreeSelection();state.root=root;input.value='';clearGit();if(state.viewerMode==='diff'){state.viewerMode='file';$('workspace').hidden=!state.tabs.length;$('empty').hidden=Boolean(state.tabs.length);}syncEditorActivity();note('파일 목록을 불러오는 중…');renderRoots();try{localStorage.setItem(selectionKey(),state.root);}catch{}history.replaceState(null,'','/?'+new URLSearchParams({root:state.root}));update();
+  if(root===state.root)return;state.workspaceRevision++;clearTreeSelection();state.root=root;input.value='';clearGit();if(state.viewerMode==='diff'){state.viewerMode='file';$('workspace').hidden=!state.tabs.length;$('empty').hidden=Boolean(state.tabs.length);}syncEditorActivity();note('Loading files…');renderRoots();try{localStorage.setItem(selectionKey(),state.root);}catch{}history.replaceState(null,'','/?'+new URLSearchParams({root:state.root}));update();
 }
-function cancelRootEdit(){state.editRoot=null;$('rootForm').reset();$('saveRoot').textContent='등록';$('cancelRootEdit').hidden=true;$('manualRoot').open=false;}
+function cancelRootEdit(){state.editRoot=null;$('rootForm').reset();$('saveRoot').textContent='Add';$('cancelRootEdit').hidden=true;$('manualRoot').open=false;}
 $('cancelRootEdit').onclick=cancelRootEdit;
 function drawRootRecords(){
   $('rootRecords').replaceChildren(...state.roots.map(root=>{
-    const record=make('div','root-record');record.append(make('strong','',root.name+(root.connected?'':' · 연결 안 됨')),make('small','',root.path));
-    if(root.id==='project'){record.append(make('small','','기본 프로젝트 · 실행한 폴더'));return record;}
-    const edit=make('button','button','수정');edit.type='button';edit.onclick=()=>{state.editRoot=root.id;$('rootLabel').value=root.name;$('rootDirectory').value=root.path;$('saveRoot').textContent='저장';$('cancelRootEdit').hidden=false;$('manualRoot').open=true;$('rootLabel').focus();};
-    const remove=make('button','button','연결 제거');remove.type='button';remove.onclick=()=>saveRoots({operation:'remove',id:root.id});record.append(edit,remove);return record;
+    const record=make('div','root-record');record.append(make('strong','',root.name+(root.connected?'':' · Disconnected')),make('small','',root.path));
+    if(root.id==='project'){record.append(make('small','','Default project · Startup folder'));return record;}
+    const edit=make('button','button','Edit');edit.type='button';edit.onclick=()=>{state.editRoot=root.id;$('rootLabel').value=root.name;$('rootDirectory').value=root.path;$('saveRoot').textContent='Save';$('cancelRootEdit').hidden=false;$('manualRoot').open=true;$('rootLabel').focus();};
+    const remove=make('button','button','Disconnect');remove.type='button';remove.onclick=()=>saveRoots({operation:'remove',id:root.id});record.append(edit,remove);return record;
   }));
 }
 async function saveRoots(data){
-  if(fsOperation&&fsOperation.target.root===data.id){$('rootMessage').textContent='파일 작업이 끝난 뒤 루트 연결을 변경하세요.';return false;}
+  if(fsOperation&&fsOperation.target.root===data.id){$('rootMessage').textContent='Wait for the file operation to finish before changing root connections.';return false;}
   const affected=state.tabs.filter(tab=>tab.entry.root_id===data.id);
   if(!canLeaveEditor(affected))return false;
-  $('rootMessage').textContent='저장 중…';
+  $('rootMessage').textContent='Saving…';
   try{
     const response=await fetch('/api/roots',{method:'POST',headers:{'Content-Type':'application/json','X-Fbrowse-Token':state.token},body:JSON.stringify(data)});
     const result=await response.json();if(!response.ok)throw Error(result.error);
@@ -593,7 +594,7 @@ async function saveRoots(data){
     if(data.id===state.diff?.root)resetPreview();
     clearGit();if(state.viewerMode==='diff')resetPreview();
     if(data.operation==='add'){const added=result.roots.find(root=>!state.roots.some(existing=>existing.id===root.id));if(added){clearTreeSelection();state.root=added.id;input.value='';try{localStorage.setItem(selectionKey(),state.root);}catch{}history.replaceState(null,'','/?'+new URLSearchParams({root:state.root}));}}
-    cancelRootEdit();await refreshRoots();drawRootRecords();state.cache.clear();await update(true);$('rootMessage').textContent='저장했습니다.';return true;
+    cancelRootEdit();await refreshRoots();drawRootRecords();state.cache.clear();await update(true);$('rootMessage').textContent='Saved.';return true;
   }catch(error){$('rootMessage').textContent=error.message;return false;}
 }
 $('rootForm').onsubmit=event=>{event.preventDefault();saveRoots({operation:state.editRoot?'edit':'add',id:state.editRoot,name:$('rootLabel').value,path:$('rootDirectory').value});};
@@ -604,7 +605,7 @@ let folderData=null,folderGeneration=0,folderController=null,folderCustomName=fa
 let folderSelected=new Map(),folderAnchor=null,folderClipboard=null,folderBusy=false,folderMenuTarget=null,pickerDialog=null,pickerDialogGeneration=0,folderDrag=null;
 function closeFolderPicker(){
   if(folderBusy)return;closeFolderMenu();finishFolderDrag();folderSelected.clear();folderClipboard=null;folderAnchor=null;
-  folderGeneration++;folderController?.abort();$('folderPicker').hidden=true;$('rootManagement').hidden=false;$('rootsDialog').classList.remove('is-selecting');$('rootsTitle').textContent='루트 폴더 관리';
+  folderGeneration++;folderController?.abort();$('folderPicker').hidden=true;$('rootManagement').hidden=false;$('rootsDialog').classList.remove('is-selecting');$('rootsTitle').textContent='Manage Root Folders';
 }
 function folderFailure(message){$('folderError').textContent=message;$('folderError').hidden=!message;}
 // The picker owns a flat selection and a metadata clipboard. Registered paths
@@ -614,9 +615,9 @@ function folderTarget(entry,context=folderData.context){return {root:context.roo
 function closeFolderMenu(){const menu=$('folderMenu');menu.hidden=true;folderMenuTarget=null;}
 function paintFolderSelection(){
   for(const node of $('folderEntries').querySelectorAll('.folder-entry'))node.setAttribute('aria-pressed',String(folderSelected.has(node.dataset.name)));
-  $('folderSelectedCount').textContent=folderSelected.size+'개 선택';$('folderClearSelection').disabled=!folderSelected.size;
+  $('folderSelectedCount').textContent=folderSelected.size+' selected';$('folderClearSelection').disabled=!folderSelected.size;
   $('folderClipboardStatus').hidden=!folderClipboard;
-  $('folderClipboardStatus').textContent=folderClipboard?(folderClipboard.action==='move'?'잘라내기: ':'복사: ')+folderClipboard.targets.length+'개 · '+folderClipboard.targets[0].rootPath+(folderClipboard.action==='move'?' 안에서 이동':' · 저장된 내용') :'';
+  $('folderClipboardStatus').textContent=folderClipboard?(folderClipboard.action==='move'?'Cut: ':'Copy: ')+folderClipboard.targets.length+' · '+folderClipboard.targets[0].rootPath+(folderClipboard.action==='move'?' · Move within this folder':' · Saved content') :'';
 }
 function selectFolderEntry(entry,event={}){
   const items=[...$('folderEntries').querySelectorAll('.folder-entry')].map(node=>folderData.entriesByName.get(node.dataset.name)),add=event.ctrlKey||event.metaKey;
@@ -639,14 +640,14 @@ document.addEventListener('pointerdown',event=>{if(!$('folderMenu').hidden&&!$('
 $('folderEntries').addEventListener('scroll',closeFolderMenu,{passive:true});window.addEventListener('resize',()=>{closeFolderMenu();finishFolderDrag();});window.addEventListener('blur',()=>{closeFolderMenu();finishFolderDrag();});
 $('folderClearSelection').onclick=()=>{folderSelected.clear();folderAnchor=null;paintFolderSelection();$('folderEntries').focus();};
 async function pinFolderTargets(targets){
-  if(!targets.length||targets.length>100)throw Error('한 번에 최대 100개 대상을 처리할 수 있습니다.');
+  if(!targets.length||targets.length>100)throw Error('You can process up to 100 targets at a time.');
   const infos=new Array(targets.length);let cursor=0;
-  await Promise.all(Array.from({length:Math.min(4,targets.length)},async()=>{while(cursor<targets.length){const i=cursor++,target=targets[i],info=await fsRequest('/api/folder-info',{capability:target.capability,name:target.name});if(info.root_id!==target.root||info.path!==target.path||!info.version)throw Error('대상 정보가 일치하지 않습니다. 다시 선택하세요.');infos[i]=info;}}));return infos;
+  await Promise.all(Array.from({length:Math.min(4,targets.length)},async()=>{while(cursor<targets.length){const i=cursor++,target=targets[i],info=await fsRequest('/api/folder-info',{capability:target.capability,name:target.name});if(info.root_id!==target.root||info.path!==target.path||!info.version)throw Error('Target information does not match. Select it again.');infos[i]=info;}}));return infos;
 }
 async function folderDestination(target){
   if(target?.kind==='directory'){
     const listing=await fsRequest('/api/folders',{path:target.entry.path,scope:target.capability,preferred_root:state.root,show_hidden:$('folderHidden').checked});
-    if(listing.path!==target.entry.path)throw Error('대상 폴더가 변경되었습니다.');return listing.context;
+    if(listing.path!==target.entry.path)throw Error('The destination folder changed.');return listing.context;
   }
   return {...folderData.context};
 }
@@ -665,12 +666,12 @@ async function showPickerOperation(action,target=null){
   const targets=selectedFolderTargets(),generation=++pickerDialogGeneration;closeFolderMenu();
   const named=['create','mkdir','rename'].includes(action);pickerDialog={action,targets,context:{...folderData.context},infos:null};
   if($('pickerFsDialog').open)$('pickerFsDialog').close();
-  $('pickerFsTitle').textContent={create:'새 파일',mkdir:'새 폴더',rename:'이름 변경',duplicate:'저장된 내용 복제',delete:'영구 삭제 확인'}[action];
-  $('pickerFsTarget').textContent=targets.length&&!['create','mkdir'].includes(action)?targets.length+'개 대상\n'+targets.map(item=>absoluteTarget(item)).join('\n'):folderData.path;
+  $('pickerFsTitle').textContent={create:'New File',mkdir:'New Folder',rename:'Rename',duplicate:'Duplicate Saved Content',delete:'Confirm Permanent Deletion'}[action];
+  $('pickerFsTarget').textContent=targets.length&&!['create','mkdir'].includes(action)?counted(targets.length,'target')+'\n'+targets.map(item=>absoluteTarget(item)).join('\n'):folderData.path;
   $('pickerFsName').hidden=$('pickerFsNameLabel').hidden=!named;$('pickerFsName').required=named;$('pickerFsName').value=action==='rename'?targets[0]?.name||'':'';
   const dirty=allPickerAffectedTabs(targets).filter(tabDirty);
-  $('pickerFsDescription').textContent=action==='delete'?'선택한 '+targets.length+'개 대상을 영구 삭제합니다. 폴더의 모든 하위 내용도 삭제합니다. 심볼릭 링크는 링크 자체만 삭제합니다.'+(dirty.length?'\n미저장 초안 '+dirty.length+'개가 삭제됩니다: '+dirty.map(tab=>tab.entry.path).join(', '):''):action==='duplicate'?'디스크에 저장된 내용만 복제합니다. 미저장 초안은 포함하지 않습니다.':'';
-  $('pickerFsMessage').textContent='대상 확인 중…';$('pickerFsSubmit').hidden=false;$('pickerFsSubmit').disabled=true;$('pickerFsCancel').disabled=false;$('pickerFsCancel').textContent='취소';$('pickerFsDialog').showModal();
+  $('pickerFsDescription').textContent=action==='delete'?'Selected: '+counted(targets.length,'target')+' will be permanently deleted, including all folder contents. Symbolic links are deleted without their targets.'+(dirty.length?'\nUnsaved drafts in '+counted(dirty.length,'tab')+' will be discarded: '+dirty.map(tab=>tab.entry.path).join(', '):''):action==='duplicate'?'Only saved disk content is duplicated. Unsaved drafts are excluded.':'';
+  $('pickerFsMessage').textContent='Checking target…';$('pickerFsSubmit').hidden=false;$('pickerFsSubmit').disabled=true;$('pickerFsCancel').disabled=false;$('pickerFsCancel').textContent='Cancel';$('pickerFsDialog').showModal();
   if(named){$('pickerFsName').focus();$('pickerFsName').select();}else $('pickerFsCancel').focus();
   try{
     if(['create','mkdir'].includes(action)){const context=await folderDestination(target);if(generation!==pickerDialogGeneration)return;pickerDialog.context=context;$('pickerFsTarget').textContent=folderAbsolute(context.rootPath,context.parent).replace(/\/$/,'')||'/';}
@@ -684,30 +685,30 @@ $('pickerFsCancel').onclick=closePickerOperation;$('pickerFsDialog').addEventLis
 $('pickerFsForm').onsubmit=async event=>{
   event.preventDefault();if(!pickerDialog||folderBusy||$('pickerFsSubmit').disabled)return;
   const snapshot=pickerDialog,name=$('pickerFsName').value;
-  if(['create','mkdir','rename'].includes(snapshot.action)&&(!name.trim()||name==='.'||name==='..'||/[\\/\0]/.test(name))){$('pickerFsMessage').textContent='폴더 구분자 없는 이름 하나를 입력하세요.';return;}
+  if(['create','mkdir','rename'].includes(snapshot.action)&&(!name.trim()||name==='.'||name==='..'||/[\\/\0]/.test(name))){$('pickerFsMessage').textContent='Enter a single name without folder separators.';return;}
   const targets=['create','mkdir'].includes(snapshot.action)?[{root:snapshot.context.root,rootPath:snapshot.context.rootPath,path:snapshot.context.parent,parent:snapshot.context.parent,capability:snapshot.context.capability,kind:'directory',name,object:false,context:snapshot.context}]:snapshot.targets;
   await runPickerOperations(snapshot.action,targets,snapshot.infos,null,name);
 };
 async function runPickerOperations(action,targets,infos,destination,name){
   if(folderBusy||fsOperation||newFileBusy)return;
-  if(!targets.length||targets.length>100){folderFailure('한 번에 최대 100개 대상을 처리할 수 있습니다.');return;}
+  if(!targets.length||targets.length>100){folderFailure('You can process up to 100 targets at a time.');return;}
   folderBusy=true;fsOperation={action,target:targets[0]};$('newFile').disabled=true;const frozen=[],results=[];let stop=false;
   if(!$('pickerFsDialog').open){$('pickerFsDialog').showModal();$('pickerFsTarget').textContent=targets.map(target=>absoluteTarget(target)).join('\n');$('pickerFsDescription').textContent='';$('pickerFsName').hidden=$('pickerFsNameLabel').hidden=true;$('pickerFsName').required=false;}
-  $('pickerFsTitle').textContent='파일 작업 중…';$('pickerFsSubmit').hidden=true;$('pickerFsCancel').disabled=true;
+  $('pickerFsTitle').textContent='File operation in progress…';$('pickerFsSubmit').hidden=true;$('pickerFsCancel').disabled=true;
   try{
     await refreshRoots();
     for(const target of targets){
       if(['rename','move','delete'].includes(action)){
-        const absolute=absoluteTarget(target);if(state.roots.some(root=>root.path===absolute||root.path.startsWith(absolute+'/')))throw Error('연결된 루트 자체나 그 상위 폴더는 이동·이름 변경·삭제할 수 없습니다.');
+        const absolute=absoluteTarget(target);if(state.roots.some(root=>root.path===absolute||root.path.startsWith(absolute+'/')))throw Error('Connected roots and their parent folders cannot be moved, renamed or deleted.');
         const aliases=allPickerAffectedTabs([target]).filter(tab=>tab.entry.root_id!==target.root);
-        if(aliases.length)throw Error('같은 경로를 다른 루트로 연 탭이 있습니다. 해당 초안을 저장하고 탭을 닫은 뒤 다시 시도하세요.');
-        if(target.root!=='@picker'&&!sameRoot(target))throw Error('루트 연결 경로가 변경되었습니다.');
-        const items=await freezeFsEditors(target);frozen.push(items);if(items.filter(item=>item.editor?.editable&&item.binding.version).length>64)throw Error('대상별 편집 탭은 최대 64개까지 유지할 수 있습니다.');
+        if(aliases.length)throw Error('Tabs opened through another root refer to the same path. Save their drafts and close them, then try again.');
+        if(target.root!=='@picker'&&!sameRoot(target))throw Error('The root connection path changed.');
+        const items=await freezeFsEditors(target);frozen.push(items);if(items.filter(item=>item.editor?.editable&&item.binding.version).length>64)throw Error('You can keep up to 64 editor tabs per target.');
       }else frozen.push([]);
     }
     for(let i=0;i<targets.length;i++){
       const target=targets[i],items=frozen[i];let sent=false,completed=false;
-      if(stop){results.push({target,message:'앞선 결과가 불명확하여 처리하지 않았습니다.'});continue;}
+      if(stop){results.push({target,message:'Not processed because the previous result is uncertain.'});continue;}
       try{
         fsOperation.target={...target,kind:infos?.[i]?.kind||target.kind};$('pickerFsMessage').textContent=(i+1)+'/'+targets.length+' · '+absoluteTarget(target);
         const body={action,capability:target.capability,name:['create','mkdir'].includes(action)?name:target.name};
@@ -718,13 +719,13 @@ async function runPickerOperations(action,targets,infos,destination,name){
         if(['move','rename'].includes(action))body.editors=items.filter(item=>item.editor?.editable&&item.binding.version).map(item=>({path:item.binding.path,version:item.binding.version}));
         sent=true;const data=await fsRequest('/api/folder-action',body);completed=true;
         const context=action==='copy'?destination:target.context,expected=action==='delete'?target.path:['create','mkdir','rename'].includes(action)?[target.parent,name].filter(Boolean).join('/'):action==='move'?[destination.parent,target.name].filter(Boolean).join('/'):null;
-        if(data.root_id!==context.root||!data.path||expected&&data.path!==expected||action==='delete'&&data.deleted!==true||['rename','move'].includes(action)&&data.old_path!==target.path||action!=='delete'&&(data.entry?.path!==data.path||data.entry?.root_id!==context.root))throw Error('작업 결과의 경로가 일치하지 않습니다.');
+        if(data.root_id!==context.root||!data.path||expected&&data.path!==expected||action==='delete'&&data.deleted!==true||['rename','move'].includes(action)&&data.old_path!==target.path||action!=='delete'&&(data.entry?.path!==data.path||data.entry?.root_id!==context.root))throw Error('The operation result path does not match.');
         if(['rename','move'].includes(action)&&target.root!=='@picker')await retargetFsTabs(target,data,items);
         if(action==='delete'){for(const item of items){item.editor?.endMutation(item.binding);item.released=true;item.tab.fsBusy=false;closeTab(item.tab.id,true);}if(state.diff?.root===target.root&&affectedPath(target.root,state.diff.path,target))resetPreview();}
         results.push({target,ok:true,path:data.path,rootPath:context.rootPath});
       }catch(error){
         const unknown=completed||sent&&(error.outcomeUnknown||error.partial);if(unknown){stop=true;for(const item of items)item.editor?.markUncertain({...item.binding,path:item.editor.path,version:item.editor.version,reason:'Folder action result is uncertain. Keep your draft and inspect disk before saving.'});}
-        results.push({target,message:error.message+(unknown?' 일부 변경되었을 수 있습니다. 자동 재시도하지 않습니다.':''),unknown});
+        results.push({target,message:error.message+(unknown?' Some changes may have been applied. The operation will not be retried automatically.':''),unknown});
       }
     }
   }catch(error){for(const target of targets)results.push({target,message:error.message});}
@@ -735,10 +736,10 @@ async function runPickerOperations(action,targets,infos,destination,name){
     const reveal=results.find(result=>result.ok&&['create','mkdir','rename'].includes(action)&&(folderAbsolute(result.rootPath,result.path.split('/').slice(0,-1).join('/')).replace(/\/$/,'')||'/')===location);
     if(location&&!$('folderPicker').hidden){await navigateFolders(location,true);$('folderFilter').value=reveal?'':filter;drawFolderEntries();if(reveal){const entry=folderData.entriesByName.get(reveal.path.split('/').pop());if(entry)selectFolderEntry(entry);}}
     await update(true).catch(()=>{});
-    const failures=results.filter(result=>!result.ok),message=results.filter(result=>result.ok).length+'개 완료, '+failures.length+'개 실패/미처리\n'+results.map(result=>(result.ok?'완료: ':result.unknown?'결과 불명확: ':'실패: ')+absoluteTarget(result.target)+(result.ok&&action!=='delete'?' → '+folderAbsolute(result.rootPath,result.path):result.ok?'':' · '+result.message)).join('\n');
-    folderBusy=false;fsOperation=null;$('newFile').disabled=false;$('status').textContent=message;$('pickerFsCancel').disabled=false;$('pickerFsCancel').textContent='닫기';
-    $('folderActionStatus').hidden=false;$('folderActionStatus').textContent=results.filter(result=>result.ok).length+'개 완료, '+failures.length+'개 실패/미처리'+(reveal?' · '+folderAbsolute(reveal.rootPath,reveal.path):'');
-    if(!failures.length){closePickerOperation();if(reveal){const row=[...$('folderEntries').querySelectorAll('.folder-entry')].find(node=>node.dataset.name===reveal.path.split('/').pop());row?.focus({preventScroll:true});row?.scrollIntoView({block:'nearest'});}}else{$('pickerFsTitle').textContent='파일 작업 결과';$('pickerFsMessage').textContent=message;}
+    const failures=results.filter(result=>!result.ok),message=results.filter(result=>result.ok).length+' completed, '+failures.length+' failed/unprocessed\n'+results.map(result=>(result.ok?'Completed: ':result.unknown?'Uncertain result: ':'Failed: ')+absoluteTarget(result.target)+(result.ok&&action!=='delete'?' → '+folderAbsolute(result.rootPath,result.path):result.ok?'':' · '+result.message)).join('\n');
+    folderBusy=false;fsOperation=null;$('newFile').disabled=false;$('status').textContent=message;$('pickerFsCancel').disabled=false;$('pickerFsCancel').textContent='Close';
+    $('folderActionStatus').hidden=false;$('folderActionStatus').textContent=results.filter(result=>result.ok).length+' completed, '+failures.length+' failed/unprocessed'+(reveal?' · '+folderAbsolute(reveal.rootPath,reveal.path):'');
+    if(!failures.length){closePickerOperation();if(reveal){const row=[...$('folderEntries').querySelectorAll('.folder-entry')].find(node=>node.dataset.name===reveal.path.split('/').pop());row?.focus({preventScroll:true});row?.scrollIntoView({block:'nearest'});}}else{$('pickerFsTitle').textContent='File Operation Results';$('pickerFsMessage').textContent=message;}
   }
 }
 $('folderNewFile').onclick=()=>showPickerOperation('create');$('folderNewFolder').onclick=()=>showPickerOperation('mkdir');$('folderRefresh').onclick=()=>{if(folderData)navigateFolders(folderData.path);};
@@ -746,7 +747,7 @@ $('folderMenu').addEventListener('click',async event=>{
   const action=event.target.closest('button')?.dataset.pickerAction,target=folderMenuTarget;if(!action)return;
   if(action==='cut'||action==='copy')return copyFolderTargets(action==='cut'?'move':'copy');
   if(action==='paste')return pasteFolderTargets(target);
-  if(action==='path'){const value=target?absoluteTarget(target):folderData.path;closeFolderMenu();try{await navigator.clipboard.writeText(value);}catch{folderFailure('클립보드를 사용할 수 없습니다: '+value);}return;}
+  if(action==='path'){const value=target?absoluteTarget(target):folderData.path;closeFolderMenu();try{await navigator.clipboard.writeText(value);}catch{folderFailure('Clipboard unavailable: '+value);}return;}
   void showPickerOperation(action,target);
 });
 function folderKeyboard(event){
@@ -775,7 +776,7 @@ $('folderEntries').addEventListener('dragstart',event=>{
   const node=event.target.closest('.folder-entry');if(!node||folderBusy||fsOperation||event.ctrlKey||event.metaKey||event.shiftKey){event.preventDefault();return;}
   const entry=folderData.entriesByName.get(node.dataset.name);if(!folderSelected.has(entry.name))selectFolderEntry(entry);
   const targets=selectedFolderTargets(),token=browserRequestId();folderDrag={targets,token,pins:pinFolderTargets(targets).catch(error=>({error})),box:$('folderEntries').getBoundingClientRect()};event.dataTransfer.effectAllowed='move';event.dataTransfer.setData('application/x-fbrowse-picker',token);
-  const ghost=make('div','button',targets.length+'개 항목 이동');ghost.style.cssText='position:fixed;left:-1000px;top:0';$('folderPicker').append(ghost);folderDrag.ghost=ghost;event.dataTransfer.setDragImage(ghost,0,0);
+  const ghost=make('div','button',counted(targets.length,'item')+' to move');ghost.style.cssText='position:fixed;left:-1000px;top:0';$('folderPicker').append(ghost);folderDrag.ghost=ghost;event.dataTransfer.setDragImage(ghost,0,0);
   for(const row of $('folderEntries').querySelectorAll('.folder-entry'))if(folderSelected.has(row.dataset.name))row.classList.add('is-picker-source');folderDrag.frame=requestAnimationFrame(scrollFolderDrag);
 });
 function folderDropEntry(event){const row=event.target.closest('.folder-entry'),entry=folderData?.entriesByName.get(row?.dataset.name);if(entry?.kind!=='directory'||entry.symlink||!entry.readable)return null;const destination=entry.path;if(folderDrag.targets.some(target=>destination===absoluteTarget(target)||destination.startsWith(absoluteTarget(target)+'/')))return null;return {row,target:folderTarget(entry)};}
@@ -792,13 +793,13 @@ function drawFolderEntries(){
     const node=make(entry.kind==='directory'?'button':'div','folder-entry'+(entry.kind==='file'?' is-file':''));
     node.title=folderAbsolute(folderData.path,entry.name);node.dataset.name=entry.name;node.tabIndex=0;node.draggable=true;node.setAttribute('aria-pressed',String(folderSelected.has(entry.name)));if(entry.kind==='file')node.setAttribute('role','button');
     node.append(icon(entry,'folder-icon'),make('span','folder-entry-name',entry.name));
-    if(entry.kind==='directory'){node.type='button';node.disabled=!entry.readable;node.append(make('small','',entry.readable?(entry.symlink?'연결 폴더 ↗':'열기 →'):'접근 불가'));node.onclick=event=>{selectFolderEntry(entry,event);if(!event.ctrlKey&&!event.metaKey&&!event.shiftKey)navigateFolders(entry.path);};}
-    else{node.append(make('small','','파일'));node.onclick=event=>selectFolderEntry(entry,event);}
+    if(entry.kind==='directory'){node.type='button';node.disabled=!entry.readable;node.append(make('small','',entry.readable?(entry.symlink?'Linked folder ↗':'Open →'):'Inaccessible'));node.onclick=event=>{selectFolderEntry(entry,event);if(!event.ctrlKey&&!event.metaKey&&!event.shiftKey)navigateFolders(entry.path);};}
+    else{node.append(make('small','','Files'));node.onclick=event=>selectFolderEntry(entry,event);}
     return node;
   }));
-  if(!items.length)$('folderEntries').append(make('div','note',query?'이름이 일치하는 항목이 없습니다.':'빈 폴더입니다. 이 폴더도 연결할 수 있습니다.'));
+  if(!items.length)$('folderEntries').append(make('div','note',query?'No matching names.':'This folder is empty. You can still connect it.'));
   const visible=new Set(items.map(entry=>entry.name));for(const name of folderSelected.keys())if(!visible.has(name))folderSelected.delete(name);if(!visible.has(folderAnchor))folderAnchor=null;paintFolderSelection();
-  $('folderCounts').textContent=`폴더 ${folderData.counts.directory}개 · 파일 ${folderData.counts.file}개`+(folderData.truncated?' · 처음 2,000개 표시':'');
+  $('folderCounts').textContent=`Folders: ${folderData.counts.directory} · Files: ${folderData.counts.file}`+(folderData.truncated?' · Showing the first 2,000 items':'');
 }
 async function navigateFolders(path,fromOperation=false){
   if(folderBusy&&!fromOperation)return false;if(!fromOperation)$('folderActionStatus').hidden=true;closeFolderMenu();finishFolderDrag();folderSelected.clear();folderAnchor=null;
@@ -808,7 +809,7 @@ async function navigateFolders(path,fromOperation=false){
     const response=await fetch('/api/folders',{method:'POST',headers:{'Content-Type':'application/json','X-Fbrowse-Token':state.token},body:JSON.stringify({path,show_hidden:$('folderHidden').checked,scope:folderData?.context?.capability,preferred_root:state.root}),signal:controller.signal});
     const data=await response.json();if(!response.ok)throw Error(data.error);
     if(generation!==folderGeneration)return false;
-    folderData=data;folderData.entriesByName=new Map(data.entries.map(entry=>[entry.name,entry]));$('folderLocation').value=data.path;$('folderSelection').textContent='선택할 폴더: '+data.path;
+    folderData=data;folderData.entriesByName=new Map(data.entries.map(entry=>[entry.name,entry]));$('folderLocation').value=data.path;$('folderSelection').textContent='Folder to connect: '+data.path;
     $('folderUp').disabled=data.path===data.parent;$('folderFilter').value='';
     if(!folderCustomName)$('folderLabel').value=data.name;
     $('folderPlaces').replaceChildren(...data.places.map(place=>{const button=make('button','button',place.name);button.type='button';button.title=place.path;button.onclick=()=>navigateFolders(place.path);return button;}));
@@ -820,11 +821,11 @@ async function navigateFolders(path,fromOperation=false){
   finally{if(generation===folderGeneration)$('folderEntries').setAttribute('aria-busy','false');}
 }
 async function openFolderPicker(){
-  folderData=null;folderCustomName=Boolean($('rootLabel').value.trim());$('folderLabel').value=$('rootLabel').value.trim();$('folderFilter').value='';$('folderEntries').replaceChildren(make('div','note','폴더를 불러오는 중…'));$('folderCounts').textContent='';$('folderSelection').textContent='';
-  $('folderPicker').hidden=false;$('rootManagement').hidden=true;$('rootsDialog').classList.add('is-selecting');$('rootsTitle').textContent='연결할 폴더 선택';$('chooseFolder').textContent=state.editRoot?'이 폴더로 변경':'이 폴더 연결';
+  folderData=null;folderCustomName=Boolean($('rootLabel').value.trim());$('folderLabel').value=$('rootLabel').value.trim();$('folderFilter').value='';$('folderEntries').replaceChildren(make('div','note','Loading folders…'));$('folderCounts').textContent='';$('folderSelection').textContent='';
+  $('folderPicker').hidden=false;$('rootManagement').hidden=true;$('rootsDialog').classList.add('is-selecting');$('rootsTitle').textContent='Select a Folder to Connect';$('chooseFolder').textContent=state.editRoot?'Use This Folder':'Connect This Folder';
   const requested=$('rootDirectory').value.trim()||state.roots.find(root=>root.id===state.root)?.path||state.project;
   const openingGeneration=folderGeneration+1,loaded=await navigateFolders(requested);
-  if(!loaded&&openingGeneration===folderGeneration&&!$('folderPicker').hidden&&requested!==state.project){if(await navigateFolders(state.project))folderFailure('기존 경로에 접근할 수 없어 프로젝트 폴더를 표시합니다.');}
+  if(!loaded&&openingGeneration===folderGeneration&&!$('folderPicker').hidden&&requested!==state.project){if(await navigateFolders(state.project))folderFailure('The previous path is inaccessible. Showing the project folder.');}
   if(!$('folderPicker').hidden)$('folderLocation').focus();
 }
 $('browseFolder').onclick=()=>{cancelRootEdit();openFolderPicker();};
@@ -852,12 +853,12 @@ async function update(refresh=false){
     state.expanded.add(nodeKey(state.root,''));
     if(!state.roots.find(r=>r.id===state.root)?.connected){drawTree();return;}
     if(query){
-      $('listLabel').textContent='검색 결과';$('status').textContent='하위 폴더까지 검색 중…';
+      $('listLabel').textContent='Search Results';$('status').textContent='Searching subfolders…';
       const data=await api('/api/search?'+new URLSearchParams({root:state.root,q:query,type:type.value,refresh:refresh?'1':'0'}),controller.signal);
       if(generation!==state.generation)return;
       const focus=treeFocusSnapshot();entries.replaceChildren(...data.entries.map(e=>row(e,true)));reconcileTreeSelection();restoreTreeFocus(focus);
-      if(!data.entries.length)note('일치하는 파일이 없습니다');
-      $('status').textContent=`${data.total}개 결과`+(data.total>data.entries.length?` · 처음 ${data.entries.length}개 표시`:'')+(data.skipped?' · 일부 폴더 접근 불가':'');
+      if(!data.entries.length)note('No matching files');
+      $('status').textContent=counted(data.total,'result')+(data.total>data.entries.length?` · Showing the first ${data.entries.length}`:'')+(data.skipped?' · Some folders are inaccessible':'');
     }else{
       const paths=[...state.expanded].map(key=>JSON.parse(key)).filter(([root])=>root===state.root);
       const loaded=await Promise.all(paths.map(async ([root,path])=>[nodeKey(root,path),await api('/api/list?'+new URLSearchParams({root,path}),controller.signal).catch(error=>{if(error.name==='AbortError')throw error;return {entries:[],error:error.message};})]));
@@ -865,7 +866,7 @@ async function update(refresh=false){
       for(const [key,data] of loaded)state.cache.set(key,data);
       drawTree();
     }
-  }catch(error){if(error.name!=='AbortError'&&generation===state.generation){note(error.message,true);$('status').textContent='새로고침으로 다시 시도하세요';}}
+  }catch(error){if(error.name!=='AbortError'&&generation===state.generation){note(error.message,true);$('status').textContent='Refresh to try again';}}
   finally{if(generation===state.generation)entries.setAttribute('aria-busy','false');}
 }
 function loadPreview(confirmed=false){
@@ -873,7 +874,7 @@ function loadPreview(confirmed=false){
   loadTab(tab);renderWorkspace();
 }
 function loadTab(tab,initialTab,pdfPage){
-  if(tab.fsBusy){$('status').textContent='파일 작업이 끝난 뒤 다시 불러오세요.';return;}
+  if(tab.fsBusy){$('status').textContent='Wait for the file operation to finish before reloading.';return;}
   tabEditor(tab)?.abandon();const entry=tab.entry,url=fileURL(entry.path,entry.root_id)+'?v='+Date.now();let viewerURL=previewURL(entry);tab.editor=null;tab.diagnosticsRootPath=state.roots.find(item=>item.id===entry.root_id)?.path;
   if(!['pdf','media'].includes(entry.category)){
     const session=globalThis.crypto?.randomUUID?.()||Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);tab.editor={root:entry.root_id,path:entry.path,session,dirty:false};viewerURL+='&editorSession='+encodeURIComponent(session);if(initialTab)viewerURL+='&initialTab='+encodeURIComponent(initialTab);
@@ -893,7 +894,7 @@ function activateTab(id,focus=false,followRoot=true){
   state.activeTab=id;state.activeGroup=tab.group;state.groups.get(tab.group).active=id;state.selected=tab.entry;state.editor=tab.editor;
   if(followRoot&&state.root!==tab.entry.root_id){clearTreeSelection();state.root=tab.entry.root_id;input.value='';clearGit();renderRoots();try{localStorage.setItem(selectionKey(),state.root);}catch{}update();}
   state.viewerMode='file';$('workspace').hidden=false;$('empty').hidden=true;$('diffViewer').hidden=true;$('viewerTabs').hidden=!(state.diff?.root===tab.entry.root_id&&state.diff?.path===tab.entry.path);$('diffWrap').hidden=true;$('showFile').setAttribute('aria-pressed','true');$('showDiff').setAttribute('aria-pressed','false');$('open').hidden=false;$('actions').hidden=false;$('open').href=previewURL(tab.entry);
-  $('viewer').setAttribute('aria-label',rootLabel(tab.entry.root_id)+' · '+tab.entry.path+' 미리보기');
+  $('viewer').setAttribute('aria-label',rootLabel(tab.entry.root_id)+' · '+tab.entry.path+' preview');
   if(followRoot)history.replaceState(null,'','/?'+new URLSearchParams({root:tab.entry.root_id,path:tab.entry.path}));
   for(const node of entries.querySelectorAll('button[data-path]'))node.classList.toggle('active',node.dataset.path===tab.entry.path&&node.dataset.root===tab.entry.root_id);
   renderWorkspace();if(focus)tabEditor(tab)?.focus?.();
@@ -912,9 +913,9 @@ function closeWorkspaceTabs(keepId=null){
   const targets=state.tabs.filter(tab=>tab!==keep);
   // Preflight the complete set before changing drafts, selection or splits.
   if(!targets.length)return false;
-  if(targets.some(tabClosingBusy)){$('status').textContent='파일 작업이나 저장이 끝난 뒤 탭을 닫으세요.';return false;}
+  if(targets.some(tabClosingBusy)){$('status').textContent='Wait for file operations and saving to finish before closing tabs.';return false;}
   const dirty=targets.filter(tabDirty);
-  if(dirty.length&&!confirm('닫을 탭 '+targets.length+'개 중 저장하지 않은 변경사항이 있는 '+dirty.length+'개 파일의 초안을 버리고 닫을까요?\n'+dirty.map(tab=>rootLabel(tab.entry.root_id)+' · '+tab.entry.path).join('\n')))return false;
+  if(dirty.length&&!confirm('Close '+counted(targets.length,'tab')+' and discard unsaved drafts in '+counted(dirty.length,'file')+'?\n'+dirty.map(tab=>rootLabel(tab.entry.root_id)+' · '+tab.entry.path).join('\n')))return false;
   abandonTabs(targets);
   for(const tab of targets){tab.slot.remove();tab.item?.remove();}
   state.tabs=keep?[keep]:[];
@@ -968,7 +969,7 @@ function renderWorkspaceTabs(){
           if(event.key==='Delete'){event.preventDefault();closeTab(tab.id);}
         };
         activate.append(make('span','tab-name'),make('small','tab-description'));
-        const dirty=make('span','tab-dirty','●');dirty.setAttribute('aria-label','저장하지 않은 변경사항');const close=make('button','tab-close','×');close.type='button';close.onclick=()=>{if(closeTab(tab.id))document.querySelector('.file-tab[data-tab="'+state.activeTab+'"] .tab-activate')?.focus();};item.append(activate,dirty,close);
+        const dirty=make('span','tab-dirty','●');dirty.setAttribute('aria-label','Unsaved changes');const close=make('button','tab-close','×');close.type='button';close.onclick=()=>{if(closeTab(tab.id))document.querySelector('.file-tab[data-tab="'+state.activeTab+'"] .tab-activate')?.focus();};item.append(activate,dirty,close);
         item.oncontextmenu=event=>{event.preventDefault();openGroupMenu(tab.group,tab.id,event.clientX,event.clientY,activate);};
         item.ondragstart=event=>event.preventDefault();
       }
@@ -976,7 +977,7 @@ function renderWorkspaceTabs(){
       const rootName=rootLabel(tab.entry.root_id),identity=rootName+(state.roots.filter(root=>root.name===rootName).length>1?' ['+tab.entry.root_id+']':'');
       const label=identity+' · '+tab.entry.path;item.title=label+'\n'+(state.roots.find(root=>root.id===tab.entry.root_id)?.path||tab.entry.root_id)+'/'+tab.entry.path;item.setAttribute('aria-selected',String(group.active===tab.id));
       const activate=item.querySelector('.tab-activate'),display=labels.get(tab.id);activate.querySelector('.tab-name').textContent=display.name;const description=activate.querySelector('.tab-description');description.textContent=display.description;description.hidden=!display.description;
-      activate.tabIndex=group.active===tab.id?0:-1;activate.setAttribute('aria-label',label);item.querySelector('.tab-close').setAttribute('aria-label',label+' 탭 닫기');item.querySelector('.tab-close').disabled=Boolean(tab.fsBusy);item.querySelector('.tab-dirty').hidden=!tabDirty(tab);
+      activate.tabIndex=group.active===tab.id?0:-1;activate.setAttribute('aria-label',label);item.querySelector('.tab-close').setAttribute('aria-label',label+': Close tab');item.querySelector('.tab-close').disabled=Boolean(tab.fsBusy);item.querySelector('.tab-dirty').hidden=!tabDirty(tab);
       if(strip.children[index]!==item)strip.insertBefore(item,strip.children[index]||null);
     }
   }
@@ -986,9 +987,9 @@ function renderWorkspaceTabs(){
 let layoutDirty=true,lastWorkspaceSize='',groupMenuAnchor=null;
 const groupTabs=id=>state.tabs.filter(tab=>tab.group===id);
 function createGroup(id='group-'+(++state.nextGroup)){
-  const strip=make('div','pane-tabs');strip.id='tabs-'+id;strip.dataset.group=id;strip.setAttribute('role','tablist');strip.setAttribute('aria-label','편집 그룹 '+id+' 파일 탭');strip.tabIndex=0;
+  const strip=make('div','pane-tabs');strip.id='tabs-'+id;strip.dataset.group=id;strip.setAttribute('role','tablist');strip.setAttribute('aria-label','Editor group '+id+' file tabs');strip.tabIndex=0;
   const group={id,active:null,strip,rect:null};state.groups.set(id,group);$('workspace').append(strip);
-  strip.addEventListener('pointerdown',event=>{if(event.target===strip&&group.active)activateTab(group.active);});
+  strip.addEventListener('pointerdown',event=>{if(event.button===0&&event.target===strip&&group.active)activateTab(group.active);});
   strip.addEventListener('contextmenu',event=>{if(event.target!==strip)return;event.preventDefault();openGroupMenu(id,group.active,event.clientX,event.clientY,strip);});
   strip.addEventListener('keydown',event=>{if(event.target===strip&&event.shiftKey&&event.key==='F10'){event.preventDefault();const rect=strip.getBoundingClientRect();openGroupMenu(id,group.active,rect.left,rect.bottom,strip);}});
   return group;
@@ -1057,16 +1058,21 @@ function renderWorkspace(){
 createGroup('group-1');new ResizeObserver(()=>layoutWorkspace()).observe($('workspace'));
 function closeGroupMenu(restore=false){const anchor=groupMenuAnchor;groupMenuAnchor=null;$('groupMenu').hidden=true;$('groupMenu').replaceChildren();if(restore&&anchor?.isConnected)anchor.focus({preventScroll:true});}
 function openGroupMenu(groupId,tabId,x,y,anchor){
-  const group=state.groups.get(groupId),tab=state.tabs.find(tab=>tab.id===tabId);if(!group)return;closeGroupMenu();groupMenuAnchor=anchor;
+  const group=state.groups.get(groupId);if(!group)return;
+  const tab=state.tabs.find(tab=>tab.id===(tabId||group.active)&&tab.group===groupId);closeGroupMenu();groupMenuAnchor=anchor;
   // Merely inspecting or cancelling a menu must preserve the active tab and drafts.
   const menu=$('groupMenu');menu.replaceChildren();
   function action(label,handler,disabled=false){const button=make('button','',label);button.type='button';button.setAttribute('role','menuitem');button.disabled=disabled;button.onclick=()=>{closeGroupMenu(true);handler();};menu.append(button);}
-  action(state.previewExpanded?'기본 보기 · Esc':'현재 파일 크게 보기',()=>{if(tab)activateTab(tab.id,false,false);setPreviewExpanded(!state.previewExpanded);},!tab);
-  action('전체 화면',()=>{if(tab)activateTab(tab.id,false,false);toggleBrowserFullscreen();},!tab);
-  for(const [edge,label]of [['left','왼쪽에 분할'],['right','오른쪽에 분할'],['top','위에 분할'],['bottom','아래에 분할']])action(label,()=>splitTab(tabId,edge,groupId),!tab||tab.fsBusy||state.previewExpanded||groupTabs(groupId).length<2);
-  action('이 그룹 합치기',()=>mergeGroup(groupId),state.groups.size<2||state.previewExpanded);if(tab)action('탭 닫기',()=>closeTab(tabId),Boolean(tab.fsBusy));
-  if(tab)action('다른 탭 모두 닫기 (모든 분할)',()=>closeWorkspaceTabs(tabId),!state.tabs.some(other=>other!==tab)||state.tabs.some(other=>other!==tab&&tabClosingBusy(other)));
-  action('모든 탭 닫기 (모든 분할)',()=>closeWorkspaceTabs(),!state.tabs.length||state.tabs.some(tabClosingBusy));
+  action(state.previewExpanded?'Restore View · Esc':'Expand Current File',()=>{if(tab)activateTab(tab.id,false,false);setPreviewExpanded(!state.previewExpanded);},!tab);
+  action('Full Screen',()=>{if(tab)activateTab(tab.id,false,false);toggleBrowserFullscreen();},!tab);
+  // Resolve the live tab binding at activation so a rename/move cannot copy an old path.
+  const copyPath=relative=>{const current=state.tabs.find(item=>item.id===tab?.id),root=current&&state.roots.find(item=>item.id===current.entry.root_id);if(current&&root)void copyPathValue(relative?current.entry.path:absoluteTarget({rootPath:root.path,path:current.entry.path}));};
+  const pathUnavailable=!tab||!state.roots.some(root=>root.id===tab.entry.root_id&&root.path);
+  action('Copy Relative Path',()=>copyPath(true),pathUnavailable);
+  action('Copy Path',()=>copyPath(false),pathUnavailable);
+  action('Merge This Group',()=>mergeGroup(groupId),state.groups.size<2||state.previewExpanded);if(tab)action('Close Tab',()=>closeTab(tabId),Boolean(tab.fsBusy));
+  if(tab)action('Close Other Tabs (All Groups)',()=>closeWorkspaceTabs(tabId),!state.tabs.some(other=>other!==tab)||state.tabs.some(other=>other!==tab&&tabClosingBusy(other)));
+  action('Close All Tabs (All Groups)',()=>closeWorkspaceTabs(),!state.tabs.length||state.tabs.some(tabClosingBusy));
   menu.hidden=false;menu.style.left='0px';menu.style.top='0px';const rect=menu.getBoundingClientRect();menu.style.left=Math.max(8,Math.min(x,innerWidth-rect.width-8))+'px';menu.style.top=Math.max(8,Math.min(y,innerHeight-rect.height-8))+'px';menu.querySelector('button:not(:disabled)')?.focus();
 }
 $('groupMenu').addEventListener('keydown',event=>{const buttons=[...$('groupMenu').querySelectorAll('button:not(:disabled)')],index=buttons.indexOf(document.activeElement);let next;if(event.key==='ArrowDown')next=buttons[(index+1)%buttons.length];if(event.key==='ArrowUp')next=buttons[(index+buttons.length-1)%buttons.length];if(event.key==='Home')next=buttons[0];if(event.key==='End')next=buttons.at(-1);if(next){event.preventDefault();next.focus();}if(event.key==='Escape'){event.preventDefault();event.stopPropagation();closeGroupMenu(true);}if(event.key==='Tab')closeGroupMenu();});
@@ -1098,7 +1104,7 @@ function showTreeMove(point){
   clearTreeMove();const target=treeMoveTarget(point),drag=pointerTabDrag;
   if(dragGhost&&drag?.source==='tree'){
     dragGhost.dataset.drop=target?(target.valid?'move':'invalid'):'';
-    dragGhost.querySelector('small').textContent=rootLabel(drag.file.root)+' ['+drag.file.root+']'+(target?(target.valid?' → '+(target.parent||'/'):' · 이동할 수 없음'):'');updateDragGhost(point);
+    dragGhost.querySelector('small').textContent=rootLabel(drag.file.root)+' ['+drag.file.root+']'+(target?(target.valid?' → '+(target.parent||'/'):' · Cannot move here'):'');updateDragGhost(point);
   }
   if(target?.valid){target.element.classList.add('is-move-target');entries.classList.toggle('is-move-root',!target.parent);}
   else if(target)document.body.classList.add('is-tree-drop-invalid');
@@ -1151,7 +1157,7 @@ function startPointerDrag(drag,event){
   }
   document.body.classList.add('is-tab-dragging');if(!state.tabs.length&&$('workspace').hidden&&state.viewerMode==='file'){drag.emptyWorkspace=true;$('workspace').classList.add('is-empty-drop');$('workspace').hidden=false;}$('workspaceDragCover').hidden=false;
   dragGhost=make('div','workspace-drag-ghost');dragGhost.dataset.source=drag.source;dragGhost.setAttribute('aria-hidden','true');
-  dragGhost.append(icon(drag.entry),make('span','drag-name',drag.files?.length>1?drag.files.length+'개 항목':drag.entry.name||drag.entry.path.split('/').at(-1)),make('small','',rootLabel(drag.entry.root_id)+' ['+drag.entry.root_id+']'));
+  dragGhost.append(icon(drag.entry),make('span','drag-name',drag.files?.length>1?counted(drag.files.length,'item'):drag.entry.name||drag.entry.path.split('/').at(-1)),make('small','',rootLabel(drag.entry.root_id)+' ['+drag.entry.root_id+']'));
   document.body.append(dragGhost);updateDragGhost(event);
 }
 function showTabDrop(event){
@@ -1166,7 +1172,7 @@ function showTabDrop(event){
   }
   overlay.hidden=false;overlay.dataset.edge=target.edge||'center';overlay.dataset.group=target.group;
   for(const [key,value]of Object.entries(target.rect))overlay.style[key]=value+'px';
-  overlay.textContent=target.noop?'현재 파일 · 분할할 다른 탭 없음':target.edge?({left:'왼쪽에 분할',right:'오른쪽에 분할',top:'위에 분할',bottom:'아래에 분할'}[target.edge]):'이 창에서 열기';return target;
+  overlay.textContent=target.noop?'Current file · No other tabs to split':target.edge?({left:'Split Left',right:'Split Right',top:'Split Up',bottom:'Split Down'}[target.edge]):'Open in This Group';return target;
 }
 function applyTabDrop(id,target,activate=true){
   if(!target||target.noop||!state.groups.has(target.group)||state.previewExpanded)return;
@@ -1191,7 +1197,7 @@ async function applyFileDrop(file,target){
     // select only allocates the file after the guard succeeds, in the frozen target group.
     if(!tab)tab=select(entry,true,undefined,{group:intent.group,activate:false});
     if(tab)applyTabDrop(tab.id,intent,foreground);
-  }catch(error){if(valid()&&state.root===context.root)$('status').textContent='파일을 열 수 없습니다: '+error.message;}
+  }catch(error){if(valid()&&state.root===context.root)$('status').textContent='Could not open the file: '+error.message;}
 }
 function finishPointerTabDrag(event,cancel=false){
   const drag=pointerTabDrag;if(!drag||event?.pointerId!==undefined&&event.pointerId!==drag.pointer)return;
@@ -1236,7 +1242,7 @@ let workspaceDrag=null;
 function resizeWorkspace(node,ratio){node.ratio=Math.max(node.bounds.min,Math.min(node.bounds.max,ratio));layoutDirty=true;layoutWorkspace();}
 function finishWorkspaceResize(){const drag=workspaceDrag;if(!drag)return;workspaceDrag=null;document.body.classList.remove('is-workspace-resizing');if(drag.handle.hasPointerCapture(drag.id))drag.handle.releasePointerCapture(drag.id);}
 function createSeparator(node){
-  const handle=make('div','workspace-separator');handle.id=node.id;handle.dataset.split=node.id;handle.dataset.axis=node.axis;handle.setAttribute('role','separator');handle.setAttribute('aria-label','편집 그룹 크기 조절');handle.setAttribute('aria-orientation',node.axis==='x'?'vertical':'horizontal');handle.tabIndex=0;$('workspace').append(handle);
+  const handle=make('div','workspace-separator');handle.id=node.id;handle.dataset.split=node.id;handle.dataset.axis=node.axis;handle.setAttribute('role','separator');handle.setAttribute('aria-label','Resize editor group');handle.setAttribute('aria-orientation',node.axis==='x'?'vertical':'horizontal');handle.tabIndex=0;$('workspace').append(handle);
   handle.addEventListener('pointerdown',event=>{if(event.button!==0)return;event.preventDefault();workspaceDrag={id:event.pointerId,handle,node};handle.setPointerCapture(event.pointerId);handle.focus();document.body.dataset.splitOrientation=node.axis==='x'?'horizontal':'vertical';document.body.classList.add('is-workspace-resizing');});
   handle.addEventListener('pointermove',event=>{if(workspaceDrag?.id!==event.pointerId)return;const box=$('workspace').getBoundingClientRect(),rect=node.rect,position=node.axis==='x'?event.clientX-box.left-rect.left:event.clientY-box.top-rect.top;resizeWorkspace(node,(position-node.bounds.gap/2)/Math.max(1,node.bounds.available));});
   for(const name of ['pointerup','pointercancel','lostpointercapture'])handle.addEventListener(name,finishWorkspaceResize);
@@ -1285,13 +1291,13 @@ function setPreviewExpanded(expanded){
   if(expanded&&state.viewerMode==='file'){
     const tab=focusedTab();if(!tab)return;expandedLayout={activeTab:state.activeTab,active:[...state.groups.values()].map(group=>[group.id,group.active])};activateTab(tab.id,false,false);
   }
-  state.previewExpanded=expanded;layoutDirty=true;$('viewer').classList.toggle('is-expanded',expanded);$('expandPreview').textContent=expanded?'↙':'⛶';$('expandPreview').setAttribute('aria-label',expanded?'기본 보기':'크게 보기');$('expandPreview').setAttribute('aria-pressed',String(expanded));$('exitExpanded').hidden=!expanded;$('expandedFullscreen').hidden=!expanded;$('fullscreenNotice').hidden=true;
+  state.previewExpanded=expanded;layoutDirty=true;$('viewer').classList.toggle('is-expanded',expanded);$('expandPreview').textContent=expanded?'↙':'⛶';$('expandPreview').setAttribute('aria-label',expanded?'Restore View':'Expand Preview');$('expandPreview').setAttribute('aria-pressed',String(expanded));$('exitExpanded').hidden=!expanded;$('expandedFullscreen').hidden=!expanded;$('fullscreenNotice').hidden=true;
   if(!expanded&&expandedLayout){const saved=expandedLayout;expandedLayout=null;for(const [id,active]of saved.active){const group=state.groups.get(id);if(group&&state.tabs.some(tab=>tab.id===active&&tab.group===id))group.active=active;}if(state.tabs.some(tab=>tab.id===saved.activeTab))activateTab(saved.activeTab,false,false);}
   renderWorkspace();if(expanded)revealPreviewControls();else{clearTimeout(previewControlsTimer);$('viewer').removeAttribute('data-controls-visible');}
 }
 // Browser fullscreen is temporary; restore the preceding in-app view on every exit.
 let browserFullscreenSession=null,fullscreenBusy=false;
-function fullscreenFailure(){const message='전체 화면을 열거나 종료하지 못했습니다. 브라우저에서 fbrowse 주소를 직접 열어 다시 시도하세요.';$('status').textContent=message;$('fullscreenNotice').textContent=message;$('fullscreenNotice').hidden=false;}
+function fullscreenFailure(){const message='Could not enter or exit full screen. Open the fbrowse address directly in a browser and try again.';$('status').textContent=message;$('fullscreenNotice').textContent=message;$('fullscreenNotice').hidden=false;}
 function syncBrowserFullscreen(){
   const active=document.fullscreenElement===$('viewer'),session=browserFullscreenSession;
   if(active&&session&&!session.entered){
@@ -1299,8 +1305,8 @@ function syncBrowserFullscreen(){
     if(tab){tab.frame.focus({preventScroll:true});try{if(previewChromeKind(tab)==='text')tabEditor(tab)?.focusPreview();else tab.frame.contentWindow.focus();}catch{}}
   }
   if(!document.fullscreenElement&&session?.entered){browserFullscreenSession=null;setPreviewExpanded(session.expanded);if(session.trigger?.isConnected)session.trigger.focus({preventScroll:true});}
-  const label=active?'전체 화면 종료':'전체 화면';
-  for(const id of ['fullscreenPreview','expandedFullscreen']){$(id).setAttribute('aria-pressed',String(active));$(id).setAttribute('aria-label',label);$(id).title=label+' · Esc로 돌아가기';$(id).disabled=fullscreenBusy;}
+  const label=active?'Exit Full Screen':'Full Screen';
+  for(const id of ['fullscreenPreview','expandedFullscreen']){$(id).setAttribute('aria-pressed',String(active));$(id).setAttribute('aria-label',label);$(id).title=label+' · Esc to return';$(id).disabled=fullscreenBusy;}
   $('expandedFullscreen').textContent=label;
 }
 async function toggleBrowserFullscreen(){
@@ -1333,12 +1339,12 @@ function handlePreviewEscape(event){
   event.preventDefault();event.stopPropagation();closeExpandedPreview();return true;
 }
 function select(entry,keepDiff=false,initialTab,placement){
-  if(fsOperation&&['rename','move','delete'].includes(fsOperation.action)&&affectedPath(entry.root_id,entry.path,fsOperation.target)){$('status').textContent='파일 작업이 끝난 뒤 열어주세요.';return;}
+  if(fsOperation&&['rename','move','delete'].includes(fsOperation.action)&&affectedPath(entry.root_id,entry.path,fsOperation.target)){$('status').textContent='Wait for the file operation to finish before opening.';return;}
   if(entry.available===false)return;
   const existing=state.tabs.find(tab=>nodeKey(tab.entry.root_id,tab.entry.path)===nodeKey(entry.root_id,entry.path));if(existing){if(placement?.activate!==false)activateTab(existing.id);return existing;}
   if(placement&&!state.groups.has(placement.group))return;
   if(!keepDiff){state.diffController?.abort();state.diffGeneration++;state.diff=null;}
-  const id='file-tab-'+(++state.nextTab),slot=make('section','workspace-slot'),frame=document.createElement('iframe');slot.id='slot-'+id;slot.setAttribute('role','tabpanel');frame.id=state.tabs.length?'preview-'+state.nextTab:'preview';frame.dataset.tab=id;frame.title=rootLabel(entry.root_id)+' · '+entry.path+' 미리보기';slot.append(frame);$('workspace').append(slot);
+  const id='file-tab-'+(++state.nextTab),slot=make('section','workspace-slot'),frame=document.createElement('iframe');slot.id='slot-'+id;slot.setAttribute('role','tabpanel');frame.id=state.tabs.length?'preview-'+state.nextTab:'preview';frame.dataset.tab=id;frame.title=rootLabel(entry.root_id)+' · '+entry.path+' preview';slot.append(frame);$('workspace').append(slot);
   const tab={id,entry:{...entry},group:placement?.group||state.activeGroup,slot,frame,editor:null};state.tabs.push(tab);layoutDirty=true;
   frame.addEventListener('focus',()=>focusTab(tab));frame.addEventListener('load',()=>{syncPreviewChrome(tab);try{const win=frame.contentWindow;win.addEventListener('keydown',handlePreviewEscape,true);win.addEventListener('focus',()=>focusTab(tab));win.document.addEventListener('pointerdown',()=>{focusTab(tab);queueMicrotask(()=>focusTab(tab));},true);if(initialTab==='source')win.document.querySelector('#editor')?.focus({preventScroll:true});}catch{}});
   loadTab(tab,initialTab);if(placement?.activate!==false)activateTab(id);else renderWorkspace();document.title='fbrowse';return tab;
@@ -1373,6 +1379,9 @@ $('treeMenu').addEventListener('keydown',event=>{
 document.addEventListener('pointerdown',event=>{if(!$('treeMenu').hidden&&!$('treeMenu').contains(event.target))closeTreeMenu();});document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!$('treeMenu').hidden){event.preventDefault();closeTreeMenu(true);}},true);
 async function copyTreePath(relative){
   const target={...treeMenuTarget},value=relative?target.path:absoluteTarget(target);closeTreeMenu();
+  await copyPathValue(value);
+}
+async function copyPathValue(value){
   try{await navigator.clipboard.writeText(value);$('status').textContent='Copied: '+value;}
   catch{$('copyPathValue').value=value;$('copyPathDialog').showModal();$('copyPathValue').focus();$('copyPathValue').select();}
 }
@@ -1383,7 +1392,7 @@ const MAX_TREE_SELECTION=10000,MAX_TREE_ACTION=100;
 function paintTreeSelection(){
   for(const {node,key} of treeRows){const value=String(treeSelection.has(key));if(node.dataset.treeSelected!==value){node.dataset.treeSelected=value;node.setAttribute('aria-pressed',value);}}
   $('selectionBar').hidden=state.sidebarMode!=='files';$('clearSelection').disabled=!treeSelection.size;
-  const label=treeSelection.size+'개 선택'+(treeSelection.size===MAX_TREE_SELECTION?' (선택 한도)':'');if($('selectionCount').textContent!==label)$('selectionCount').textContent=label;
+  const label=treeSelection.size+' selected'+(treeSelection.size===MAX_TREE_SELECTION?' (selection limit)':'');if($('selectionCount').textContent!==label)$('selectionCount').textContent=label;
 }
 function clearTreeSelection(){if(marquee)finishMarquee(true);treeSelection.clear();treeAnchor=null;paintTreeSelection();}
 function reconcileTreeSelection(){
@@ -1476,46 +1485,46 @@ function updateFileClipboard(){
   $('contextCopyFile').disabled=disabled||treeSelection.size>1||!treeMenuTarget?.object||!sameRoot(treeMenuTarget);
   $('contextPasteFile').disabled=disabled||!fileClipboard||!sameRoot(fileClipboard)||Boolean(treeMenuTarget&&!sameRoot(treeMenuTarget));
   const indicator=$('clipboardStatus');indicator.hidden=!fileClipboard&&!clipboardNotice;
-  indicator.textContent=clipboardNotice||(fileClipboard?'복사됨: '+rootLabel(fileClipboard.root)+' · '+fileClipboard.path+' · 저장된 파일 참조':'');
+  indicator.textContent=clipboardNotice||(fileClipboard?'Copied: '+rootLabel(fileClipboard.root)+' · '+fileClipboard.path+' · Saved file reference':'');
   indicator.setAttribute('aria-busy',String(copyLookupBusy||filePasteBusy));
   for(const node of entries.querySelectorAll('.row'))node.dataset.fileClipboard=String(fileClipboard?.root===node.dataset.root&&fileClipboard.path===node.dataset.path);
 }
 async function verifyCopyRoots(...targets){
   // This preflight improves feedback; the POST equality guards close the server-side race.
   const info=await fsRequest('/api/info');
-  if(targets.some(target=>!info.roots?.some(root=>root.id===target.root&&root.connected&&root.path===target.rootPath)))throw Error('루트 연결 경로가 변경되었습니다. 원본을 다시 선택해 복사하세요.');
+  if(targets.some(target=>!info.roots?.some(root=>root.id===target.root&&root.connected&&root.path===target.rootPath)))throw Error('The root connection path changed. Select and copy the source again.');
 }
 async function copyTreeFile(target){
   if(!target?.object||copyLookupBusy||filePasteBusy||fsOperation||newFileBusy)return;
-  target={...target};closeTreeMenu(true);fileClipboard=null;copyLookupBusy=true;clipboardNotice='복사할 파일 확인 중…';updateFileClipboard();
+  target={...target};closeTreeMenu(true);fileClipboard=null;copyLookupBusy=true;clipboardNotice='Checking file to copy…';updateFileClipboard();
   try{
-    if(!sameRoot(target))throw Error('루트 연결 경로가 변경되었습니다. 새로고침 후 다시 복사하세요.');
+    if(!sameRoot(target))throw Error('The root connection path changed. Refresh and copy again.');
     await verifyCopyRoots(target);
     const info=await fsRequest('/api/fs-info?'+new URLSearchParams({root:target.root,path:target.path}));
-    if(info.root_id!==target.root||info.path!==target.path||!info.version||!['file','directory','symlink'].includes(info.kind)||!sameRoot(target))throw Error('복사할 파일의 응답이 일치하지 않습니다. 다시 선택하세요.');
+    if(info.root_id!==target.root||info.path!==target.path||!info.version||!['file','directory','symlink'].includes(info.kind)||!sameRoot(target))throw Error('The copy source response does not match. Select it again.');
     fileClipboard=Object.freeze({...target,kind:info.kind,version:info.version});clipboardNotice='';
-    $('status').textContent='복사됨: '+absoluteTarget(target)+' · 저장된 파일을 붙여넣습니다. 수정 중인 원문은 포함하지 않습니다.';
-  }catch(error){clipboardNotice='복사 실패: '+error.message;$('status').textContent=clipboardNotice;}
+    $('status').textContent='Copied: '+absoluteTarget(target)+' · Pasting the saved file. Unsaved source changes are excluded.';
+  }catch(error){clipboardNotice='Copy failed: '+error.message;$('status').textContent=clipboardNotice;}
   finally{copyLookupBusy=false;updateFileClipboard();}
 }
 async function pasteTreeFile(target){
   if(!fileClipboard||copyLookupBusy||filePasteBusy||fsOperation||newFileBusy)return;
   const source=fileClipboard,destination={...target};closeTreeMenu(true);filePasteBusy=true;fsOperation={action:'copy',target:destination,source};$('newFile').disabled=true;
-  clipboardNotice='붙여넣는 중… '+absoluteTarget(source)+' → '+absoluteTarget(destination,destination.parent)+' · 다른 파일을 탐색할 수 있습니다.';updateFileClipboard();let sent=false,completed=false;
+  clipboardNotice='Pasting… '+absoluteTarget(source)+' → '+absoluteTarget(destination,destination.parent)+' · You can continue browsing other files.';updateFileClipboard();let sent=false,completed=false;
   try{
-    if(!sameRoot(source)||!sameRoot(destination))throw Error('루트 연결 경로가 변경되었습니다. 다시 복사한 뒤 붙여넣으세요.');
+    if(!sameRoot(source)||!sameRoot(destination))throw Error('The root connection path changed. Copy again before pasting.');
     await verifyCopyRoots(source,destination);
     sent=true;const data=await fsRequest('/api/fs',{action:'copy',root:destination.root,parent:destination.parent,source_root:source.root,source_path:source.path,expected_version:source.version,source_root_path:source.rootPath,root_path:destination.rootPath});completed=true;
     const parent=data.path?.split('/').slice(0,-1).join('/');
-    if(data.root_id!==destination.root||data.source_root_id!==source.root||data.source_path!==source.path||!data.path||parent!==destination.parent||data.entry?.root_id!==destination.root||data.entry?.path!==data.path||!sameRoot(destination)||!sameRoot(source))throw Error('붙여넣기 결과의 대상이 일치하지 않습니다. 대상 폴더를 새로고침해 확인하세요.');
+    if(data.root_id!==destination.root||data.source_root_id!==source.root||data.source_path!==source.path||!data.path||parent!==destination.parent||data.entry?.root_id!==destination.root||data.entry?.path!==data.path||!sameRoot(destination)||!sameRoot(source))throw Error('The paste destination does not match. Refresh and check the destination folder.');
     for(const key of [...state.cache.keys()])if(JSON.parse(key)[0]===destination.root)state.cache.delete(key);
     state.expanded.add(nodeKey(destination.root,destination.parent));
     // A delayed result never opens a file or follows a changed root/tab selection.
     if(state.root===destination.root)await update(true);
-    clipboardNotice='붙여넣기 완료: '+absoluteTarget(destination,data.path)+' · 다시 붙여넣으면 이름을 보존하며 별도 사본을 만듭니다.';
+    clipboardNotice='Paste completed: '+absoluteTarget(destination,data.path)+' · Paste again to create another copy while preserving the name.';
   }catch(error){
     const unknown=completed||(sent&&error.outcomeUnknown);
-    clipboardNotice='붙여넣기 실패: '+(error.name==='AbortError'?'응답 시간이 초과되었습니다.':error.message)+(unknown?' 작업이 이미 완료되었을 수 있습니다. 재시도 전에 대상 폴더를 확인하세요.':'');
+    clipboardNotice='Paste failed: '+(error.name==='AbortError'?'Response timed out.':error.message)+(unknown?' The operation may already have completed. Check the destination folder before retrying.':'');
     // A stale source must be copied again; never silently refresh its saved version or root binding.
     if(error.status===409||!sameRoot(source))fileClipboard=null;
   }finally{filePasteBusy=false;fsOperation=null;$('newFile').disabled=false;$('status').textContent=clipboardNotice;updateFileClipboard();}
@@ -1565,7 +1574,7 @@ async function showFsDialog(action,target){
     target.kind=info.kind;fsDialogTarget.info=info;fsDialogTarget.target=target;fsMessage('');$('fsSubmit').disabled=false;
     if(action==='delete'){
       const dirty=affectedTabs(target).filter(tabDirty);
-      $('fsDescription').textContent='really delete? '+target.path.split('/').pop()+'\n'+absoluteTarget(target)+'\n'+(info.kind==='directory'?'This permanently deletes this folder and all its contents.':info.kind==='symlink'?'This permanently deletes the symbolic link itself.':'This permanently deletes this file.')+(dirty.length?'\nUnsaved changes in '+dirty.length+' affected tab(s) will be discarded: '+dirty.map(tab=>tab.entry.path).join(', '):'');
+      $('fsDescription').textContent='really delete? '+target.path.split('/').pop()+'\n'+absoluteTarget(target)+'\n'+(info.kind==='directory'?'This permanently deletes this folder and all its contents.':info.kind==='symlink'?'This permanently deletes the symbolic link itself.':'This permanently deletes this file.')+(dirty.length?'\nUnsaved changes in '+counted(dirty.length,'affected tab')+' will be discarded: '+dirty.map(tab=>tab.entry.path).join(', '):'');
       $('fsDescription').style.whiteSpace='pre-wrap';$('fsDescription').style.overflowWrap='anywhere';$('fsCancel').focus();
     }else if(action==='duplicate')await runFsOperation();
   }catch(error){if(generation===fsDialogGeneration&&$('fsDialog').open){fsMessage(error.name==='AbortError'?'Target lookup timed out. No file operation was sent.':error.message,true);$('fsSubmit').disabled=true;}}
@@ -1600,25 +1609,25 @@ async function retargetFsTabs(target,data,frozen){
       tab.editor.path=newPath;tab.editor.dirty=editor.dirty;
     }
     tab.entry=oldPath===target.path?{...tab.entry,...data.entry,path:newPath,name:newPath.split('/').pop()}:{...tab.entry,path:newPath};
-    tab.frame.title=rootLabel(target.root)+' · '+newPath+' 미리보기';
+    tab.frame.title=rootLabel(target.root)+' · '+newPath+' preview';
     if(!editor){let pdfPage;try{pdfPage=tab.frame.contentWindow.PDFViewerApplication?.page;}catch{}tab.fsBusy=false;loadTab(tab,undefined,pdfPage);tab.fsBusy=true;}
   }
   const expanded=new Set();for(const key of state.expanded){const [root,path]=JSON.parse(key);expanded.add(root===target.root&&(path===target.path||path.startsWith(target.path+'/'))?nodeKey(root,data.path+path.slice(target.path.length)):key);}state.expanded=expanded;
   if(state.diff?.root===target.root&&affectedPath(target.root,state.diff.path,target)){state.diffController?.abort();state.diffGeneration++;state.diff=null;$('viewerTabs').hidden=true;}
-  const active=state.tabs.find(tab=>tab.id===state.activeTab);if(active&&frozen.some(item=>item.tab===active)){state.selected=active.entry;state.editor=active.editor;$('open').href=previewURL(active.entry);$('viewer').setAttribute('aria-label',rootLabel(active.entry.root_id)+' · '+active.entry.path+' 미리보기');if(state.root===active.entry.root_id)history.replaceState(null,'','/?'+new URLSearchParams({root:active.entry.root_id,path:active.entry.path}));}
+  const active=state.tabs.find(tab=>tab.id===state.activeTab);if(active&&frozen.some(item=>item.tab===active)){state.selected=active.entry;state.editor=active.editor;$('open').href=previewURL(active.entry);$('viewer').setAttribute('aria-label',rootLabel(active.entry.root_id)+' · '+active.entry.path+' preview');if(state.root===active.entry.root_id)history.replaceState(null,'','/?'+new URLSearchParams({root:active.entry.root_id,path:active.entry.path}));}
   renderWorkspace();
 }
 // Use existing descriptor-anchored actions sequentially, with identities pinned
 // before the first mutation. Never refresh a failed version or retry a lost POST.
 async function pinTreeTargets(targets){
-  if(!targets.length||targets.length>MAX_TREE_ACTION)throw Error('한 번에 최대 '+MAX_TREE_ACTION+'개 대상을 처리할 수 있습니다.');
+  if(!targets.length||targets.length>MAX_TREE_ACTION)throw Error('You can process up to '+MAX_TREE_ACTION+' targets at a time.');
   await verifyCopyRoots(...targets);
   const results=new Array(targets.length);let cursor=0;
   await Promise.all(Array.from({length:Math.min(4,targets.length)},async()=>{
     while(cursor<targets.length){const index=cursor++,target=targets[index];
-      if(!sameRoot(target))throw Error('루트 연결 경로가 변경되었습니다.');
+      if(!sameRoot(target))throw Error('The root connection path changed.');
       const info=await fsRequest('/api/fs-info?'+new URLSearchParams({root:target.root,path:target.path}));
-      if(info.root_id!==target.root||info.path!==target.path||!info.version||!sameRoot(target))throw Error('대상 정보가 일치하지 않습니다: '+target.path);
+      if(info.root_id!==target.root||info.path!==target.path||!info.version||!sameRoot(target))throw Error('Target information does not match: '+target.path);
       results[index]=info;
     }
   }));return results;
@@ -1626,13 +1635,13 @@ async function pinTreeTargets(targets){
 async function showTreeDelete(){
   const targets=effectiveTreeTargets();if(!targets.length||fsOperation||newFileBusy)return;
   if(targets.length===1)return showFsDialog('delete',targets[0]);
-  if(targets.length>MAX_TREE_ACTION){$('status').textContent='삭제는 한 번에 최대 '+MAX_TREE_ACTION+'개 대상까지 가능합니다.';return;}
+  if(targets.length>MAX_TREE_ACTION){$('status').textContent='You can delete up to '+MAX_TREE_ACTION+' targets at a time.';return;}
   closeTreeMenu();if($('fsDialog').open)closeFsDialog();const generation=++fsDialogGeneration;
   fsDialogTarget={action:'delete',targets,target:targets[0]};$('fsDialog').style.cssText='';$('fsTitle').textContent='Really delete?';
-  $('fsTarget').textContent=rootLabel(targets[0].root)+' · '+targets.length+'개 대상';
+  $('fsTarget').textContent=rootLabel(targets[0].root)+' · '+counted(targets.length,'target');
   $('fsName').hidden=$('fsNameLabel').hidden=true;$('fsName').required=false;
   const dirty=[...new Set(targets.flatMap(affectedTabs))].filter(tabDirty);
-  $('fsDescription').textContent='really delete? '+targets.length+'개 대상을 영구 삭제합니다 (순차 처리).\n폴더는 모든 하위 내용도 삭제하며, 심볼릭 링크는 링크 자체만 삭제합니다.\n'+targets.map(target=>absoluteTarget(target)).join('\n')+(dirty.length?'\nUnsaved changes in '+dirty.length+' affected tab(s) will be discarded: '+dirty.map(tab=>tab.entry.path).join(', '):'');
+  $('fsDescription').textContent='really delete? '+counted(targets.length,'target')+' will be permanently deleted in sequence.\nAll folder contents will be deleted. Symbolic links are deleted without their targets.\n'+targets.map(target=>absoluteTarget(target)).join('\n')+(dirty.length?'\nUnsaved changes in '+counted(dirty.length,'affected tab')+' will be discarded: '+dirty.map(tab=>tab.entry.path).join(', '):'');
   $('fsDescription').style.whiteSpace='pre-wrap';$('fsDescription').style.overflowWrap='anywhere';
   $('fsCancel').textContent='Cancel';$('fsSubmit').hidden=false;$('fsSubmit').textContent='Delete '+targets.length+' permanently';fsControls(false);$('fsSubmit').disabled=true;fsMessage('Checking targets…');$('fsDialog').showModal();$('fsCancel').focus();
   try{const infos=await pinTreeTargets(targets);if(generation!==fsDialogGeneration||!$('fsDialog').open)return;fsDialogTarget.infos=infos;$('fsSubmit').disabled=false;fsMessage('');}
@@ -1640,7 +1649,7 @@ async function showTreeDelete(){
 }
 async function runTreeBatch(action,targets,lookup,destination){
   if(fsOperation||newFileBusy)return;
-  if(targets.length>MAX_TREE_ACTION){$('status').textContent='이동은 한 번에 최대 '+MAX_TREE_ACTION+'개 대상까지 가능합니다.';return;}
+  if(targets.length>MAX_TREE_ACTION){$('status').textContent='You can move up to '+MAX_TREE_ACTION+' targets at a time.';return;}
   fsOperation={action,target:targets[0]};$('newFile').disabled=true;
   const results=[],allFrozen=[],revision=state.workspaceRevision,query=input.value;let stop=false;
   if(action==='delete'){
@@ -1657,19 +1666,19 @@ async function runTreeBatch(action,targets,lookup,destination){
     for(let i=0;i<targets.length;i++){
       targets[i]={...targets[i],kind:infos[i].kind};
       const frozen=await freezeFsEditors(targets[i]);allFrozen.push(frozen);
-      if(frozen.filter(item=>item.editor?.editable&&item.binding.version).length>64)throw Error('대상별 편집 탭은 최대 64개까지 유지할 수 있습니다.');
+      if(frozen.filter(item=>item.editor?.editable&&item.binding.version).length>64)throw Error('You can keep up to 64 editor tabs per target.');
     }
     for(let i=0;i<targets.length;i++){
       const target=targets[i],frozen=allFrozen[i];let sent=false,completed=false;
-      if(stop){results.push({target,ok:false,message:'처리하지 않음: 앞선 결과를 확인해야 합니다.'});continue;}
+      if(stop){results.push({target,ok:false,message:'Not processed: review the previous result first.'});continue;}
       try{
-        if(!sameRoot(target)||destination&&!sameRoot(destination))throw Error('루트 연결 경로가 변경되었습니다.');
+        if(!sameRoot(target)||destination&&!sameRoot(destination))throw Error('The root connection path changed.');
         fsOperation.target=target;
-        $('status').textContent=(action==='move'?'이동':'삭제')+' 중… '+(i+1)+'/'+targets.length+' · '+target.path;
+        $('status').textContent=(action==='move'?'Move':'Delete')+' in progress… '+(i+1)+'/'+targets.length+' · '+target.path;
         const editors=frozen.filter(item=>item.editor?.editable&&item.binding.version).map(item=>({path:item.binding.path,version:item.binding.version}));
         sent=true;const data=await fsRequest('/api/fs',{action,root:target.root,root_path:target.rootPath,path:target.path,expected_version:infos[i].version,...(action==='move'?{parent:destination.parent,editors}:{confirmed:true})});completed=true;
         const next=action==='move'?[destination.parent,target.path.split('/').pop()].filter(Boolean).join('/'):target.path;
-        if(data.root_id!==target.root||data.path!==next||!sameRoot(target)||(action==='move'&&(data.old_path!==target.path||data.entry?.path!==next||data.entry?.root_id!==target.root))||(action==='delete'&&data.deleted!==true))throw Error('작업 결과의 대상이 일치하지 않습니다.');
+        if(data.root_id!==target.root||data.path!==next||!sameRoot(target)||(action==='move'&&(data.old_path!==target.path||data.entry?.path!==next||data.entry?.root_id!==target.root))||(action==='delete'&&data.deleted!==true))throw Error('The operation result target does not match.');
         if(action==='move')await retargetFsTabs(target,data,frozen);
         else for(const item of frozen){item.editor?.endMutation(item.binding);item.released=true;item.tab.fsBusy=false;closeTab(item.tab.id,true);}
         if(action==='delete'&&state.diff?.root===target.root&&affectedPath(target.root,state.diff.path,target))resetPreview();
@@ -1677,7 +1686,7 @@ async function runTreeBatch(action,targets,lookup,destination){
       }catch(error){
         const unknown=completed||(sent&&(error.outcomeUnknown||error.partial));
         if(unknown){stop=true;for(const item of frozen)item.editor?.markUncertain({...item.binding,path:item.editor.path,version:item.editor.version,reason:'Filesystem result is uncertain. Keep the draft and inspect disk before saving.'});}
-        results.push({target,ok:false,unknown,message:error.message+(unknown?' · 일부 또는 전체가 변경되었을 수 있습니다. 재시도 전에 확인하세요.':'')});
+        results.push({target,ok:false,unknown,message:error.message+(unknown?' · Some or all changes may have been applied. Check before retrying.':'')});
       }
     }
   }catch(error){for(const target of targets)results.push({target,ok:false,message:error.message});}
@@ -1689,12 +1698,12 @@ async function runTreeBatch(action,targets,lookup,destination){
     }
     await refreshFsTree(targets[0]).catch(()=>{});
     if(state.root===targets[0].root&&state.workspaceRevision===revision){treeSelection=new Map();for(const result of results){const path=result.ok&&action==='move'?result.path:!result.ok?result.target.path:null;if(path){const key=nodeKey(result.target.root,path),item=treeRowMap.get(key);if(item&&sameRoot(result.target))treeSelection.set(key,item.target);}}treeAnchor=null;paintTreeSelection();}
-    const message=(action==='move'?'이동':'삭제')+': '+successes.length+'개 완료, '+failures.length+'개 실패/미처리'+(results.some(result=>result.unknown)?' (결과 불명확 포함)':'')+'\n'+results.map(result=>(result.ok?'완료: ':result.unknown?'결과 불명확: ':'실패: ')+result.target.path+(result.ok&&action==='move'?' → '+result.path:result.ok?'':' · '+result.message)).join('\n');
+    const message=(action==='move'?'Move':'Delete')+': '+successes.length+' completed, '+failures.length+' failed/unprocessed'+(results.some(result=>result.unknown)?' (includes uncertain results)':'')+'\n'+results.map(result=>(result.ok?'Completed: ':result.unknown?'Uncertain result: ':'Failed: ')+result.target.path+(result.ok&&action==='move'?' → '+result.path:result.ok?'':' · '+result.message)).join('\n');
     const background=fsOperation.background;fsOperation=null;$('newFile').disabled=false;renderWorkspaceTabs();$('status').textContent=message;
     if(action==='delete'&&!failures.length){$('fsDialog').close();fsDialogTarget=null;$('fsProgress').hidden=true;}
     else if(failures.length){
       if(action==='move'){if($('fsDialog').open)$('fsDialog').close();$('fsDialog').showModal();$('fsName').hidden=$('fsNameLabel').hidden=true;$('fsName').required=false;$('fsDescription').textContent='';$('fsTarget').textContent='';}
-      $('fsTitle').textContent='작업 결과';fsMessage(message,true);$('fsSubmit').hidden=true;fsControls(false);$('fsCancel').textContent='Close';if(background){$('fsProgress').hidden=$('fsDialog').open;$('fsProgress').textContent='File operation result';}
+      $('fsTitle').textContent='Operation Results';fsMessage(message,true);$('fsSubmit').hidden=true;fsControls(false);$('fsCancel').textContent='Close';if(background){$('fsProgress').hidden=$('fsDialog').open;$('fsProgress').textContent='File operation result';}
     }
   }
 }
@@ -1704,18 +1713,18 @@ async function applyTreeMove(drag,destination){
   if(fsOperation||newFileBusy||!sameRoot(drag.file)||!sameRoot(destination))return;
   const target={...drag.file,object:true},next=[destination.parent,target.path.split('/').pop()].filter(Boolean).join('/');
   const revision=state.workspaceRevision,query=input.value;let frozen=[],sent=false,completed=false,message;
-  fsOperation={action:'move',target};$('newFile').disabled=true;$('status').textContent='이동 중… '+target.path+' → '+(destination.parent||'/');
+  fsOperation={action:'move',target};$('newFile').disabled=true;$('status').textContent='Moving… '+target.path+' → '+(destination.parent||'/');
   try{
     const info=await drag.moveInfo;if(info.error)throw info.error;
-    if(info.root_id!==target.root||info.path!==target.path||!info.version)throw Error('이동할 파일 정보가 일치하지 않습니다. 다시 선택하세요.');
+    if(info.root_id!==target.root||info.path!==target.path||!info.version)throw Error('The move source information does not match. Select it again.');
     target.kind=info.kind;
     const roots=await fsRequest('/api/info');
-    if(!roots.roots?.some(root=>root.id===target.root&&root.path===target.rootPath&&root.connected)||!sameRoot(target))throw Error('루트 연결 경로가 변경되었습니다. 다시 선택하세요.');
+    if(!roots.roots?.some(root=>root.id===target.root&&root.path===target.rootPath&&root.connected)||!sameRoot(target))throw Error('The root connection path changed. Select it again.');
     frozen=await freezeFsEditors(target);
     const editors=frozen.filter(item=>item.editor?.editable&&item.binding.version).map(item=>({path:item.binding.path,version:item.binding.version}));
-    if(editors.length>64)throw Error('영향받는 편집 탭을 일부 닫은 뒤 이동하세요. 한 번에 최대 64개를 유지할 수 있습니다.');
+    if(editors.length>64)throw Error('Close some affected editor tabs before moving. You can keep up to 64 at a time.');
     sent=true;const data=await fsRequest('/api/fs',{action:'move',root:target.root,root_path:target.rootPath,path:target.path,parent:destination.parent,expected_version:info.version,editors});completed=true;
-    if(data.root_id!==target.root||data.old_path!==target.path||data.path!==next||data.entry?.root_id!==target.root||data.entry?.path!==next||!sameRoot(target))throw Error('이동 결과의 경로가 일치하지 않습니다. 대상 폴더를 확인하세요.');
+    if(data.root_id!==target.root||data.old_path!==target.path||data.path!==next||data.entry?.root_id!==target.root||data.entry?.path!==next||!sameRoot(target))throw Error('The move result path does not match. Check the destination folder.');
     await retargetFsTabs(target,data,frozen);
     const reveal=state.root===target.root&&state.workspaceRevision===revision&&input.value===query;
     if(reveal){
@@ -1725,11 +1734,11 @@ async function applyTreeMove(drag,destination){
     await refreshFsTree(target,next);
     if(reveal&&treeRowMap.has(nodeKey(target.root,next)))selectTreeTarget(treeRowMap.get(nodeKey(target.root,next)).target);
     if(reveal&&state.root===target.root)for(const row of entries.querySelectorAll('.row'))if(row.dataset.path===next){row.classList.add('is-move-complete');row.scrollIntoView({block:'nearest'});}
-    message='이동 완료: '+target.path+' → '+next;
+    message='Move completed: '+target.path+' → '+next;
   }catch(error){
     const unknown=completed||(sent&&error.outcomeUnknown);
     if(unknown)for(const item of frozen)item.editor?.markUncertain({...item.binding,path:item.editor.path,version:item.editor.version,reason:'Move result or editor binding is uncertain. Keep your draft, inspect the destination, and reload before saving.'});
-    message='이동하지 못했습니다: '+(error.name==='AbortError'?'응답 시간이 초과되었습니다.':error.message)+(unknown?' 이동이 완료되었을 수 있으니 대상 폴더를 확인하세요.':'');
+    message='Could not move: '+(error.name==='AbortError'?'Response timed out.':error.message)+(unknown?' The move may have completed. Check the destination folder.':'');
     if(unknown)await refreshFsTree(target).catch(()=>{});
   }finally{
     for(const item of frozen){try{if(item.tab.frame.isConnected)item.editor?.endMutation(item.binding);}catch{}finally{item.tab.fsBusy=false;}}
@@ -1773,32 +1782,32 @@ async function runFsOperation(){
   }
 }
 function showNewFile(target){
-  if(newFileBusy||fsOperation)return;closeTreeMenu();newFileTarget={...target};$('newFileTarget').textContent='대상: '+rootLabel(target.root)+' · '+(state.roots.find(root=>root.id===target.root)?.path||target.root)+'/'+target.parent;
+  if(newFileBusy||fsOperation)return;closeTreeMenu();newFileTarget={...target};$('newFileTarget').textContent='Target: '+rootLabel(target.root)+' · '+(state.roots.find(root=>root.id===target.root)?.path||target.root)+'/'+target.parent;
   if($('fsDialog').open)closeFsDialog();
   $('newFileName').value='';$('newFileName').readOnly=false;$('cancelNewFile').disabled=false;$('newFileMessage').classList.add('error');$('newFileMessage').textContent='';$('createNewFile').disabled=false;$('newFileDialog').showModal();$('newFileName').focus();
 }
 $('newFile').onclick=()=>showNewFile({root:state.root,parent:''});$('contextNewFile').onclick=()=>showNewFile(treeMenuTarget);$('cancelNewFile').onclick=()=>{if(!newFileBusy)$('newFileDialog').close();};
-$('newFileDialog').addEventListener('cancel',event=>{if(newFileBusy){event.preventDefault();$('newFileMessage').textContent='파일을 만드는 중… 완료 후 닫을 수 있습니다.';}});
+$('newFileDialog').addEventListener('cancel',event=>{if(newFileBusy){event.preventDefault();$('newFileMessage').textContent='Creating file… You can close this dialog when it finishes.';}});
 $('newFileForm').onsubmit=async event=>{
   event.preventDefault();if(newFileBusy)return;const name=$('newFileName').value,target={...newFileTarget},context={root:state.root,tab:state.activeTab};
-  if(!name.trim()||name==='.'||name==='..'||/[\\/\0]/.test(name)){$('newFileMessage').textContent='폴더 구분자 없이 파일 이름 하나를 입력하세요.';$('newFileName').focus();return;}
-  newFileBusy=true;$('createNewFile').disabled=true;$('cancelNewFile').disabled=true;$('newFileName').readOnly=true;$('newFileMessage').classList.remove('error');$('newFileMessage').textContent='파일을 만드는 중… 완료 후 닫을 수 있습니다.';
+  if(!name.trim()||name==='.'||name==='..'||/[\\/\0]/.test(name)){$('newFileMessage').textContent='Enter a single file name without folder separators.';$('newFileName').focus();return;}
+  newFileBusy=true;$('createNewFile').disabled=true;$('cancelNewFile').disabled=true;$('newFileName').readOnly=true;$('newFileMessage').classList.remove('error');$('newFileMessage').textContent='Creating file… You can close this dialog when it finishes.';
   const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),15000);
   try{
-    const response=await fetch('/api/create',{method:'POST',headers:{'Content-Type':'application/json','X-Fbrowse-Token':state.token},body:JSON.stringify({root:target.root,parent:target.parent,name}),signal:controller.signal});const data=await response.json();clearTimeout(timeout);if(response.status!==201)throw Error(data.error||'파일을 만들지 못했습니다.');
-    const expectedPath=[target.parent,name].filter(Boolean).join('/');if(data.root_id!==target.root||data.path!==expectedPath||data.entry?.root_id!==target.root||data.entry?.path!==expectedPath)throw Error('만든 파일 응답의 대상이 일치하지 않습니다. 새로고침하여 확인하세요.');
-    if(!state.roots.some(root=>root.id===target.root))throw Error('파일을 만든 루트의 연결이 제거되었습니다. 루트를 다시 연결해 확인하세요.');
+    const response=await fetch('/api/create',{method:'POST',headers:{'Content-Type':'application/json','X-Fbrowse-Token':state.token},body:JSON.stringify({root:target.root,parent:target.parent,name}),signal:controller.signal});const data=await response.json();clearTimeout(timeout);if(response.status!==201)throw Error(data.error||'Could not create the file.');
+    const expectedPath=[target.parent,name].filter(Boolean).join('/');if(data.root_id!==target.root||data.path!==expectedPath||data.entry?.root_id!==target.root||data.entry?.path!==expectedPath)throw Error('The created file response does not match. Refresh and check it.');
+    if(!state.roots.some(root=>root.id===target.root))throw Error('The root containing the created file was disconnected. Reconnect it to check the file.');
     state.cache.delete(nodeKey(target.root,target.parent));state.expanded.add(nodeKey(target.root,target.parent));$('newFileDialog').close();
     if(context.root===state.root&&context.tab===state.activeTab){select(data.entry,false,'source');update(true);}
-    else{update(true).then(()=>{$('status').textContent='파일을 만들었습니다: '+rootLabel(target.root)+' · '+data.path;});}
-  }catch(error){$('newFileMessage').classList.add('error');$('newFileMessage').textContent=error.name==='AbortError'?'응답 대기를 중단했습니다. 파일이 이미 만들어졌을 수 있습니다. 대상 폴더를 새로고침하여 확인한 뒤 다시 시도하세요.':error.message;}
+    else{update(true).then(()=>{$('status').textContent='File created: '+rootLabel(target.root)+' · '+data.path;});}
+  }catch(error){$('newFileMessage').classList.add('error');$('newFileMessage').textContent=error.name==='AbortError'?'Stopped waiting for the response. The file may already exist. Refresh and check the destination folder before retrying.':error.message;}
   finally{clearTimeout(timeout);newFileBusy=false;$('createNewFile').disabled=false;$('cancelNewFile').disabled=false;$('newFileName').readOnly=false;}
 };
 renderWorkspace();
 input.oninput=()=>{finishMarquee(true);clearTreeSelection();state.controller?.abort();state.generation++;clearTimeout(state.timer);state.timer=setTimeout(()=>update(),200);};
 type.onchange=()=>{finishMarquee(true);clearTreeSelection();update();};$('refresh').onclick=()=>{if(state.viewerMode==='file'&&!canLeaveEditor())return;state.cache.clear();update(true);if(state.viewerMode==='diff'&&state.diff)selectDiff(state.diff.change,state.diff.group);else loadPreview(true);};
 $('home').onclick=()=>{input.value='';state.expanded=new Set([nodeKey(state.root,'')]);clearTreeSelection();update();};
-$('copy').onclick=async()=>{const url=new URL('/?'+new URLSearchParams({root:state.selected?.root_id||state.diff?.root,path:state.selected?.path||state.diff?.path}),location.origin).href;try{await navigator.clipboard.writeText(url);$('copy').textContent='✓';$('copy').title='복사됨';setTimeout(()=>{$('copy').textContent='⧉';$('copy').title='링크 복사';},1500);}catch{window.prompt('미리보기 링크를 복사하세요',url);}};
+$('copy').onclick=async()=>{const url=new URL('/?'+new URLSearchParams({root:state.selected?.root_id||state.diff?.root,path:state.selected?.path||state.diff?.path}),location.origin).href;try{await navigator.clipboard.writeText(url);$('copy').textContent='✓';$('copy').title='Copied';setTimeout(()=>{$('copy').textContent='⧉';$('copy').title='Copy Link';},1500);}catch{window.prompt('Copy the preview link',url);}};
 document.addEventListener('keydown',event=>{
   if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='s'&&activeEditor()){event.preventDefault();activeEditor().save();return;}
   if(handlePreviewEscape(event))return;
@@ -1828,7 +1837,7 @@ document.addEventListener('keydown',event=>{
   if(sharedWeb){try{
     const url=new URL(sharedWeb);
     if(['http:','https:'].includes(url.protocol)&&url.origin!==location.origin&&!url.username&&!url.password){
-      const banner=make('p','note','웹 페이지는 별도 브라우저 탭에서 엽니다. '),link=make('a','',url.href);
+      const banner=make('p','note','Web pages open in a separate browser tab. '),link=make('a','',url.href);
       link.href=url.href;link.target='_blank';link.rel='noopener noreferrer';link.onclick=event=>{if(openExternalURL(url.href,event.ctrlKey||event.metaKey))event.preventDefault();};banner.append(link);document.body.prepend(banner);
     }
   }catch{}}

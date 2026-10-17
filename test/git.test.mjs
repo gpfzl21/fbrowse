@@ -298,7 +298,7 @@ test('Git service in isolated real repositories', async t => {
     try {
       const value = await service.status(root);
       assert.equal(value.available, true);
-      assert.match(value.message, /필터/);
+      assert.match(value.message, /filters/);
       assert.match((await service.diff(root, 'file')).text, /\+after/);
       assert.equal((await service.diff(root, 'file', { staged: true })).kind, 'empty');
     } finally { restore(); }

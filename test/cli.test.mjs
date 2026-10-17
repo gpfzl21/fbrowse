@@ -56,9 +56,9 @@ const info = async url => {
 
 test('help/version and validation work without external programs or browser features', async t => {
   const f = await fixture(t);
-  assert.equal((await f.run(['version'])).stdout.trim(), '0.16.0');
-  assert.equal((await f.run(['--version'])).stdout.trim(), '0.16.0');
-  assert.match((await f.run(['help'])).stdout, /브라우저 자동 열기는 비활성화/);
+  assert.equal((await f.run(['version'])).stdout.trim(), '0.17.0');
+  assert.equal((await f.run(['--version'])).stdout.trim(), '0.17.0');
+  assert.match((await f.run(['help'])).stdout, /Automatic browser opening is disabled/);
   assert.match((await f.run(['--help'])).stdout, /roots/);
   for (const args of [['--open'], ['list', 'extra'], ['roots', 'add'], ['url', '--port', '0'], ['version', 'extra']]) {
     assert.notEqual((await f.run(args, { allowFailure: true })).code, 0);
@@ -137,7 +137,7 @@ test('a mismatched instance is never reused, shut down, overwritten, or listed',
     for (const command of ['start', 'url', 'stop', 'restart']) {
       const result = await f.run([command, '--no-pdfjs'], { allowFailure: true });
       assert.notEqual(result.code, 0);
-      assert.match(result.stderr, /서버 신원이 일치하지 않습니다/);
+      assert.match(result.stderr, /Server identity does not match/);
     }
     assert.ok(!(await f.run(['list'])).stdout.includes(url));
     assert.equal((await info(url)).instance_id, JSON.parse(original).instance_id);
@@ -183,7 +183,7 @@ test('roots use the existing external config and support concurrent edits and di
   await f.run(['roots', 'edit', 'papers', '--name', '보관 논문']);
   const listing = (await f.run(['roots'])).stdout;
   assert.match(listing, /보관 논문/);
-  assert.match(listing, /연결 안 됨/);
+  assert.match(listing, /Disconnected/);
   assert.ok((await info(url)).roots.some(root => root.id === 'papers' && root.connected === false));
   await f.run(['roots', 'remove', 'papers']);
   assert.ok(!(await info(url)).roots.some(root => root.id === 'papers'));

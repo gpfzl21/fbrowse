@@ -41,7 +41,7 @@ cd fbrowse
 npm ci
 mkdir -p dist
 npm pack --pack-destination dist
-npm install --global ./dist/wlalsrne-fbrowse-0.16.0.tgz
+npm install --global ./dist/wlalsrne-fbrowse-0.17.0.tgz
 ```
 
 로컬 개발용 이름 `@fbrowse/cli`로 설치한 이전 버전을 사용 중이면 같은 prefix에서 이전 패키지를
@@ -159,7 +159,11 @@ PDF.js의 페이지 너비 보기와 큰 PDF의 HTTP Range 스트리밍, HTML의
 포인터를 따라가는 파일 표시와 탭 삽입선을 확인한 뒤 놓고, Escape나 창 밖에 놓기로 취소합니다.
 탭 표시줄에 놓으면 탭 순서와 소속 창을 바꾸고, 다른 창 가운데에 놓으면 그 창으로 이동합니다.
 마지막 탭을 옮기거나 닫은 그룹은 바로 옆의 같은 분할에 속한 그룹과 합쳐지고 다른 그룹의 배치는 유지합니다. 새 파일은 현재 포커스가 있는 그룹에 열립니다.
-탭 우클릭 메뉴의 **다른 탭 모두 닫기 (모든 분할)**는 클릭한 탭 하나만 남기고, **모든 탭 닫기 (모든 분할)**는
+앱의 버튼·메뉴·도움말·오류 안내는 영어로 표시합니다. 파일명·루트 표시 이름·문서 내용은 원래 언어를 유지합니다.
+탭 우클릭 메뉴의 **Copy Relative Path**는 해당 탭의 등록 루트 기준 상대 경로를, **Copy Path**는 서버의 절대 경로를 복사합니다.
+다른 루트의 비활성 탭도 우클릭한 파일의 경로를 사용하며, 빈 탭 표시줄은 그 그룹의 활성 탭을 사용합니다.
+클립보드를 사용할 수 없으면 경로 선택 대화상자에서 Ctrl/Cmd+C로 복사할 수 있습니다. 분할은 그룹 가장자리로 드래그해서 수행합니다.
+탭 우클릭 메뉴의 **Close Other Tabs (All Groups)**는 클릭한 탭 하나만 남기고, **Close All Tabs (All Groups)**는
 등록 루트와 분할 그룹에 관계없이 fbrowse의 열린 파일 탭 전체를 닫습니다. Orca 자체의 탭은 닫지 않습니다.
 닫을 대상 중 초안이 있으면 파일 목록과 개수를 한 번에 확인하며, 취소하면 활성 탭·분할·초안·실행 취소 기록을 유지합니다.
 파일 작업이나 저장 중인 탭이 대상에 있으면 일괄 닫기를 막습니다. 남길 탭의 편집기는 그대로 유지하며, 모두 닫으면 빈 화면으로 돌아갑니다.
@@ -507,13 +511,13 @@ Playwright와 Chromium은 선택적 개발 도구이며 앱 실행에는 필요�
 패키지는 npm 계정 `wlalsrne`의 `@wlalsrne/fbrowse` 이름으로 공개 배포합니다.
 배포 전에 변경 내용을 검증하고 새 버전을 지정하세요. 이미 게시한 버전은 덮어쓸 수 없습니다.
 `package.json`과 `package-lock.json`의 버전을 함께 갱신하고 CLI·서버 버전도 맞춥니다.
-다음은 0.16.0 배포 명령의 예입니다.
+다음은 0.17.0 배포 명령의 예입니다.
 
 ```bash
 npm whoami
 npm test
 npm pack --pack-destination dist
-npm publish ./dist/wlalsrne-fbrowse-0.16.0.tgz --access public
+npm publish ./dist/wlalsrne-fbrowse-0.17.0.tgz --access public
 ```
 
 `npm pack`으로 만든 앱 코드·문서만 게시합니다. 프로젝트 데이터, XDG 설정·상태·캐시와

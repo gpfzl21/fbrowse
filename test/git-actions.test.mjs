@@ -22,7 +22,8 @@ function replaceEnv(changes) {
 const expected = context => ({ expectedHead: context.head, expectedBranch: context.branch, expectedIndex: context.indexToken, expectedPushToken: context.pushToken });
 const rejection = (status, pattern) => error => {
   assert.equal(error.status, status, error.message);
-  assert.match(error.message, /[가-힣]/);
+  assert.match(error.message, /[A-Za-z]{3,}/);
+  assert.doesNotMatch(error.message, /[가-힣]/);
   if (pattern) assert.match(error.message, pattern);
   return true;
 };
@@ -127,14 +128,14 @@ test('Git actions against isolated real repositories and local bare remotes', as
     const first = await service.context(root);
     await git('branch', 'same-head');
     await git('symbolic-ref', 'HEAD', 'refs/heads/same-head');
-    await assert.rejects(service.stage(root, { paths: ['file.txt'], ...expected(first) }), rejection(409, /변경/));
+    await assert.rejects(service.stage(root, { paths: ['file.txt'], ...expected(first) }), rejection(409, /changed/));
     const second = await service.context(root);
     await git('add', '--', 'file.txt');
-    await assert.rejects(service.commit(root, { message: 'stale index', ...expected(second) }), rejection(409, /변경/));
+    await assert.rejects(service.commit(root, { message: 'stale index', ...expected(second) }), rejection(409, /changed/));
     const third = await service.context(root);
     await git('commit', '-qm', 'external commit');
-    await assert.rejects(service.unstage(root, { paths: ['file.txt'], ...expected(third) }), rejection(409, /변경/));
-    await assert.rejects(service.stage(root, { paths: ['file.txt'] }), rejection(400, /확인 정보/));
+    await assert.rejects(service.unstage(root, { paths: ['file.txt'], ...expected(third) }), rejection(409, /changed/));
+    await assert.rejects(service.stage(root, { paths: ['file.txt'] }), rejection(400, /verification details/));
     assert.equal((await git('log', '--format=%s', '-1')).trim(), 'external commit');
   }));
 
@@ -164,7 +165,7 @@ test('Git actions against isolated real repositories and local bare remotes', as
     await assert.rejects(service.unstage(root, { paths: ['folder'], ...expected(await service.context(root)) }), rejection(400));
     await write('.gitignore', '*.ignored\n');
     await write('cache.ignored', 'ignored');
-    await assert.rejects(service.stage(root, { paths: ['cache.ignored'], ...expected(await service.context(root)) }), rejection(403, /무시/));
+    await assert.rejects(service.stage(root, { paths: ['cache.ignored'], ...expected(await service.context(root)) }), rejection(403, /ignores/));
   }));
 
   await t.test('hidden/excluded staged files and hidden rename origins block commit', () => fixture(async ({ root, git, write, seed, service }) => {
@@ -174,8 +175,8 @@ test('Git actions against isolated real repositories and local bare remotes', as
     await git('add', '--', 'file.txt', '.secret');
     let context = await service.context(root);
     assert.equal(context.commitAllowed, false);
-    assert.match(context.commitReason, /숨기거나 제외/);
-    await assert.rejects(service.commit(root, { message: 'hidden', ...expected(context) }), rejection(409, /숨기거나 제외/));
+    assert.match(context.commitReason, /Hidden or excluded/);
+    await assert.rejects(service.commit(root, { message: 'hidden', ...expected(context) }), rejection(409, /Hidden or excluded/));
     const showing = createGitActions({ showHidden: true });
     assert.equal((await showing.context(root)).commitAllowed, true);
     await showing.commit(root, { message: 'include visible hidden', ...expected(await showing.context(root)) });
@@ -209,10 +210,10 @@ test('Git actions against isolated real repositories and local bare remotes', as
     assert.equal(context.canWrite, false);
     assert.equal(context.commitAllowed, false);
     assert.equal(context.pushAllowed, false);
-    assert.match(context.commitReason, /최상위/);
+    assert.match(context.commitReason, /top-level/);
     await write('sub/file.txt', 'changed');
     for (const method of ['stage', 'unstage', 'commit', 'push'])
-      await assert.rejects(service[method](sub, { paths: ['file.txt'], message: 'no', ...expected(context) }), rejection(403, /최상위/));
+      await assert.rejects(service[method](sub, { paths: ['file.txt'], message: 'no', ...expected(context) }), rejection(403, /top-level/));
     await fs.symlink(root, path.join(base, 'alias'));
     assert.equal((await service.context(path.join(base, 'alias'))).available, false);
     assert.equal((await service.context(base)).reason, 'not_repository');
@@ -269,7 +270,7 @@ test('Git actions against isolated real repositories and local bare remotes', as
     assert.equal(await git('show', ':file.txt'), 'HELLO FILTER\n');
     const restore = replaceEnv({ GIT_AUTHOR_NAME: 'Injected', GIT_AUTHOR_EMAIL: 'injected@invalid', GIT_COMMITTER_NAME: 'Injected', GIT_COMMITTER_EMAIL: 'injected@invalid' });
     try {
-      await assert.rejects(service.commit(root, { message: 'missing identity', ...expected(await service.context(root)) }), rejection(409, /사용자/));
+      await assert.rejects(service.commit(root, { message: 'missing identity', ...expected(await service.context(root)) }), rejection(409, /user/));
     } finally { restore(); }
     await fs.writeFile(path.join(home, '.gitconfig'), '[user]\n name = Existing Global User\n email = existing@invalid\n');
     await script('.git/hooks/pre-commit', 'echo hook-called > .git/hook-marker');
@@ -335,7 +336,7 @@ test('Git actions against isolated real repositories and local bare remotes', as
     assert.equal(detached.branch, null);
     assert.equal(detached.commitAllowed, false);
     assert.equal(detached.pushAllowed, false);
-    await assert.rejects(service.commit(root, { message: 'detached', ...expected(detached) }), rejection(409, /분리/));
+    await assert.rejects(service.commit(root, { message: 'detached', ...expected(detached) }), rejection(409, /detached/));
   }));
 
   await t.test('reviewed explicit non-force push and upstream to temporary bare remote only', () => fixture(async ({ root, git, at, write, seed, bare, service }) => {
@@ -348,7 +349,7 @@ test('Git actions against isolated real repositories and local bare remotes', as
     assert.equal(context.pushAllowed, true);
     assert.deepEqual(context.remotes, [{ name: 'origin', url: remote }]);
     const push = { remote: 'origin', branch: 'reviewed', confirmed: true, setUpstream: true, ...expected(context) };
-    await assert.rejects(service.push(root, { ...push, confirmed: false }), rejection(400, /명시적/));
+    await assert.rejects(service.push(root, { ...push, confirmed: false }), rejection(400, /explicitly/));
     await assert.rejects(service.push(root, { ...push, remote: 'unknown' }), rejection(400));
     await assert.rejects(service.push(root, { ...push, branch: 'bad:branch' }), rejection(400));
     await assert.rejects(service.push(root, { ...push, branch: '+forced' }), rejection(400));
@@ -385,7 +386,7 @@ test('Git actions against isolated real repositories and local bare remotes', as
     const remoteHead = (await at(remote, 'rev-parse', 'refs/heads/main')).trim();
     await seed('local-only.txt', 'local', 'local change');
     const before = await service.context(root), index = await fs.readFile(path.join(root, '.git/index'));
-    await assert.rejects(service.push(root, { remote: 'origin', branch: 'main', confirmed: true, ...expected(before) }), rejection(409, /거절/));
+    await assert.rejects(service.push(root, { remote: 'origin', branch: 'main', confirmed: true, ...expected(before) }), rejection(409, /rejected/));
     assert.equal((await git('rev-parse', 'HEAD')).trim(), before.head);
     assert.equal((await at(remote, 'rev-parse', 'refs/heads/main')).trim(), remoteHead);
     assert.deepEqual(await fs.readFile(path.join(root, '.git/index')), index);
@@ -400,20 +401,20 @@ test('Git actions against isolated real repositories and local bare remotes', as
     await git('config', '--add', 'remote.origin.pushurl', '/temporary-second-url');
     context = await service.context(root);
     assert.equal(context.pushAllowed, false);
-    await assert.rejects(service.push(root, { remote: 'origin', branch: 'main', confirmed: true, ...expected(context) }), rejection(400, /정확히 하나/));
+    await assert.rejects(service.push(root, { remote: 'origin', branch: 'main', confirmed: true, ...expected(context) }), rejection(400, /exactly one/));
     await git('config', '--unset-all', 'remote.origin.pushurl');
     await git('config', 'remote.origin.mirror', 'true');
     context = await service.context(root);
-    await assert.rejects(service.push(root, { remote: 'origin', branch: 'main', confirmed: true, ...expected(context) }), rejection(400, /미러/));
+    await assert.rejects(service.push(root, { remote: 'origin', branch: 'main', confirmed: true, ...expected(context) }), rejection(400, /mirror/));
     await git('config', 'remote.origin.mirror', 'false');
     await git('branch', 'other');
     await git('symbolic-ref', 'HEAD', 'refs/heads/other');
-    await assert.rejects(service.push(root, { remote: 'origin', branch: 'main', confirmed: true, ...expected(context) }), rejection(409, /변경/));
+    await assert.rejects(service.push(root, { remote: 'origin', branch: 'main', confirmed: true, ...expected(context) }), rejection(409, /changed/));
     await script('.git/local-auth-failure', 'test "$GIT_TERMINAL_PROMPT" = 0 || exit 2\ntest "$GCM_INTERACTIVE" = never || exit 2\ntest "$GIT_ASKPASS" = /bin/false || exit 2\ncase "$GIT_SSH_COMMAND" in *BatchMode=yes*) ;; *) exit 2;; esac\necho auth-env-checked > .git/auth-marker\necho "Authentication failed https://user:password@host/?token=private" >&2\nexit 1');
     await git('config', 'remote.origin.receivepack', path.join(root, '.git/local-auth-failure'));
     await assert.rejects(service.push(root, { remote: 'origin', branch: 'main', confirmed: true, ...expected(await service.context(root)) }), error => {
       assert.equal(error.status, 409);
-      assert.match(error.message, /자격 증명/);
+      assert.match(error.message, /credentials/);
       assert.doesNotMatch(error.message, /password|private|https:/);
       return true;
     });
@@ -433,11 +434,11 @@ test('Git actions against isolated real repositories and local bare remotes', as
     assert.deepEqual(firstReview.remotes, [{ name: 'origin', url: first }]);
     assert.match(firstReview.pushToken, /^[a-f0-9]{64}$/);
     await assert.rejects(service.push(root, { remote: 'origin', branch: 'main', confirmed: true,
-      expectedHead: firstReview.head, expectedBranch: firstReview.branch }), rejection(400, /검토 정보/));
+      expectedHead: firstReview.head, expectedBranch: firstReview.branch }), rejection(400, /review details/));
     await service.push(root, { remote: 'origin', branch: 'main', confirmed: true, ...expected(firstReview) });
     assert.equal((await at(first, 'rev-parse', 'refs/heads/main')).trim(), firstReview.head);
     await fs.writeFile(included, `[url "${second}"]\n pushInsteadOf = fbrowse-local:reviewed\n`);
-    await assert.rejects(service.push(root, { remote: 'origin', branch: 'main', confirmed: true, ...expected(firstReview) }), rejection(409, /설정이 변경/));
+    await assert.rejects(service.push(root, { remote: 'origin', branch: 'main', confirmed: true, ...expected(firstReview) }), rejection(409, /configuration changed/));
     assert.equal((await at(second, 'for-each-ref')).trim(), '');
     const nextReview = await service.context(root);
     assert.deepEqual(nextReview.remotes, [{ name: 'origin', url: second }]);
@@ -451,7 +452,7 @@ test('Git actions against isolated real repositories and local bare remotes', as
     const secretChanged = await service.context(root);
     assert.equal(secretReview.remotes[0].url, secretChanged.remotes[0].url);
     assert.notEqual(secretReview.pushToken, secretChanged.pushToken);
-    await assert.rejects(service.push(root, { remote: 'origin', branch: 'main', confirmed: true, ...expected(secretReview) }), rejection(409, /설정이 변경/));
+    await assert.rejects(service.push(root, { remote: 'origin', branch: 'main', confirmed: true, ...expected(secretReview) }), rejection(409, /configuration changed/));
   }));
 
   await t.test('core.worktree redirection cannot grant selected-root writes outside the repository', () => fixture(async ({ base, root, home, git, write, seed, service }) => {
@@ -477,7 +478,7 @@ test('Git actions against isolated real repositories and local bare remotes', as
     assert.equal((await git('diff', '--cached', '--name-only')).trim(), '');
   }));
 
-  await t.test('unsafe index links and FIFOs fail promptly with redacted Korean errors', () => fixture(async ({ base, root, seed, service }) => {
+  await t.test('unsafe index links and FIFOs fail promptly with redacted English errors', () => fixture(async ({ base, root, seed, service }) => {
     await seed();
     const before = await service.context(root), index = path.join(root, '.git/index');
     const external = path.join(base, 'external-index');
@@ -488,7 +489,8 @@ test('Git actions against isolated real repositories and local bare remotes', as
     assert.equal((await service.context(root)).available, false);
     await assert.rejects(service.stage(root, { paths: ['file.txt'], ...expected(before) }), error => {
       assert.equal(error.status, 409);
-      assert.match(error.message, /[가-힣]/);
+      assert.match(error.message, /[A-Za-z]{3,}/);
+      assert.doesNotMatch(error.message, /[가-힣]/);
       assert.doesNotMatch(error.message, /ELOOP|external-index|\/tmp\//);
       return true;
     });
@@ -519,11 +521,11 @@ test('Git actions against isolated real repositories and local bare remotes', as
       try { await fs.stat(path.join(root, '.git/commit-started')); break; }
       catch { await new Promise(resolve => setTimeout(resolve, 10)); }
     }
-    await assert.rejects(linkedService.stage(worktree, { paths: ['linked.txt'], ...expected(await linkedService.context(worktree)) }), rejection(409, /진행 중/));
-    await assert.rejects(createGitActions().commit(root, { message: 'double submit', ...expected(await service.context(root)) }), rejection(409, /진행 중/));
+    await assert.rejects(linkedService.stage(worktree, { paths: ['linked.txt'], ...expected(await linkedService.context(worktree)) }), rejection(409, /in progress/));
+    await assert.rejects(createGitActions().commit(root, { message: 'double submit', ...expected(await service.context(root)) }), rejection(409, /in progress/));
     assert.equal((await pending).ok, true);
     await fs.writeFile(path.join(root, '.git/index.lock'), 'external lock');
-    await assert.rejects(service.stage(root, { paths: ['file.txt'], ...expected(await service.context(root)) }), rejection(409, /진행 중/));
+    await assert.rejects(service.stage(root, { paths: ['file.txt'], ...expected(await service.context(root)) }), rejection(409, /in progress/));
     assert.equal(await fs.readFile(path.join(root, '.git/index.lock'), 'utf8'), 'external lock');
   }));
 
@@ -533,7 +535,7 @@ test('Git actions against isolated real repositories and local bare remotes', as
     await git('add', '--', 'file.txt');
     const before = await service.context(root), stagedBefore = await git('ls-files', '--stage');
     await script('.git/hooks/pre-commit', 'yes secret-output >&2');
-    await assert.rejects(service.commit(root, { message: 'overflow', ...expected(before) }), rejection(409, /크기 제한.*일부 적용/s));
+    await assert.rejects(service.commit(root, { message: 'overflow', ...expected(before) }), rejection(409, /size limit.*changes may have been applied/s));
     assert.equal((await git('rev-parse', 'HEAD')).trim(), before.head);
     assert.equal(await git('ls-files', '--stage'), stagedBefore);
     await fs.unlink(path.join(root, '.git/hooks/pre-commit'));
@@ -547,7 +549,7 @@ test('Git actions against isolated real repositories and local bare remotes', as
     const before = await service.context(root), stagedBefore = await git('ls-files', '--stage');
     await script('.git/hooks/pre-commit', 'echo run >> .git/timeout-runs\nsleep 120\ntouch .git/should-never-run');
     const start = Date.now();
-    await assert.rejects(service.commit(root, { message: 'timeout', ...expected(before) }), rejection(409, /초과.*자동으로 재시도/s));
+    await assert.rejects(service.commit(root, { message: 'timeout', ...expected(before) }), rejection(409, /timed out.*Do not retry automatically/s));
     assert.ok(Date.now() - start >= 29000);
     assert.ok(Date.now() - start < 35000);
     assert.equal((await git('rev-parse', 'HEAD')).trim(), before.head);
@@ -564,7 +566,7 @@ test('Git actions against isolated real repositories and local bare remotes', as
     await fs.writeFile(hook, '#!/bin/sh\necho run >> timeout-runs\nsleep 120\nexit 0\n');
     await fs.chmod(hook, 0o700);
     const start = Date.now();
-    await assert.rejects(service.push(root, { remote: 'origin', branch: 'main', confirmed: true, ...expected(before) }), rejection(409, /초과.*자동으로 재시도/s));
+    await assert.rejects(service.push(root, { remote: 'origin', branch: 'main', confirmed: true, ...expected(before) }), rejection(409, /timed out.*Do not retry automatically/s));
     assert.ok(Date.now() - start >= 59000);
     assert.ok(Date.now() - start < 65000);
     assert.equal((await git('rev-parse', 'HEAD')).trim(), before.head);

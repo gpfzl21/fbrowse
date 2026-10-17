@@ -49,9 +49,9 @@ test('Markdown links resolve against the document and map into registered roots'
     await assert.rejects(resolve('same.txt'), { code: 'ENOENT' });
     const outside = path.join(base, 'unregistered.txt');
     await fs.writeFile(outside, 'outside');
-    await assert.rejects(resolve(outside), /루트 관리/);
+    await assert.rejects(resolve(outside), /Manage Roots/);
     await fs.symlink(outside, path.join(roots.project.path, 'docs/outside.md'));
-    await assert.rejects(resolve('outside.md'), /루트 관리/);
+    await assert.rejects(resolve('outside.md'), /Manage Roots/);
     await fs.writeFile(path.join(roots.other.path, '.hidden.md'), 'hidden');
     await assert.rejects(resolve('../../other/.hidden.md'), { status: 403 });
     assert.equal((await resolve('../../other/.hidden.md', true)).entry.path, '.hidden.md');

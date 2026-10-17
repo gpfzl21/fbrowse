@@ -5,23 +5,23 @@ process.umask(0o077);
 try {
   const [major, minor] = process.versions.node.split('.').map(Number);
   if (major < 22 || (major === 22 && minor < 12)) {
-    throw new Error('Node.js 22.12 이상이 필요합니다.');
+    throw new Error('Node.js 22.12 or later is required.');
   }
   await main(process.argv.slice(2));
 } catch (error) {
   const messages = new Map([
-    ['Root ID already exists', '이미 존재하는 루트 ID입니다.'],
-    ['Unknown root ID', '존재하지 않는 루트 ID입니다.'],
-    ['Root ID: 1–48 ASCII letters/digits/_/-, excluding project', '루트 ID는 영문·숫자·_·- 1~48자이며 project는 사용할 수 없습니다.'],
-    ['Root name is required (max 120 characters)', '루트 이름이 필요합니다 (최대 120자).'],
-    ['Invalid project root configuration', '프로젝트 루트 설정이 올바르지 않습니다.'],
-    ['Invalid roots', '루트 설정이 올바르지 않습니다.'],
-    ['Invalid root name', '루트 이름이 올바르지 않습니다.'],
-    ['Root paths must be absolute', '루트 경로는 절대 경로여야 합니다.'],
-    ['Timed out waiting for root configuration lock', '루트 설정 잠금 대기 시간이 초과되었습니다.'],
+    ['Root ID already exists', 'Root ID already exists.'],
+    ['Unknown root ID', 'Root ID does not exist.'],
+    ['Root ID: 1–48 ASCII letters/digits/_/-, excluding project', 'Root IDs must be 1–48 letters, digits, _ or -; project is reserved.'],
+    ['Root name is required (max 120 characters)', 'A root name is required (up to 120 characters).'],
+    ['Invalid project root configuration', 'Invalid project root configuration.'],
+    ['Invalid roots', 'Invalid root configuration.'],
+    ['Invalid root name', 'Invalid root name.'],
+    ['Root paths must be absolute', 'Root paths must be absolute.'],
+    ['Timed out waiting for root configuration lock', 'Timed out waiting for the root configuration lock.'],
   ]);
-  const message = messages.get(error.message) ?? (error.code === 'ENOENT' ? `경로가 없습니다: ${error.path ?? error.message}` :
-    ['EACCES', 'EPERM'].includes(error.code) ? `접근 권한이 없습니다: ${error.path ?? error.message}` : error.message);
+  const message = messages.get(error.message) ?? (error.code === 'ENOENT' ? `Path not found: ${error.path ?? error.message}` :
+    ['EACCES', 'EPERM'].includes(error.code) ? `Permission denied: ${error.path ?? error.message}` : error.message);
   console.error(`fbrowse: ${message}`);
   process.exitCode = 1;
 }

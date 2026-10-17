@@ -44,16 +44,16 @@ function snapshot(root){
     assert.equal(posts.length,0);assert.equal(gets.filter(url=>/context|branches|history/.test(url.pathname)).length,0);
     assert.deepEqual(fs.readFileSync(path.join(ready.project,'.git/index')),initialIndex);assert.equal(git(ready.project,'rev-parse','HEAD'),initialHead);
     await page.locator('#gitTab').click();await idle();
-    assert.ok(await page.locator('#gitCommit').isDisabled());assert.match(await page.locator('#gitCommitScope').textContent(),/0개/);
+    assert.ok(await page.locator('#gitCommit').isDisabled());assert.match(await page.locator('#gitCommitScope').textContent(),/Staged files: 0/);
     assert.equal(gets.filter(url=>/branches|history/.test(url.pathname)).length,0);
     await page.locator('#gitView-branches').click();await page.locator('.git-meta').first().waitFor();
     assert.equal(await page.locator('.git-meta').count(),50);
-    const branchFirst=await page.locator('.git-meta').first().textContent();await page.locator('.git-pages').getByRole('button',{name:'다음',exact:true}).click();
+    const branchFirst=await page.locator('.git-meta').first().textContent();await page.locator('.git-pages').getByRole('button',{name:'Next',exact:true}).click();
     await page.waitForFunction(()=>state.gitPages.branches?.offset===50&&!state.gitPages.branches.loading);assert.ok(await page.locator('.git-meta').count()>0);assert.notEqual(await page.locator('.git-meta').first().textContent(),branchFirst);
     await page.locator('#gitView-history').click();await page.waitForFunction(()=>state.gitPages.history&&!state.gitPages.history.loading);
     assert.equal(await page.locator('.git-meta').count(),30);assert.match(await page.locator('.git-meta').first().textContent(),/history entry 62/);
-    await page.locator('.git-pages').getByRole('button',{name:'다음',exact:true}).click();await page.waitForFunction(()=>state.gitPages.history.offset===30&&!state.gitPages.history.loading);
-    assert.equal(await page.locator('.git-meta').count(),30);await page.locator('.git-pages').getByRole('button',{name:'이전',exact:true}).click();await page.waitForFunction(()=>state.gitPages.history.offset===0&&!state.gitPages.history.loading);
+    await page.locator('.git-pages').getByRole('button',{name:'Next',exact:true}).click();await page.waitForFunction(()=>state.gitPages.history.offset===30&&!state.gitPages.history.loading);
+    assert.equal(await page.locator('.git-meta').count(),30);await page.locator('.git-pages').getByRole('button',{name:'Previous',exact:true}).click();await page.waitForFunction(()=>state.gitPages.history.offset===0&&!state.gitPages.history.loading);
     assert.equal(posts.length,0);await changes();
     // Cancel and Escape are read-only, including the bare remote's refs.
     await page.locator('#gitPush').click();await page.locator('#pushDialog').waitFor();
@@ -63,23 +63,23 @@ function snapshot(root){
     // Real per-file stage/unstage preserve content and do not include unrelated paths.
     await action('stage','action.txt').click();await idle();await action('unstage','action.txt').waitFor();
     assert.equal(git(ready.project,'diff','--cached','--name-only'),'action.txt');
-    assert.match(await page.locator('#gitCommitScope').textContent(),/1개/);
+    assert.match(await page.locator('#gitCommitScope').textContent(),/Staged files: 1/);
     const stagedPost=posts.find(entry=>entry.action==='stage').body;assert.equal(stagedPost.expectedHead,initialHead);assert.equal(stagedPost.expectedBranch,'browser-actions');assert.equal(typeof stagedPost.expectedIndex,'string');assert.deepEqual(stagedPost.paths,['action.txt']);
     await action('unstage','action.txt').click();await idle();assert.equal(git(ready.project,'diff','--cached','--name-only'),'');
     // External index changes make the displayed expectedIndex stale; server rejects it.
-    git(ready.project,'add','unrelated.txt');await action('stage','action.txt').click();await idle();assert.match(await result().textContent(),/실패/);assert.equal(git(ready.project,'diff','--cached','--name-only'),'unrelated.txt');
+    git(ready.project,'add','unrelated.txt');await action('stage','action.txt').click();await idle();assert.match(await result().textContent(),/failed/);assert.equal(git(ready.project,'diff','--cached','--name-only'),'unrelated.txt');
     await action('unstage','unrelated.txt').click();await idle();
     // Busy UI prevents double submit; failure output is visible and can be retried explicitly.
     const gate=deferred(),started=deferred();let stageCalls=0;
     await page.route('**/api/git/stage',async route=>{stageCalls++;started.resolve();await gate.promise;await route.continue();});
-    await action('stage','action.txt').click();await started.promise;assert.ok(await action('stage','action.txt').isDisabled());assert.match(await result().textContent(),/작업 중/);
+    await action('stage','action.txt').click();await started.promise;assert.ok(await action('stage','action.txt').isDisabled());assert.match(await result().textContent(),/in progress/);
     gate.resolve();await idle();await page.unroute('**/api/git/stage');assert.equal(stageCalls,1);
     fs.writeFileSync(path.join(ready.project,'.git/hooks/pre-commit'),'#!/bin/sh\nexit 1\n',{mode:0o755});
-    await page.locator('#gitCommitMessage').fill('intentional rejected fixture commit');await page.locator('#gitCommit').click();await idle();assert.match(await result().textContent(),/실패/);assert.equal(git(ready.project,'rev-parse','HEAD'),initialHead);assert.equal(git(ready.project,'diff','--cached','--name-only'),'action.txt');
+    await page.locator('#gitCommitMessage').fill('intentional rejected fixture commit');await page.locator('#gitCommit').click();await idle();assert.match(await result().textContent(),/failed/);assert.equal(git(ready.project,'rev-parse','HEAD'),initialHead);assert.equal(git(ready.project,'diff','--cached','--name-only'),'action.txt');
     fs.unlinkSync(path.join(ready.project,'.git/hooks/pre-commit'));
     await page.locator('#gitCommitMessage').fill('browser deliberate staged commit');await page.locator('#gitCommit').click();await idle();
     assert.equal(git(ready.project,'log','-1','--format=%s'),'browser deliberate staged commit');assert.equal(git(ready.project,'show','--format=','--name-only','HEAD'),'action.txt');assert.equal(git(ready.project,'diff','--name-only'),'unrelated.txt');
-    assert.equal(await page.locator('#gitCommitMessage').inputValue(),'');assert.match(await result().textContent(),/완료/);
+    assert.equal(await page.locator('#gitCommitMessage').inputValue(),'');assert.match(await result().textContent(),/Completed/);
     await page.locator('#gitView-history').click();await page.waitForFunction(()=>state.gitPages.history&&!state.gitPages.history.loading);assert.match(await page.locator('.git-meta').first().textContent(),/browser deliberate staged commit/);await changes();
     await page.locator('#gitPush').click();await page.locator('#confirmPush').click();await idle();assert.equal(git(ready.remote,'rev-parse','refs/heads/browser-actions'),git(ready.project,'rev-parse','HEAD'));
     const push=posts.find(entry=>entry.action==='push').body;assert.equal(push.confirmed,true);assert.equal(push.remote,'origin');assert.equal(push.branch,'browser-actions');assert.equal(push.expectedBranch,'browser-actions');assert.ok(push.expectedHead);assert.equal(push.expectedIndex,undefined);assert.equal(typeof push.expectedPushToken,'string');assert.equal(push.setUpstream,true);assert.equal(git(ready.project,'config','branch.browser-actions.remote'),'origin');
@@ -88,7 +88,7 @@ function snapshot(root){
     git(ready.project,'config','remote.origin.pushurl',ready.alternateRemote);
     const pushedHead=git(ready.remote,'rev-parse','refs/heads/browser-actions');
     const rejectedPush=page.waitForResponse(response=>new URL(response.url()).pathname==='/api/git/push'&&response.request().method()==='POST');
-    await page.locator('#confirmPush').click();assert.equal((await rejectedPush).status(),409);await idle();assert.match(await result().textContent(),/실패/);assert.equal(git(ready.remote,'rev-parse','refs/heads/browser-actions'),pushedHead);assert.equal(git(ready.alternateRemote,'rev-parse','refs/heads/browser-actions'),remoteHead);
+    await page.locator('#confirmPush').click();assert.equal((await rejectedPush).status(),409);await idle();assert.match(await result().textContent(),/failed/);assert.equal(git(ready.remote,'rev-parse','refs/heads/browser-actions'),pushedHead);assert.equal(git(ready.alternateRemote,'rev-parse','refs/heads/browser-actions'),remoteHead);
     assert.equal(posts.filter(entry=>entry.action==='push').at(-1).body.expectedPushToken,reviewedPushToken);
     git(ready.project,'config','--unset','remote.origin.pushurl');await refresh();
     // Register independent hidden-staged and subtree roots through real root API.
@@ -96,9 +96,9 @@ function snapshot(root){
     const hidden=await register('Hidden fixture',ready.results),subtree=await register('Subtree fixture',ready.subtree);
     await refresh();
     async function switchRoot(id){await page.locator('#rootSelect').selectOption(id);await page.waitForFunction(root=>state.root===root&&state.git&&state.gitContext&&!state.gitContextLoading,id);}
-    await switchRoot(hidden);assert.ok(await page.locator('#gitCommit').isDisabled());assert.equal(await page.locator('#gitPanel [data-path=".hidden-stage.txt"]').count(),0);assert.match(await page.locator('#gitPanel').textContent(),/숨|표시|제외/);
+    await switchRoot(hidden);assert.ok(await page.locator('#gitCommit').isDisabled());assert.equal(await page.locator('#gitPanel [data-path=".hidden-stage.txt"]').count(),0);assert.match(await page.locator('#gitPanel').textContent(),/Hidden or excluded/);
     const hiddenContext=await get('context?root='+hidden);assert.equal(hiddenContext.commitAllowed,false);
-    await switchRoot(subtree);assert.ok(await page.locator('#gitCommit').isDisabled());assert.ok(await page.locator('#gitPush').isDisabled());assert.match(await page.locator('#gitPanel').textContent(),/최상위|읽기/);
+    await switchRoot(subtree);assert.ok(await page.locator('#gitCommit').isDisabled());assert.ok(await page.locator('#gitPush').isDisabled());assert.match(await page.locator('#gitPanel').textContent(),/top-level|read only/);
     // A late context/history response must never repaint another root.
     await switchRoot('project');const late=deferred(),lateStarted=deferred();
     await page.route('**/api/git/history?**',async route=>{if(new URL(route.request().url()).searchParams.get('root')==='project'){lateStarted.resolve();await late.promise;}await route.continue().catch(()=>{});});
@@ -108,18 +108,18 @@ function snapshot(root){
     await page.route('**/api/git/stage',async route=>{mutationStarted.resolve();await mutationGate.promise;await route.continue();});
     await action('stage','unrelated.txt').click();await mutationStarted.promise;await switchRoot(hidden);mutationGate.resolve();await page.waitForFunction(()=>!state.gitBusy.has('project'));
     assert.equal(await result().count(),0);assert.equal(git(ready.project,'diff','--cached','--name-only'),'unrelated.txt');await page.unroute('**/api/git/stage');
-    await switchRoot('project');await result().filter({hasText:'완료'}).waitFor();await action('unstage','unrelated.txt').click();await idle();
+    await switchRoot('project');await result().filter({hasText:'Completed'}).waitFor();await action('unstage','unrelated.txt').click();await idle();
     // The visible-file batch is explicit and bounded, and does not include the untracked group.
     await page.locator('[data-batch="unstaged"]').click();await idle();assert.equal(git(ready.project,'diff','--cached','--name-only'),'unrelated.txt');await page.locator('[data-batch="staged"]').click();await idle();
     // Conflict entries cannot be silently included in commit or batch actions.
     await switchRoot(hidden);git(ready.results,'reset','-q','HEAD','--','.hidden-stage.txt');
     const blob=git(ready.results,'rev-parse','HEAD:action.txt');
     execFileSync('git',['-C',ready.results,'update-index','--index-info'],{input:`0 ${'0'.repeat(40)}\taction.txt\n100644 ${blob} 1\taction.txt\n100644 ${blob} 2\taction.txt\n100644 ${blob} 3\taction.txt\n`});
-    await refresh();assert.ok(await page.locator('#gitCommit').isDisabled());assert.ok(await action('stage','action.txt').isDisabled());assert.match(await page.locator('#gitPanel').textContent(),/충돌/);
+    await refresh();assert.ok(await page.locator('#gitCommit').isDisabled());assert.ok(await action('stage','action.txt').isDisabled());assert.match(await page.locator('#gitPanel').textContent(),/conflicts/);
     // A truncated visible staged scope cannot authorize a whole-index commit.
     await switchRoot('project');await action('stage','unrelated.txt').click();await idle();
     await page.route('**/api/git/status?**',async route=>{const response=await route.fetch();const body=await response.json();await route.fulfill({response,json:{...body,truncated:true}});});
-    await refresh();await page.locator('#gitCommitMessage').fill('must remain disabled');assert.ok(await page.locator('#gitCommit').isDisabled());assert.match(await page.locator('#gitPanel').textContent(),/전체 스테이징/);
+    await refresh();await page.locator('#gitCommitMessage').fill('must remain disabled');assert.ok(await page.locator('#gitCommit').isDisabled());assert.match(await page.locator('#gitPanel').textContent(),/full staged scope/);
     await page.unroute('**/api/git/status?**');await refresh();await action('unstage','unrelated.txt').click();await idle();
     // An old HEAD is rejected by the real API, leaving index and refs untouched.
     await switchRoot('project');const latest=await current();const stale=await post('stage',{root:'project',paths:['unrelated.txt'],expectedHead:initialHead,expectedBranch:latest.branch,expectedIndex:latest.indexToken});assert.equal(stale.status(),409);assert.equal(git(ready.project,'diff','--cached','--name-only'),'');

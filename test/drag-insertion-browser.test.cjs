@@ -49,7 +49,7 @@ const fs=require('node:fs/promises');
   for(const file of ['sample.py','same.txt',...files])if(await tab(file).count())await tab(file).locator('.tab-close').click();
   assert.equal(await page.locator('.file-tab').count(),1);
   const prior=await page.evaluate(()=>JSON.stringify({layout:state.layout,tabs:state.tabs.map(t=>[t.id,t.group])}));
-  await dragTab(page,'README.md',groupPoint(page,'README.md','right'),{inspect:async()=>{assert.equal(await page.locator('#workspaceDrop').getAttribute('data-edge'),'center','self split does not promise a half preview');assert((await page.locator('#workspaceDrop').textContent()).includes('다른 탭 없음'),'self split honestly describes unchanged placement');}});
+  await dragTab(page,'README.md',groupPoint(page,'README.md','right'),{inspect:async()=>{assert.equal(await page.locator('#workspaceDrop').getAttribute('data-edge'),'center','self split does not promise a half preview');assert((await page.locator('#workspaceDrop').textContent()).includes('No other tabs to split'),'self split honestly describes unchanged placement');}});
   assert.equal(await page.evaluate(()=>JSON.stringify({layout:state.layout,tabs:state.tabs.map(t=>[t.id,t.group])})),prior);
   assert.equal(requests.filter(r=>r.method==='POST'&&/\/api\/(?:fs|editor\/save)/.test(new URL(r.url).pathname)).length,0);
   console.log('PASS: physical BEFORE/AFTER/end insertion, exact predicted order, near-self/source exclusion, horizontal strip scroll, cross-group collapse and sole-file self-drop');

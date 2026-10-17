@@ -33,7 +33,7 @@ const fs = require('node:fs/promises');
   assert.equal(await width(current.locator('#markdown')),await current.locator('body').evaluate(()=>innerWidth));
   await current.locator('body').evaluate(()=>localStorage.removeItem('fbrowse.previewWidth'));
   await current.locator('#mode').click(); const editor = current.locator('#editor'); await editor.focus(); await page.keyboard.press('Control+End'); await page.keyboard.insertText('\nwidth draft 한글\n');
-  const draft = await editor.inputValue(); await page.keyboard.press('Control+s'); await current.locator('#notice').filter({ hasText: '저장했습니다.' }).waitFor();
+  const draft = await editor.inputValue(); await page.keyboard.press('Control+s'); await current.locator('#notice').filter({ hasText: 'Saved.' }).waitFor();
   await editor.evaluate(n => { window.savedEditorNode = n; }); await current.locator('#mode').click();
   await current.locator('#markdown').evaluate(n => window.savedArticleChild = n.firstChild);
   for (const viewport of [1200, 740, 1920]) {

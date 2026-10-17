@@ -102,6 +102,6 @@ async function expandTab(page, file, { root = 'project', keyboard = false } = {}
   const label = fileTab(page, file, root).locator('.tab-activate');
   if (keyboard) { await label.focus(); await page.keyboard.press('Shift+F10'); }
   else await label.click({ button: 'right' });
-  await page.getByRole('menuitem', { name: /크게 보기/ }).click();
+  await page.getByRole('menuitem', { name: /Expand Current File/ }).click();
 }
 module.exports = { fixture, gate, fileTab, groupRect, groupPoint, dragTab, expandTab };

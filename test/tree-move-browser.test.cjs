@@ -51,7 +51,7 @@ fixture(async({ready,page,row,tab,frame,open})=>{
   await drop('source/folder',row('destination'));await tab('destination/folder/child/note.md').waitFor();
   assert.equal(await tab('destination/folder/child/note.md').getAttribute('data-tab'),childId);assert((await child.locator('#editor').inputValue()).endsWith('CHILD DRAFT'));
   const before=await fs.readFile(path.join(ready.project,'source/collision.txt'),'utf8');
-  await drop('source/collision.txt',row('destination'));await page.locator('#status').filter({hasText:'이동하지 못했습니다'}).waitFor();
+  await drop('source/collision.txt',row('destination'));await page.locator('#status').filter({hasText:'Could not move'}).waitFor();
   assert.equal(await fs.readFile(path.join(ready.project,'source/collision.txt'),'utf8'),before);assert.equal(await fs.readFile(path.join(ready.project,'destination/collision.txt'),'utf8'),'DESTINATION');
   await drop('source/collision.txt',row('destination'),{cancel:true});
   await start('destination/folder',row('destination/folder/child'));
@@ -64,7 +64,7 @@ fixture(async({ready,page,row,tab,frame,open})=>{
   });
   await start('source/collision.txt',page.locator('#listLabel'));await lookup.promise;
   await fs.writeFile(path.join(ready.project,'source/collision.txt'),'REPLACED');await page.mouse.up();
-  await page.locator('#status').filter({hasText:'이동하지 못했습니다'}).waitFor();
+  await page.locator('#status').filter({hasText:'Could not move'}).waitFor();
   assert.equal(await fs.readFile(path.join(ready.project,'source/collision.txt'),'utf8'),'REPLACED');
   await start('source/collision.txt',page.locator('#entries'));
   const box=await page.locator('#entries').boundingBox(),beforeScroll=await page.locator('#entries').evaluate(node=>node.scrollTop);

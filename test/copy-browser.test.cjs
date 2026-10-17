@@ -19,7 +19,7 @@ const path = require('node:path');
   async function copy(file) {
     await reveal(file); const response=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/fs-info' && new URL(r.url()).searchParams.get('path')===file);
     await row(file).focus(); await page.keyboard.press('Control+c'); assert.equal((await response).status(),200);
-    await page.locator('#clipboardStatus').filter({hasText:/복사됨/}).waitFor();
+    await page.locator('#clipboardStatus').filter({hasText:/Copied/}).waitFor();
     await page.waitForFunction(()=>document.querySelector('#clipboardStatus').getAttribute('aria-busy')==='false');
   }
   async function paste(file, expectedParent, { blank = false, success = true } = {}) {
@@ -71,13 +71,13 @@ const path = require('node:path');
   assert.equal(await fs.readFile(path.join(ready.results,'same.txt'),'utf8'),'results');
   // Context menu exposes the same metadata clipboard and preserves the native text clipboard.
   await root('project');await reveal('source/sub/child.txt');await row('source/sub/child.txt').click({button:'right'});await page.locator('#contextCopyFile').click();
-  await page.locator('#clipboardStatus').filter({hasText:/복사됨/}).waitFor();await root('other');await row('target').click({button:'right'});
+  await page.locator('#clipboardStatus').filter({hasText:/Copied/}).waitFor();await root('other');await row('target').click({button:'right'});
   const menuPaste=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/fs'&&r.request().postDataJSON().action==='copy');await page.locator('#contextPasteFile').click();assert.equal((await menuPaste).status(),201);
   await page.waitForFunction(()=>document.querySelector('#clipboardStatus').getAttribute('aria-busy')==='false');
   // Preflight rejects disappeared/remapped roots before submitting any mutation.
   async function refusedBeforePost() {
     const before=calls.length;await row('target').focus();await page.keyboard.press('Control+v');
-    await page.locator('#clipboardStatus').filter({hasText:/실패|failed/i}).waitFor();assert.equal(calls.length,before,'invalid root never sends copy POST');
+    await page.locator('#clipboardStatus').filter({hasText:/failed/i}).waitFor();assert.equal(calls.length,before,'invalid root never sends copy POST');
   }
   await root('project');await copy('source/sub/child.txt');await root('other');
   await fs.rename(ready.project,ready.project+'-unmounted');try{await refusedBeforePost();}finally{await fs.rename(ready.project+'-unmounted',ready.project);}
@@ -87,9 +87,9 @@ const path = require('node:path');
   assert.equal((await post('api/roots',{operation:'edit',id:'other',name:'other',path:ready.results})).status(),200);
   // Copy from a registered source then remove its mapping while another root is active.
   await root('other');await row('same.txt').focus();const sourceInfo=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/fs-info');await page.keyboard.press('Control+c');await sourceInfo;
-  await page.locator('#clipboardStatus').filter({hasText:/복사됨/}).waitFor();await root('project');
+  await page.locator('#clipboardStatus').filter({hasText:/Copied/}).waitFor();await root('project');
   assert.equal((await post('api/roots',{operation:'remove',id:'other'})).status(),200);
-  const beforeRemove=calls.length;await row('source').focus();await page.keyboard.press('Control+v');await page.locator('#clipboardStatus').filter({hasText:/실패|failed/i}).waitFor();assert.equal(calls.length,beforeRemove);
+  const beforeRemove=calls.length;await row('source').focus();await page.keyboard.press('Control+v');await page.locator('#clipboardStatus').filter({hasText:/failed/i}).waitFor();assert.equal(calls.length,beforeRemove);
   await register('other',ready.results);
   await root('project'); await copy('same.txt'); await fs.unlink(path.join(ready.project,'same.txt')); await root('other');
   // Deleted source may use 404/409 depending on the boundary that detects disappearance.

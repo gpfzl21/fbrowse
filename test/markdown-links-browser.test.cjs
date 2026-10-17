@@ -83,7 +83,7 @@ fixture(async({ready,page,browser,open,tab,frame,register})=>{
   await page.locator('#entries button.row[data-root="other"][data-path="linked/deep"][aria-expanded="true"]').waitFor();
   assert.equal(await page.locator('#filesTab').getAttribute('aria-pressed'),'true');
   await sourceTab();await source.getByRole('link',{name:'미연결 루트',exact:true}).click();
-  await source.locator('#notice').filter({hasText:'루트 관리'}).waitFor();await intact();
+  await source.locator('#notice').filter({hasText:'Manage Roots'}).waitFor();await intact();
   await sourceTab();const priorCount=await count();await source.getByRole('link',{name:'앱 경로',exact:true}).click();await page.waitForFunction(()=>state.selected?.path==='docs/target.md');assert.equal(await count(),priorCount);
 
   await sourceTab();await page.context().route('https://links.example.test/**',route=>route.fulfill({contentType:'text/html',body:'<h1>External site</h1>'}));
@@ -91,7 +91,7 @@ fixture(async({ready,page,browser,open,tab,frame,register})=>{
   const web=await popup;await web.getByRole('heading',{name:'External site'}).waitFor();
   assert.equal(await count(),priorCount);assert.equal(await page.evaluate(()=>state.activeTab),sourceId);
   assert.deepEqual(await page.evaluate(()=>openCalls),[]);await intact();await web.close();
-  await source.getByRole('link',{name:'누락',exact:true}).click();await source.locator('#notice').filter({hasText:'파일이 없습니다'}).waitFor();
+  await source.getByRole('link',{name:'누락',exact:true}).click();await source.locator('#notice').filter({hasText:'File not found'}).waitFor();
   assert.equal(await count(),priorCount);await intact();
 
   // A slow response cannot steal focus from a later explicit tab selection.

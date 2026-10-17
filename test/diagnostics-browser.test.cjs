@@ -23,7 +23,7 @@ async function until(check, message) { for (let i = 0; i < 160; i++) { if (await
   let code = await open('diagnostics.py');
   const editor = () => code.locator('#editor');
   const status = () => code.locator('#diagnosticsStatus');
-  const clean = async (target = code) => { await target.locator('#diagnosticsStatus').filter({ hasText: /오류 0 · 경고 0/ }).waitFor(); };
+  const clean = async (target = code) => { await target.locator('#diagnosticsStatus').filter({ hasText: /Errors: 0 · Warnings: 0/ }).waitFor(); };
   const replace = async value => { await editor().focus(); await page.keyboard.press('Control+A'); await page.keyboard.insertText(value); assert.equal(await editor().inputValue(), value); };
   const showProblems = async (target = code) => { if (await target.locator('#diagnosticsPanel').isHidden()) await target.locator('#diagnosticsToggle').click(); };
   await clean(); assert.ok(posts.some(post => post.body.path === 'diagnostics.py'));
@@ -115,9 +115,9 @@ async function until(check, message) { for (let i = 0; i < 160; i++) { if (await
   await page.locator('#diffContent').filter({ hasText: 'working version' }).waitFor(); delayed.release.release();
   const diffCount = posts.length; await sleep(1100); assert.equal(posts.length, diffCount, 'diff mode disables retained current-file checks');
   await page.locator('#filesTab').click(); await row('diagnostics.py').click(); await clean();
-  unavailableNext = true; await code.locator('#diagnosticsRetry').click(); await status().filter({ hasText: /사용 불가/ }).waitFor();
+  unavailableNext = true; await code.locator('#diagnosticsRetry').click(); await status().filter({ hasText: /Unavailable/ }).waitFor();
   assert.equal(await code.locator('#diagnosticsList button').count(), 0); await code.locator('#diagnosticsRetry').click(); await clean();
-  const readonly = await open('readonly.py'); await readonly.locator('#diagnosticsStatus').filter({ hasText: '읽기 전용' }).waitFor();
+  const readonly = await open('readonly.py'); await readonly.locator('#diagnosticsStatus').filter({ hasText: 'Read Only' }).waitFor();
   const readonlyCount = posts.length; await sleep(1000); assert.equal(posts.length, readonlyCount);
   const over = await open('overlimit.py'); await over.locator('#diagnosticsStatus').filter({ hasText: /512 KiB/ }).waitFor();
   const overCount = posts.length; await sleep(1000); assert.equal(posts.length, overCount);
@@ -158,7 +158,7 @@ async function until(check, message) { for (let i = 0; i < 160; i++) { if (await
   if(await page.locator('#fsCancel').isVisible())await page.locator('#fsCancel').click();
   await page.locator('#rootSelect').selectOption('other'); code = await open('detached.py'); await clean(); delayed = await hold();
   await page.locator('#manageRoots').click();
-  await page.locator('.root-record').filter({ has: page.locator('strong').filter({ hasText: /^other$/ }) }).getByRole('button', { name: '연결 제거', exact: true }).click();
+  await page.locator('.root-record').filter({ has: page.locator('strong').filter({ hasText: /^other$/ }) }).getByRole('button', { name: 'Disconnect', exact: true }).click();
   await tab('detached.py', 'other').waitFor({ state: 'detached' }); delayed.release.release();
   await page.locator('#closeRoots').click(); const detachCount = posts.filter(post => post.body.root === 'other').length; await sleep(1100); assert.equal(posts.filter(post => post.body.root === 'other').length, detachCount, 'detached root cannot request or apply results');
   assert.equal(await fs.readFile(path.join(ready.results, 'detached.py'), 'utf8'), 'value = 1\n');
@@ -174,7 +174,7 @@ async function until(check, message) { for (let i = 0; i < 160; i++) { if (await
   try {
     const standalonePosts = []; standalone.on('request', request => { if (new URL(request.url()).pathname === '/api/diagnostics') standalonePosts.push(request.postDataJSON()); });
     await standalone.goto(ready.url + '_preview?root=project&path=diagnostics.py');
-    await standalone.locator('#diagnosticsStatus').filter({ hasText: /오류 0 · 경고 0/ }).waitFor();
+    await standalone.locator('#diagnosticsStatus').filter({ hasText: /Errors: 0 · Warnings: 0/ }).waitFor();
     assert.equal(standalonePosts.length, 1); assert.equal(standalonePosts[0].text, original, 'standalone preview checks its current disk-bound text');
   } finally { await standalone.close(); }
   assert.ok(posts.every(post => post.body.root && post.body.path && post.body.expected_version && post.body.request_id));

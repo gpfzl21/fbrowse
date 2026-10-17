@@ -56,7 +56,7 @@ const gate = () => { let release; const promise = new Promise(resolve => release
     const editor = () => frame().locator('#editor');
     const text = () => editor().inputValue();
     async function open(file) {
-      await row(file).click(); await frame().locator('#info').filter({ hasText: /줄/ }).waitFor();
+      await row(file).click(); await frame().locator('#info').filter({ hasText: /lines?/ }).waitFor();
     }
     async function source() {
       if (await editor().isHidden()) await frame().locator('#mode').click();
@@ -78,10 +78,10 @@ const gate = () => { let release; const promise = new Promise(resolve => release
 
     console.log('Editor browser: direct text/code/LaTeX edits and native undo');
     await open('plain.txt'); assert.equal(await editor().getAttribute('readonly'), null);
-    assert.equal(await frame().getByRole('button', { name: /^Edit$|^편집$/ }).count(), 0);
+    assert.equal(await frame().getByRole('button', { name: /^Edit$/ }).count(), 0);
     const edited = originals['plain.txt'] + 'typed 한글\n';
     await editor().focus(); await page.keyboard.press('Control+End'); await page.keyboard.insertText('typed 한글\n');
-    await frame().locator('#dirty').filter({ hasText: '수정됨' }).waitFor();
+    await frame().locator('#dirty').filter({ hasText: 'Modified' }).waitFor();
     await save({ file: 'plain.txt', text: edited });
     const sameSession = await page.locator('.workspace-slot.is-visible iframe').getAttribute('src');
     await row('plain.txt').click();
@@ -165,7 +165,7 @@ const gate = () => { let release; const promise = new Promise(resolve => release
     console.log('Editor browser: failed save and external conflict preserve both sides');
     await page.route('**/api/save', route => route.abort('failed'));
     await editor().focus(); await page.keyboard.press('Control+s');
-    await frame().locator('#notice').filter({ hasText: '저장하지 못했습니다' }).waitFor();
+    await frame().locator('#notice').filter({ hasText: 'Could not save' }).waitFor();
     assert.equal(await text(), edited + 'draft'); assert.equal(await fs.readFile(path.join(project, 'plain.txt'), 'utf8'), edited);
     await page.unroute('**/api/save');
     await fs.writeFile(path.join(project, 'plain.txt'), 'external winner\n');
@@ -206,7 +206,7 @@ const gate = () => { let release; const promise = new Promise(resolve => release
     await editor().focus(); await page.keyboard.press('Control+End'); await page.keyboard.insertText('unsaved during shutdown');
     await app.close();
     await page.keyboard.press('Control+s');
-    await frame().locator('#notice').filter({ hasText: '저장하지 못했습니다' }).waitFor();
+    await frame().locator('#notice').filter({ hasText: 'Could not save' }).waitFor();
     assert.equal(await text(), markdown + 'unsaved during shutdown');
     assert.equal(await fs.readFile(path.join(project, 'notes.md'), 'utf8'), markdown);
     await page.context().close(); await app.close(); app = await start();
@@ -220,7 +220,7 @@ const gate = () => { let release; const promise = new Promise(resolve => release
     for (const file of ['mixed.txt', 'large.txt']) {
       await page.goto(new URL('/_preview?root=project&path=' + file, app.url).href);
       await page.locator('#editor[readonly]').waitFor();
-      await page.locator('#notice').filter({ hasText: /read.only|읽기 전용|8 MiB/i }).waitFor();
+      await page.locator('#notice').filter({ hasText: /read.only|8 MiB/i }).waitFor();
       assert.ok(await page.locator('#save').isDisabled());
       assert.equal((await page.locator('#editor').inputValue()).length, file === 'large.txt' ? 8 * 1024 * 1024 + 1 : 8);
     }

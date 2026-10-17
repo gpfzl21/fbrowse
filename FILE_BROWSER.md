@@ -8,6 +8,7 @@ fbrowse 0.2부터 서버와 CLI는 Node.js 기반입니다. 설치·실행·다�
 - Python, Bash 실행기, tmux, flock 불필요
 - 브라우저 자동 열기 없음: 표시된 주소를 Orca Browser에서 직접 열기
 - 루트 관리의 폴더 선택기로 서버 디렉터리를 확인하며 연결
+- 0.17.0: 탭·그룹 메뉴에 Copy Relative Path / Copy Path 추가, 방향별 분할 메뉴 제거 (드래그 분할 유지). 앱 UI·접근성·오류·CLI 영어 통일, 다중 루트·이름 변경/이동·클립보드 대체 경로·초안/undo 회귀 검증
 - 0.16.0: 탭은 파일명만 표시하고 이름이 겹칠 때만 짧은 폴더 경로·필요한 루트 정보를 작은 글씨로 표시. 전체 경로 툴팁·접근성 이름, 닫기·분할·이름 변경·이동 후 자동 갱신
 - 0.15.1: 폴더 선택기의 우클릭 메뉴는 다른 파일·폴더·입력란 등 메뉴 바깥을 클릭하면 닫힘
 - 0.15.0: 폴더 선택 창에서도 새 파일·새 폴더, 우클릭 이름 변경·복제·삭제·경로 복사, 다중 선택·잘라내기/복사·붙여넣기·폴더 위 드래그 이동 지원. 등록 전 폴더에서도 작업 가능하며 등록된 루트 자체는 보호
@@ -61,3 +62,8 @@ fbrowse 0.2부터 서버와 CLI는 Node.js 기반입니다. 설치·실행·다�
 - 설정·로그·캐시는 XDG 위치에 저장하고 프로젝트 안에는 앱 파일을 생성하지 않음
 
 기존 Python 구현은 Git 이력에 보존되어 있습니다. 현재 설치와 배포 패키지는 Node.js 기반입니다.
+
+## Current UI controls
+
+App-owned UI, accessibility labels, dialogs, server messages and CLI help use English; user files and root names keep their original text.
+The tab/group context menu offers **Copy Relative Path** (relative to that tab’s registered root) and **Copy Path** (server absolute path). Blank strips use their group’s active tab. Clipboard failures show a selectable path. Directional split menu items are removed; edge dragging still splits groups.

@@ -18,7 +18,7 @@ const server=http.createServer((request,response)=>{
     await page.route('**/api/external-browser',async route=>{
       const data=route.request().postDataJSON();
       if(data.action==='connect')return route.fulfill({json:{connected:bridge}});
-      opens.push(data);return route.fulfill(fail?{status:503,json:{error:'Orca 연결을 확인할 수 없습니다.'}}:{json:{opened:true,background:data.background}});
+      opens.push(data);return route.fulfill(fail?{status:503,json:{error:'Could not verify the Orca connection.'}}:{json:{opened:true,background:data.background}});
     });
     await page.goto(ready.url+'?path=web-links.md');let source=await frame('web-links.md');await source.locator('#markdown h1').waitFor();
     // The ordinary browser uses its real anchor behavior, without window.open.
@@ -58,7 +58,7 @@ const server=http.createServer((request,response)=>{
     assert.equal(await source.locator('#webLinkMenu').count(),0);
     assert.equal(await source.locator('body').evaluate(()=>window.lastContextPrevented),false,'Orca host menu is not suppressed');
     fail=true;await requestOpen(()=>link.click());
-    await source.locator('#notice').filter({hasText:'Orca 연결을 확인할 수 없습니다.'}).waitFor();assert.equal(opens.length,4);await intact();
+    await source.locator('#notice').filter({hasText:'Could not verify the Orca connection.'}).waitFor();assert.equal(opens.length,4);await intact();
     assert.deepEqual(await page.evaluate(({href})=>{const source=state.tabs[0].frame.contentWindow;return [fbrowseOpenExternal(null,href),fbrowseOpenExternal(source,'javascript:alert(1)'),fbrowseOpenExternal(source,location.origin)];},{href:origin+'/paper'}),[false,false,false]);
     await source.locator('#mode').click();await source.locator('#editor').focus();await page.keyboard.press('Control+z');assert.equal(await source.locator('#editor').inputValue(),'# Web links\n\n[External]('+origin+'/paper)\n');
     assert.deepEqual(errors,[]);

@@ -66,7 +66,7 @@ test('isolated server and storage integrations', async t => {
     const info = (await request(app, '/api/info')).json();
     assert.equal(info.service, 'project-file-browser');
     assert.equal(info.backend, 'node');
-    assert.equal(info.version, '0.16.0');
+    assert.equal(info.version, '0.17.0');
     assert.equal(info.pid, process.pid);
     assert.equal(info.root, roots.project);
     assert.equal(info.pdfjs, false);
@@ -211,9 +211,9 @@ test('isolated server and storage integrations', async t => {
       assert.notEqual((await request(app, '/_preview?path=' + name)).status, 200);
       assert.notEqual((await request(app, '/files/' + name)).status, 200);
     }
-    assert.match(byName('external.txt').unavailable_reason, /루트 밖/);
-    assert.match(byName('broken.txt').unavailable_reason, /없습니다/);
-    assert.match(byName('loop').unavailable_reason, /순환/);
+    assert.match(byName('external.txt').unavailable_reason, /outside registered roots/);
+    assert.match(byName('broken.txt').unavailable_reason, /does not exist/);
+    assert.match(byName('loop').unavailable_reason, /cycle/);
     const search = (await request(app, '/api/search?q=linked&refresh=1')).json().entries;
     assert.ok(search.some(value => value.path === 'linked-note.txt' && value.symlink));
     assert.equal(search.some(value => value.path === 'linked-docs/note.txt'), false);

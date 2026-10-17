@@ -24,7 +24,7 @@ fixture(async ({ ready, page, errors, requests }) => {
   await page.goto(ready.url + '_preview?root=project&path=slides.html');
   const inner = page.frameLocator('#htmlPreview'), toggle = page.locator('#slideMode');
   await toggle.waitFor();
-  await page.locator('#notice').filter({hasText:'큰 HTML 파일의 원문'}).waitFor({state:'attached'});
+  await page.locator('#notice').filter({hasText:'Large HTML source'}).waitFor({state:'attached'});
   assert.equal(await page.locator('#notice').isVisible(), false, 'source performance notice never covers HTML preview');
   assert.equal(await page.locator('#htmlPreview').getAttribute('sandbox'), 'allow-same-origin');
   assert.equal(await inner.locator('body').evaluate(() => window.slideIndex), undefined);

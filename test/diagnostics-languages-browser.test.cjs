@@ -58,15 +58,15 @@ async function until(check, message) { for (let i = 0; i < 160; i++) { if (await
     await code.locator('#diagnosticsEnabled').click();
     assert.equal(await code.locator('.diagnostic-underline').count(), 0);
     const off = posts.length; await replace(clean); await sleep(900); assert.equal(posts.length, off);
-    await code.locator('#diagnosticsEnabled').click(); await code.locator('#diagnosticsStatus').filter({hasText:/오류 0 · 경고 0/}).waitFor();
+    await code.locator('#diagnosticsEnabled').click(); await code.locator('#diagnosticsStatus').filter({hasText:/Errors: 0 · Warnings: 0/}).waitFor();
     const retry = posts.length; await code.locator('#diagnosticsRetry').click();
     await until(() => posts.length > retry, 'retry: ' + file);
-    await code.locator('#diagnosticsStatus').filter({hasText:/오류 0 · 경고 0/}).waitFor();
+    await code.locator('#diagnosticsStatus').filter({hasText:/Errors: 0 · Warnings: 0/}).waitFor();
   }
-  code = await open('live.zsh'); await code.locator('#diagnosticsStatus').filter({hasText:/지원하지 않는 파일.*zsh/}).waitFor();
+  code = await open('live.zsh'); await code.locator('#diagnosticsStatus').filter({hasText:/Unsupported file.*zsh/}).waitFor();
   for (const file of ['live.sh', 'run-live']) { code = await open(file); await checked(file, files[file]); }
-  await replace('#!/bin/zsh\necho ok\n'); await code.locator('#diagnosticsStatus').filter({hasText:/지원하지 않는 파일/}).waitFor();
-  await replace(files['run-live']); await code.locator('#diagnosticsStatus').filter({hasText:/오류 0 · 경고 0/}).waitFor();
+  await replace('#!/bin/zsh\necho ok\n'); await code.locator('#diagnosticsStatus').filter({hasText:/Unsupported file/}).waitFor();
+  await replace(files['run-live']); await code.locator('#diagnosticsStatus').filter({hasText:/Errors: 0 · Warnings: 0/}).waitFor();
 
   // Hold real responses, then change text, roots, or close the owning frame.
   code = await open('live.json');
@@ -79,7 +79,7 @@ async function until(check, message) { for (let i = 0; i < 160; i++) { if (await
   const hold = async () => { const count = held.length; holdNext = true; await code.locator('#diagnosticsRetry').click(); await until(() => held.length > count, 'held real JSON result'); return held.at(-1); };
   await replace(cases[3][2]); await checked('live.json', cases[3][2]);
   let delayed = await hold(); await replace(files['live.json']);
-  await code.locator('#diagnosticsStatus').filter({hasText:/오류 0 · 경고 0/}).waitFor(); delayed.release(); await sleep(200);
+  await code.locator('#diagnosticsStatus').filter({hasText:/Errors: 0 · Warnings: 0/}).waitFor(); delayed.release(); await sleep(200);
   assert.equal(await code.locator('#diagnosticsList button').count(), 0, 'old error cannot replace newer clean result');
   await replace(cases[3][2]); await code.locator('#diagnosticsList button').first().waitFor({state:'attached'});
   delayed = await hold(); await page.locator('#rootSelect').selectOption('other'); delayed.release();

@@ -15,7 +15,7 @@ fixture(async({ready,page,requests})=>{
  // Both rows are visible without scrolling: a scroll event must not hide this regression.
  const clickEnd=async(name,modifiers=[])=>{const box=await item(name).boundingBox();await item(name).click({position:{x:box.width-12,y:12},modifiers});};
  await show('a.txt');await clickEnd('b.txt');assert(await menu.isHidden(),'clicking another file dismisses the menu');assert.equal(await item('b.txt').getAttribute('aria-pressed'),'true');
- await show('b.txt');await clickEnd('a.txt',['Control']);assert(await menu.isHidden());assert.equal(await page.locator('#folderSelectedCount').textContent(),'2개 선택');
+ await show('b.txt');await clickEnd('a.txt',['Control']);assert(await menu.isHidden());assert.equal(await page.locator('#folderSelectedCount').textContent(),'2 selected');
  await show('a.txt');await page.locator('#rootsTitle').click();assert(await menu.isHidden(),'clicking outside the picker panel dismisses the menu');
  await show('a.txt');await page.locator('#folderFilter').click();assert(await menu.isHidden());await page.keyboard.type('b.txt');assert.equal(await item('a.txt').count(),0);await page.locator('#folderFilter').fill('');
  await show('a.txt');await page.locator('#folderLabel').click();assert(await menu.isHidden());assert(await page.locator('#folderLabel').evaluate(n=>n===document.activeElement));

@@ -86,7 +86,7 @@
           continue;
         }
         try {
-          if (index >= 1000 || token.tex.length > 20000) throw Error('수식 렌더링 크기 제한을 초과했습니다.');
+          if (index >= 1000 || token.tex.length > 20000) throw Error('Math rendering size limit exceeded.');
           katex.render(token.tex, element, { displayMode: token.display || token.mathDisplay,
             throwOnError: true, trust: false, strict: 'ignore', maxExpand: 1000, maxSize: 20,
             output: 'htmlAndMathml', macros: {} });
@@ -94,7 +94,7 @@
           failed++;
           element.classList.add('math-error');
           element.textContent = token.raw;
-          element.title = '수식 원문: ' + error.message;
+          element.title = 'Math source: ' + error.message;
         }
       }
       return failed;

@@ -90,7 +90,7 @@ async function firstGestures() {
     await row('qa-click.txt').focus(); await page.keyboard.press('Enter'); assert.equal(await tab('qa-click.txt').getAttribute('aria-selected'), 'true');
     await page.keyboard.press('Shift+F10'); assert(await page.locator('#treeMenu').isVisible()); await page.keyboard.press('Escape');
     const copied = page.waitForResponse(r => new URL(r.url()).pathname === '/api/fs-info'); await row('qa-click.txt').focus(); await page.keyboard.press('Control+c'); assert.equal((await copied).status(), 200);
-    await page.locator('#clipboardStatus').filter({ hasText: /복사됨/ }).waitFor();
+    await page.locator('#clipboardStatus').filter({ hasText: /Copied/ }).waitFor();
     for (const file of ['nested', 'outside-link.txt', 'broken-link.txt']) {
       const before = await model(); await row(file).scrollIntoViewIfNeeded(); const r = await row(file).locator('.icon').boundingBox();
       await page.mouse.move(r.x + 2, r.y + r.height / 2); await page.mouse.down(); await page.mouse.move(r.x + 9, r.y + r.height / 2);
@@ -123,7 +123,7 @@ async function immersive() {
       assert(await md.locator('#previewHeader').evaluate(n => getComputedStyle(n).display !== 'none'), 'unknown source cannot sync owned frame');
       await md.locator('body').evaluate(() => parent.fbrowseSyncPreviewChrome(window));
       assert(await md.locator('#previewHeader').isHidden(), 'valid source and binding sync owned frame');
-      await page.getByRole('button', { name: '크게 보기 종료 · Esc', exact: true }).click();
+      await page.getByRole('button', { name: 'Exit expanded preview · Esc', exact: true }).click();
     }
     const messageGuard = await page.evaluate(() => {
       const t = state.tabs.find(t => t.entry.path === 'immersive.md'), editor = t.editor;
@@ -190,7 +190,7 @@ async function immersive() {
         if (file === 'immersive.html' && mode === 'rendered') assert(await html.frameLocator('#htmlPreview').locator('header').isVisible(), 'authored HTML header retained');
         if (exit === 'click') await screenshot(page, file.replace('.', '-') + '-' + mode);
         if (exit === 'Escape') { if (file === 'immersive.html' && mode === 'rendered') await html.locator('#htmlPreview').click({ position: { x: 100, y: 200 } }); else if (content === '#source') await view.locator('#editor').evaluate(n => n.focus({ preventScroll: true })); else await view.locator('#markdown').click({ position: { x: 100, y: 100 } }); await page.keyboard.press('Escape'); }
-        else await page.getByRole('button', { name: '크게 보기 종료 · Esc', exact: true }).click();
+        else await page.getByRole('button', { name: 'Exit expanded preview · Esc', exact: true }).click();
         await chrome(view, false, file + '/' + mode, content); await identical(view, 'restored ' + file + '/' + mode);
         if (file === 'immersive.html' && mode === 'rendered') assert(await html.frameLocator('#htmlPreview').locator('body').evaluate(() => retainedHTML.doc === document && retainedHTML.header === document.querySelector('header') && retainedHTML.heading === document.querySelector('h1') && retainedHTML.scroll === document.scrollingElement.scrollTop), 'authored HTML document/header/heading/scroll retained');
         if (content === '#source') await alignment(view, 'restored ' + mode);
@@ -204,13 +204,13 @@ async function immersive() {
     await code.locator('#editor').focus(); await page.keyboard.press('Control+z'); assert.equal(await code.locator('#editor').inputValue(), original);
     await page.keyboard.press('Control+Shift+z'); assert.equal(await code.locator('#editor').inputValue(), draft);
     assert((await tab('sample.py').textContent()).includes('●'), 'dirty notification reaches parent');
-    await page.keyboard.press('Control+s'); await code.locator('#notice').filter({ hasText: '저장했습니다.' }).waitFor(); assert.equal(await fs.readFile(ready.project + '/sample.py', 'utf8'), draft);
+    await page.keyboard.press('Control+s'); await code.locator('#notice').filter({ hasText: 'Saved.' }).waitFor(); assert.equal(await fs.readFile(ready.project + '/sample.py', 'utf8'), draft);
     assert(await code.locator('#notice').isVisible(), 'save notice remains visible outside hidden header'); await screenshot(page, 'code'); await page.keyboard.press('Escape'); assert(await code.locator('#previewHeader').isVisible());
     // Hold the new text document load: expansion must apply after load and quick exit must win.
     for (const exitEarly of [false, true]) {
       const held = gate(), seen = gate(); const route = async route => { seen.release(); await held.promise; await route.continue(); };
       await page.route('**/_preview?*', route); await row('late.txt').click(); await tab('late.txt').waitFor(); await seen.promise;
-      await expandTab(page, 'late.txt'); if (exitEarly) await page.getByRole('button', { name: '크게 보기 종료 · Esc', exact: true }).click();
+      await expandTab(page, 'late.txt'); if (exitEarly) await page.getByRole('button', { name: 'Exit expanded preview · Esc', exact: true }).click();
       held.release(); const late = await frame('late.txt'); await late.locator('#editor:not([readonly])').waitFor(); await chrome(late, !exitEarly, 'load-after-expand ' + exitEarly, '#source');
       if (!exitEarly) { await late.locator('#editor').focus(); await page.keyboard.press('Escape'); }
       assert(await late.locator('#previewHeader').isVisible()); await page.unroute('**/_preview?*', route); await tab('late.txt').locator('.tab-close').click();
@@ -221,7 +221,7 @@ async function immersive() {
     const foreign = await frame('late.txt'); await foreign.locator('#previewHeader').waitFor(); await expandTab(page, 'late.txt');
     await page.evaluate(id => fbrowseSyncPreviewChrome(state.tabs.find(t => t.id === id).frame.contentWindow), foreignId);
     assert(await foreign.locator('#previewHeader').evaluate(n => getComputedStyle(n).display !== 'none' && !document.documentElement.hasAttribute('data-fbrowse-expanded')), 'known source with foreign origin cannot style document chrome');
-    await page.getByRole('button', { name: '크게 보기 종료 · Esc', exact: true }).click(); await tab('late.txt').locator('.tab-close').click();
+    await page.getByRole('button', { name: 'Exit expanded preview · Esc', exact: true }).click(); await tab('late.txt').locator('.tab-close').click();
     assert(ready.pdfjs, 'cached real PDF.js required'); const pdf = await open('sample.pdf'); await pdf.locator('#viewer .page').first().waitFor({ timeout: 20000 });
     await pdf.locator('#viewsManagerToggleButton').click();
     await pdf.locator('#viewsManager').waitFor();
@@ -236,7 +236,7 @@ async function immersive() {
       assert.equal(expanded.y, 0); assert.equal(expanded.x, 0); assert(Math.abs(expanded.height - size.height) <= 1); assert(Math.abs(expanded.width - size.width) <= 1, 'open PDF sidebar leaves no offset');
       assert.equal(await pdf.locator('body').evaluate(() => document.adoptedStyleSheets.length), originalSheets + 1);
       assert(await pdf.locator('#viewerContainer').evaluate(n => n === pdfIdentity.viewer && document.querySelector('#viewer .page') === pdfIdentity.page && PDFViewerApplication === pdfIdentity.app && PDFViewerApplication.pdfDocument === pdfIdentity.doc));
-      await screenshot(page, 'pdf'); if (exit === 'Escape') { await pdf.locator('#viewerContainer').click(); await page.keyboard.press('Escape'); } else await page.getByRole('button', { name: '크게 보기 종료 · Esc', exact: true }).click();
+      await screenshot(page, 'pdf'); if (exit === 'Escape') { await pdf.locator('#viewerContainer').click(); await page.keyboard.press('Escape'); } else await page.getByRole('button', { name: 'Exit expanded preview · Esc', exact: true }).click();
       await settle(pdf); assert.equal(await pdf.locator('#toolbarContainer').isVisible(), toolbar); const restored = await pdf.locator('#viewerContainer').boundingBox();
       for (const key of ['x', 'y', 'width', 'height']) assert(Math.abs(restored[key] - before[key]) <= 1, 'PDF geometry restored ' + key);
       assert.equal(await pdf.locator('#outerContainer').getAttribute('class'), sidebarState, 'open sidebar state retained'); assert(await pdf.locator('#viewsManager').isVisible());

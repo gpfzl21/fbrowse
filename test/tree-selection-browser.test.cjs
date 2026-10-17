@@ -24,7 +24,7 @@ fixture(async({ready,page,row,open,requests})=>{
   await expect(['multi/nested','multi/nested/child.txt','multi/a.txt','multi/b.txt']);
   await row('multi/d.txt').click({modifiers:['Control','Shift']});
   await expect(['multi/nested','multi/nested/child.txt','multi/a.txt','multi/b.txt','multi/c.txt','multi/d.txt']);
-  assert.equal(await page.locator('#selectionCount').textContent(),'6개 선택');
+  assert.equal(await page.locator('#selectionCount').textContent(),'6 selected');
   assert.equal(await row('multi/a.txt').getAttribute('aria-pressed'),'true');
   await row('multi/b.txt').click({button:'right'});await expect(['multi/nested','multi/nested/child.txt','multi/a.txt','multi/b.txt','multi/c.txt','multi/d.txt']);
   assert.match(await page.locator('#contextDelete').textContent(),/6/);assert(await page.locator('#contextRename').isDisabled());

@@ -47,7 +47,7 @@ const fs=require('node:fs/promises');
     if(kind==='newer-focus')await tab('sample.py').locator('.tab-activate').click();
     const expected=await model();const infoDone=kind==='deleted'?null:page.waitForResponse(r=>new URL(r.url()).pathname==='/api/info');
     held.release();entryResponse=await entryDone;if(infoDone)await infoDone;
-    if(kind==='deleted')await page.locator('#status').filter({hasText:/파일을 열 수 없습니다/}).waitFor();
+    if(kind==='deleted')await page.locator('#status').filter({hasText:/Could not open the file/}).waitFor();
     await page.waitForTimeout(100);await page.unroute('**/api/entry?*',route);await clean();
     if(kind==='newer-focus'){
       await tab(file).waitFor();const activeId=await tab('sample.py').getAttribute('data-tab');

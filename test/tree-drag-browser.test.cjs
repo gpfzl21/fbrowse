@@ -35,7 +35,7 @@ const { createHash } = require('node:crypto');
     const r=await ghost.boundingBox(); assert(r.width>15&&r.height>10,'visible ghost geometry');
     const viewport=page.viewportSize(),expected={x:Math.max(0,Math.min(viewport.width-r.width-4,point.x+16)),y:Math.max(0,Math.min(viewport.height-r.height-4,point.y+18))};
     assert(Math.abs(r.x-expected.x)<2&&Math.abs(r.y-expected.y)<2,'ghost follows actual pointer with viewport clamping '+JSON.stringify({r,point,expected}));
-    const text=await ghost.textContent(); assert(text.includes(root==='project'?'프로젝트':root)||text.includes(root),'ghost identifies source root '+text);
+    const text=await ghost.textContent(); assert(text.includes(root==='project'?'Project':root)||text.includes(root),'ghost identifies source root '+text);
   }
   async function start(locator,point,{source='tree',file,root='project'}={}) {
     await locator.scrollIntoViewIfNeeded(); const r=await locator.boundingBox(); const x=r.x+Math.min(25,r.width/2),y=r.y+r.height/2;

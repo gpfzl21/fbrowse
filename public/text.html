@@ -1,6 +1,6 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>텍스트 미리보기</title><style>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Text Preview</title><style>
 :root{color-scheme:light dark;--bg:#fff;--text:#24292f;--muted:#6e7781;--line:#d8dee4;--soft:#f6f8fa;--accent:#0969da;--keyword:#cf222e;--string:#0a3069;--number:#0550ae;--title:#8250df}
 @media(prefers-color-scheme:dark){:root{--bg:#161b22;--text:#e6edf3;--muted:#8b949e;--line:#30363d;--soft:#0d1117;--accent:#79c0ff;--keyword:#ff7b72;--string:#a5d6ff;--number:#79c0ff;--title:#d2a8ff}}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.7 system-ui,-apple-system,"Segoe UI",sans-serif}header{position:sticky;top:0;z-index:2;display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:8px 14px;border-bottom:1px solid var(--line);background:var(--bg);font-size:12px}#info{flex:1;color:var(--muted)}button,a{font:inherit}button{cursor:pointer;border:1px solid var(--line);background:var(--bg);color:var(--text);padding:4px 9px;border-radius:6px}button:hover,button[aria-pressed="true"]{background:var(--soft);color:var(--accent)}a{color:var(--accent)}#notice{margin:0;padding:8px 16px;background:var(--soft);color:var(--muted);font-size:12px}[hidden]{display:none!important}.source-shell{display:flex;overflow:auto;min-height:calc(100vh - 50px)}pre,code{font-family:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}pre{margin:0;font-size:13px;line-height:1.7;tab-size:4}.gutter{position:sticky;left:0;align-self:stretch;flex-shrink:0;user-select:none;text-align:right;padding:18px 12px;background:var(--soft);border-right:1px solid var(--line);color:var(--muted)}.source{padding:18px;min-width:0;flex:1}.source-shell.wrap .source{white-space:pre-wrap;overflow-wrap:anywhere}.gutter span{display:block}article{max-width:1000px;margin:auto;padding:24px 36px 80px;overflow-wrap:break-word}article h1,article h2{border-bottom:1px solid var(--line);padding-bottom:.3em}article h1{font-size:2em}article h2{font-size:1.5em}article h3{font-size:1.25em}article h1,article h2,article h3,article h4{line-height:1.3;margin:1.4em 0 .65em;scroll-margin-top:65px}article>:first-child{margin-top:0}article p,article ul,article ol,article blockquote,article table,article pre{margin:0 0 16px}article pre{padding:16px;background:var(--soft);border-radius:8px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere}article code{font-size:.88em;background:var(--soft);border-radius:4px;padding:.15em .35em}article pre code{background:none;padding:0;font-size:13px}article blockquote{padding:0 1em;color:var(--muted);border-left:4px solid var(--line)}article table{display:block;max-width:100%;overflow:auto;border-collapse:collapse}article th,article td{border:1px solid var(--line);padding:6px 13px}article tr:nth-child(even){background:var(--soft)}article img{max-width:100%;height:auto}article hr{border:0;border-top:1px solid var(--line);margin:24px 0}article input[type="checkbox"]{margin-right:6px}.hljs-comment,.hljs-quote{color:var(--muted);font-style:italic}.hljs-keyword,.hljs-selector-tag,.hljs-doctag,.hljs-tag{color:var(--keyword)}.hljs-string,.hljs-regexp,.hljs-template-tag{color:var(--string)}.hljs-number,.hljs-literal,.hljs-attr,.hljs-variable,.hljs-params{color:var(--number)}.hljs-title,.hljs-section,.hljs-type,.hljs-built_in{color:var(--title)}.hljs-meta,.hljs-symbol,.hljs-bullet{color:var(--accent)}.hljs-emphasis{font-style:italic}.hljs-strong{font-weight:bold}.hljs-addition{color:#22863a}.hljs-deletion{color:var(--keyword)}@media(max-width:600px){article{padding:18px 16px 50px}.source{padding:14px 10px}.gutter{padding-top:14px;padding-bottom:14px}}
@@ -22,8 +22,8 @@ html[data-fbrowse-expanded]>body>#previewHeader{display:none}
 #diagnosticTooltip{position:fixed;z-index:11;pointer-events:none;max-width:min(440px,calc(100vw - 16px));max-height:min(40vh,240px);overflow:hidden;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);box-shadow:0 4px 16px #0003;white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;line-height:1.5}
 @media(prefers-color-scheme:dark){.diagnostic-underline{filter:brightness(1.6)}}
 </style></head><body data-preview-width="readable">
-<header id="previewHeader"><span id="info">텍스트를 불러오는 중…</span><button id="mode" hidden aria-pressed="false">원문 보기</button><button id="previewWidth" hidden aria-label="미리보기 전체 너비" aria-pressed="false" title="읽기 너비 (최대 1000px) · 전체 너비로 전환">전체 너비</button><button id="wrap" aria-pressed="true" title="긴 줄을 화면 너비에 맞춰 자동 줄바꿈">자동 줄바꿈</button><span id="diagnosticsControls" hidden><button id="diagnosticsEnabled" aria-pressed="true" title="실시간 검사 끄기">검사 켜짐</button><button id="diagnosticsToggle" aria-expanded="false" aria-controls="diagnosticsPanel">문제</button><span id="diagnosticsStatus" role="status" aria-live="polite"></span><button id="diagnosticsRetry" title="현재 파일 다시 검사">재검사</button></span><span id="dirty" role="status"></span><button id="save" disabled title="저장 · Ctrl/Cmd+S">저장</button><button id="reload" hidden>디스크에서 다시 불러오기</button><button id="copy">복사</button><a id="raw" target="_blank" rel="noopener">원본 ↗</a><section id="diagnosticsPanel" aria-label="현재 파일 문제" hidden><ul id="diagnosticsList"></ul></section></header>
-<p id="notice" hidden role="status"></p><div class="source-shell wrap" id="source"><pre class="gutter" id="lines" aria-hidden="true"></pre><div class="source-area"><pre class="source" aria-hidden="true"><code id="code"></code><span id="sourceEnd" aria-hidden="true">&#8203;</span></pre><textarea id="editor" aria-label="파일 원문 편집" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="soft" readonly></textarea></div></div><article id="markdown" hidden></article><div id="htmlViewport" hidden><iframe id="htmlPreview" title="HTML 미리보기" sandbox="allow-same-origin" hidden></iframe></div>
+<header id="previewHeader"><span id="info">Loading text…</span><button id="mode" hidden aria-pressed="false">Source</button><button id="previewWidth" hidden aria-label="Full preview width" aria-pressed="false" title="Reading width (up to 1000px) · Switch to full width">Full Width</button><button id="wrap" aria-pressed="true" title="Wrap long lines to the viewport width">Word Wrap</button><span id="diagnosticsControls" hidden><button id="diagnosticsEnabled" aria-pressed="true" title="Turn off live diagnostics">Diagnostics On</button><button id="diagnosticsToggle" aria-expanded="false" aria-controls="diagnosticsPanel">Problems</button><span id="diagnosticsStatus" role="status" aria-live="polite"></span><button id="diagnosticsRetry" title="Check the current file again">Recheck</button></span><span id="dirty" role="status"></span><button id="save" disabled title="Save · Ctrl/Cmd+S">Save</button><button id="reload" hidden>Reload from Disk</button><button id="copy">Copy</button><a id="raw" target="_blank" rel="noopener">Raw ↗</a><section id="diagnosticsPanel" aria-label="Current File Problems" hidden><ul id="diagnosticsList"></ul></section></header>
+<p id="notice" hidden role="status"></p><div class="source-shell wrap" id="source"><pre class="gutter" id="lines" aria-hidden="true"></pre><div class="source-area"><pre class="source" aria-hidden="true"><code id="code"></code><span id="sourceEnd" aria-hidden="true">&#8203;</span></pre><textarea id="editor" aria-label="Edit file source" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="soft" readonly></textarea></div></div><article id="markdown" hidden></article><div id="htmlViewport" hidden><iframe id="htmlPreview" title="HTML Preview" sandbox="allow-same-origin" hidden></iframe></div>
 <div id="diagnosticDecorations" aria-hidden="true"></div><div id="diagnosticTooltip" role="tooltip" hidden></div>
 <script>
 'use strict';
@@ -43,10 +43,10 @@ function configurePreviewWidth(markdown){
 }
 function applyPreviewWidth(){
   document.body.dataset.previewWidth=previewWidth;
-  $('previewWidth').textContent=previewWidth==='full'?'읽기 너비':'전체 너비';
-  $('previewWidth').setAttribute('aria-label',previewWidth==='full'?'미리보기 읽기 너비':'미리보기 전체 너비');
+  $('previewWidth').textContent=previewWidth==='full'?'Reading Width':'Full Width';
+  $('previewWidth').setAttribute('aria-label',previewWidth==='full'?'Preview reading width':'Full preview width');
   $('previewWidth').setAttribute('aria-pressed',String(previewWidth==='full'));
-  $('previewWidth').title=previewWidth==='full'?'전체 너비 · 읽기 너비로 전환':'읽기 너비 (최대 1000px) · 전체 너비로 전환';
+  $('previewWidth').title=previewWidth==='full'?'Full width · Switch to reading width':'Reading width (up to 1000px) · Switch to full width';
 }
 configurePreviewWidth(/\.(md|markdown|mdown)$/i.test(path));
 $('previewWidth').onclick=()=>{previewWidth=previewWidth==='full'?'readable':'full';applyPreviewWidth();try{localStorage.setItem(previewWidthKey,previewWidth);}catch{}};
@@ -54,7 +54,7 @@ const filePrefix='/roots/'+encodeURIComponent(root)+'/files/';
 let fileURL=filePrefix+path.split('/').map(encodeURIComponent).join('/');
 let data=null,rendered=false,sourceMode=false,lineStarts=[],lineNumberFrame=0,slideView=false,marpDocument=false,pendingMarkdownAnchor=null;
 const markdownLinks=new WeakMap();
-const slideMode=document.createElement('button');slideMode.id='slideMode';slideMode.textContent='슬라이드 보기';slideMode.hidden=true;slideMode.setAttribute('aria-pressed','false');$('previewWidth').before(slideMode);
+const slideMode=document.createElement('button');slideMode.id='slideMode';slideMode.textContent='Slide View';slideMode.hidden=true;slideMode.setAttribute('aria-pressed','false');$('previewWidth').before(slideMode);
 slideMode.onclick=()=>{slideView=!slideView;renderHTML();showMode();if(slideView)$('htmlPreview').focus();};
 window.addEventListener('blur',()=>{if(document.activeElement===$('htmlPreview'))notifyFocus();});
 const session=new URLSearchParams(location.search).get('editorSession')||'',editor=$('editor');
@@ -65,8 +65,8 @@ let diagnosticsActive=parent===window,diagnosticsTimer=0,diagnosticsGeneration=0
 const diagnosticsPanel=$('diagnosticsPanel');document.body.append(diagnosticsPanel);
 diagnosticsPanel.setAttribute('role','region');diagnosticsPanel.setAttribute('aria-labelledby','diagnosticsHeading');
 const diagnosticsHeading=document.createElement('div');diagnosticsHeading.className='diagnostics-panel-heading';
-const diagnosticsTitle=document.createElement('h2');diagnosticsTitle.id='diagnosticsHeading';diagnosticsTitle.textContent='현재 파일 문제';
-const diagnosticsClose=document.createElement('button');diagnosticsClose.id='diagnosticsClose';diagnosticsClose.type='button';diagnosticsClose.textContent='×';diagnosticsClose.setAttribute('aria-label','문제 닫기');
+const diagnosticsTitle=document.createElement('h2');diagnosticsTitle.id='diagnosticsHeading';diagnosticsTitle.textContent='Current File Problems';
+const diagnosticsClose=document.createElement('button');diagnosticsClose.id='diagnosticsClose';diagnosticsClose.type='button';diagnosticsClose.textContent='×';diagnosticsClose.setAttribute('aria-label','Close problems');
 diagnosticsHeading.append(diagnosticsTitle,diagnosticsClose);diagnosticsPanel.prepend(diagnosticsHeading);
 let diagnosticFrame=0,diagnosticHoverFrame=0,diagnosticHoverPoint=null,diagnosticRects=[],diagnosticRanges=[],diagnosticNodes=[];
 function hideDiagnosticTooltip(){cancelAnimationFrame(diagnosticHoverFrame);diagnosticHoverFrame=0;diagnosticHoverPoint=null;$('diagnosticTooltip').hidden=true;editor.removeAttribute('aria-describedby');}
@@ -85,7 +85,7 @@ function positionDiagnosticsPanel(){
 diagnosticsClose.onclick=()=>closeDiagnosticsPanel(true);
 document.addEventListener('pointerdown',event=>{hideDiagnosticTooltip();if(!diagnosticsPanel.hidden&&!diagnosticsPanel.contains(event.target)&&!$('diagnosticsToggle').contains(event.target))closeDiagnosticsPanel();},true);
 document.addEventListener('keydown',event=>{hideDiagnosticTooltip();if(event.key==='Escape'&&!diagnosticsPanel.hidden){event.preventDefault();event.stopImmediatePropagation();closeDiagnosticsPanel(true);}},true);
-function diagnosticMessage(item){return (item.severity==='error'?'오류':item.severity==='warning'?'경고':'정보')+' · '+(item.code?item.code+' · ':'')+item.message;}
+function diagnosticMessage(item){return (item.severity==='error'?'Error':item.severity==='warning'?'Warning':'Info')+' · '+(item.code?item.code+' · ':'')+item.message;}
 // Checker columns count Unicode codepoints; DOM ranges and textarea selection use UTF16.
 function diagnosticOffset(line,column,cache){
   const index=Math.max(0,Math.min(lineStarts.length-1,line-1));let entry=cache.get(index);
@@ -175,11 +175,11 @@ function clearDiagnostics(){diagnostics=[];diagnosticRanges=[];diagnosticRects=[
 function diagnosticStatus(message){$('diagnosticsStatus').textContent=message;$('diagnosticsStatus').title=message;}
 function scheduleDiagnostics(){
   cancelDiagnostics();clearDiagnostics();const language=diagnosticsLanguage();$('diagnosticsControls').hidden=!language;
-  $('diagnosticsEnabled').setAttribute('aria-pressed',String(diagnosticsEnabled));$('diagnosticsEnabled').textContent=diagnosticsEnabled?'검사 켜짐':'검사 꺼짐';$('diagnosticsEnabled').title=diagnosticsEnabled?'실시간 검사 끄기':'실시간 검사 켜기';$('diagnosticsRetry').disabled=!diagnosticsAllowed();
+  $('diagnosticsEnabled').setAttribute('aria-pressed',String(diagnosticsEnabled));$('diagnosticsEnabled').textContent=diagnosticsEnabled?'Diagnostics On':'Diagnostics Off';$('diagnosticsEnabled').title=diagnosticsEnabled?'Turn off live diagnostics':'Turn on live diagnostics';$('diagnosticsRetry').disabled=!diagnosticsAllowed();
   if(!language){$('diagnosticsPanel').hidden=true;$('diagnosticsToggle').setAttribute('aria-expanded','false');return;}
-  if(!diagnosticsAllowed()){diagnosticStatus(!diagnosticsEnabled?'검사 꺼짐':!data?.editable?'읽기 전용':recoveryBlocked?'저장 기준 확인 필요':diagnosticsComposing?'입력 중…':'검사 대기');return;}
-  if(new TextEncoder().encode(editor.value).byteLength>512*1024){diagnosticStatus('검사 생략 · 최대 512 KiB');return;}
-  diagnosticStatus('검사 대기…');diagnosticsTimer=setTimeout(runDiagnostics,800);
+  if(!diagnosticsAllowed()){diagnosticStatus(!diagnosticsEnabled?'Diagnostics Off':!data?.editable?'Read Only':recoveryBlocked?'Save baseline needs verification':diagnosticsComposing?'Composing…':'Waiting for diagnostics');return;}
+  if(new TextEncoder().encode(editor.value).byteLength>512*1024){diagnosticStatus('Diagnostics skipped · Maximum 512 KiB');return;}
+  diagnosticStatus('Waiting for diagnostics…');diagnosticsTimer=setTimeout(runDiagnostics,800);
 }
 function applyDiagnosticMarkers(){
   const gutter=$('lines');for(const label of gutter.querySelectorAll('[data-diagnostic-severity]')){delete label.dataset.diagnosticSeverity;label.removeAttribute('title');}
@@ -202,27 +202,27 @@ function revealDiagnostic(item){
 }
 function renderDiagnostics(result){
   diagnostics=Array.isArray(result.diagnostics)?result.diagnostics.slice(0,200).filter(item=>Number.isInteger(item.line)&&item.line>0&&Number.isInteger(item.column)&&item.column>0&&['error','warning','info'].includes(item.severity)&&typeof item.message==='string'):[];
-  const fragment=document.createDocumentFragment();for(const item of diagnostics){const row=document.createElement('li'),button=document.createElement('button');button.type='button';button.className='diagnostic-'+item.severity;button.textContent=item.line+':'+item.column+' · '+(item.severity==='error'?'오류':item.severity==='warning'?'경고':'정보')+' · '+(item.code?item.code+' · ':'')+item.message;button.onclick=()=>revealDiagnostic(item);row.append(button);fragment.append(row);}$('diagnosticsList').replaceChildren(fragment);applyDiagnosticMarkers();
-  const checker=({ruff:'Ruff',chktex:'ChkTeX',shellcheck:'ShellCheck',babel:'Babel parser',json:'JSON parser',yaml:'YAML parser'})[result.checker]||'문법 검사';
-  if(result.status==='ok'){const errors=diagnostics.filter(item=>item.severity==='error').length,warnings=diagnostics.filter(item=>item.severity==='warning').length;diagnosticStatus(checker+' · 오류 '+errors+' · 경고 '+warnings+(diagnostics.some(item=>item.severity==='info')?' · 정보 '+diagnostics.filter(item=>item.severity==='info').length:''));}
-  else{const statuses={unavailable:'사용 불가',unsupported:'지원하지 않는 파일',skipped:'검사 생략',busy:'검사 중 · 재검사 가능'};diagnosticStatus(checker+' · '+(statuses[result.status]||'검사 실패')+(result.message?' · '+result.message:''));}
-  if(!diagnostics.length){const row=document.createElement('li');row.textContent=result.status==='ok'?'발견된 문제가 없습니다.':$('diagnosticsStatus').textContent;$('diagnosticsList').append(row);}cacheDiagnosticRanges();positionDiagnosticsPanel();
+  const fragment=document.createDocumentFragment();for(const item of diagnostics){const row=document.createElement('li'),button=document.createElement('button');button.type='button';button.className='diagnostic-'+item.severity;button.textContent=item.line+':'+item.column+' · '+(item.severity==='error'?'Error':item.severity==='warning'?'Warning':'Info')+' · '+(item.code?item.code+' · ':'')+item.message;button.onclick=()=>revealDiagnostic(item);row.append(button);fragment.append(row);}$('diagnosticsList').replaceChildren(fragment);applyDiagnosticMarkers();
+  const checker=({ruff:'Ruff',chktex:'ChkTeX',shellcheck:'ShellCheck',babel:'Babel parser',json:'JSON parser',yaml:'YAML parser'})[result.checker]||'Syntax checker';
+  if(result.status==='ok'){const errors=diagnostics.filter(item=>item.severity==='error').length,warnings=diagnostics.filter(item=>item.severity==='warning').length;diagnosticStatus(checker+' · Errors: '+errors+' · Warnings: '+warnings+(diagnostics.some(item=>item.severity==='info')?' · Info: '+diagnostics.filter(item=>item.severity==='info').length:''));}
+  else{const statuses={unavailable:'Unavailable',unsupported:'Unsupported file',skipped:'Diagnostics skipped',busy:'Checking · Recheck available'};diagnosticStatus(checker+' · '+(statuses[result.status]||'Diagnostics failed')+(result.message?' · '+result.message:''));}
+  if(!diagnostics.length){const row=document.createElement('li');row.textContent=result.status==='ok'?'No problems found.':$('diagnosticsStatus').textContent;$('diagnosticsList').append(row);}cacheDiagnosticRanges();positionDiagnosticsPanel();
 }
 async function runDiagnostics(){
   diagnosticsTimer=0;if(!diagnosticsAllowed())return;
   const generation=diagnosticsGeneration,binding={root,path,text:editor.value,version:data.version},controller=new AbortController();diagnosticsController=controller;
   const requestId=(globalThis.crypto?.randomUUID?.()||Date.now().toString(36)+'-'+generation),current=()=>generation===diagnosticsGeneration&&diagnosticsController===controller&&!controller.signal.aborted&&diagnosticsAllowed()&&root===binding.root&&path===binding.path&&data.version===binding.version&&editor.value===binding.text;
-  let timedOut=false;const timeout=setTimeout(()=>{timedOut=true;controller.abort();},12000);diagnosticStatus('검사 중…');
+  let timedOut=false;const timeout=setTimeout(()=>{timedOut=true;controller.abort();},12000);diagnosticStatus('Checking…');
   try{
     await tokenReady;if(!current())return;
-    if(!token)throw Error('검사 연결을 준비하지 못했습니다.');
+    if(!token)throw Error('Could not prepare the diagnostics connection.');
     const response=await fetch('/api/diagnostics',{method:'POST',headers:{'Content-Type':'application/json','X-Fbrowse-Token':token},body:JSON.stringify({root:binding.root,path:binding.path,text:binding.text,expected_version:binding.version,request_id:requestId}),signal:controller.signal});
     const result=await response.json();if(!current())return;
-    if(!response.ok)throw Error(result.error||'검사 요청에 실패했습니다.');
+    if(!response.ok)throw Error(result.error||'Diagnostics request failed.');
     const language=diagnosticsLanguage(),languageMatches=language==='shell'?['shell','sh','bash','dash','ksh'].includes(result.language):result.language===language;
-    if(result.root_id!==binding.root||result.path!==binding.path||result.request_id!==requestId||!languageMatches)throw Error('검사 응답이 일치하지 않습니다.');
+    if(result.root_id!==binding.root||result.path!==binding.path||result.request_id!==requestId||!languageMatches)throw Error('Diagnostics response does not match.');
     renderDiagnostics(result);
-  }catch(error){if(generation===diagnosticsGeneration&&diagnosticsController===controller&&(timedOut||!controller.signal.aborted)){clearDiagnostics();diagnosticStatus(timedOut?'검사 시간 초과 · 재검사 가능':'검사 실패 · '+error.message);}}
+  }catch(error){if(generation===diagnosticsGeneration&&diagnosticsController===controller&&(timedOut||!controller.signal.aborted)){clearDiagnostics();diagnosticStatus(timedOut?'Diagnostics timed out · Recheck available':'Diagnostics failed · '+error.message);}}
   finally{clearTimeout(timeout);if(diagnosticsController===controller)diagnosticsController=null;}
 }
 $('diagnosticsToggle').onclick=()=>{const open=diagnosticsPanel.hidden;diagnosticsPanel.hidden=!open;$('diagnosticsToggle').setAttribute('aria-expanded',String(open));if(open)positionDiagnosticsPanel();};
@@ -252,14 +252,14 @@ window.fbrowseEditor={root,get path(){return path;},session,get version(){return
     if(diagnosticsActive!==binding.active){diagnosticsActive=binding.active;scheduleDiagnostics();}return true;
   },
   async beginMutation(binding){
-    if(!data||!bindingMatches(binding)||saving||mutationLock)throw Error('편집기가 준비되지 않았거나 저장 중입니다. 완료 후 다시 시도하세요.');
+    if(!data||!bindingMatches(binding)||saving||mutationLock)throw Error('The editor is not ready or is saving. Try again when it finishes.');
     const lock={...binding};mutationLock=lock;mutationControls();await tabWrite;
-    if(mutationLock!==lock||!bindingMatches(binding))throw Error('편집 대상이 변경되었습니다.');return true;
+    if(mutationLock!==lock||!bindingMatches(binding))throw Error('The editing target changed.');return true;
   },
   async retarget(binding){
-    if(!mutationLock||binding.root!==root||binding.session!==session||binding.old_path!==path||binding.old_path!==mutationLock.path||binding.old_version!==(data?.version||null)||binding.old_version!==mutationLock.version||!binding.path||binding.path.startsWith('/')||binding.path.split('/').some(part=>!part||part==='.'||part==='..')||/[\\\0]/.test(binding.path))throw Error('이름 변경 편집기 응답이 일치하지 않습니다.');
+    if(!mutationLock||binding.root!==root||binding.session!==session||binding.old_path!==path||binding.old_path!==mutationLock.path||binding.old_version!==(data?.version||null)||binding.old_version!==mutationLock.version||!binding.path||binding.path.startsWith('/')||binding.path.split('/').some(part=>!part||part==='.'||part==='..')||/[\\\0]/.test(binding.path))throw Error('The rename editor response does not match.');
     path=binding.path;fileURL=filePrefix+path.split('/').map(encodeURIComponent).join('/');data.path=path;data.version=typeof binding.version==='string'&&binding.version?binding.version:null;
-    recoveryBlocked=!data.version;$('raw').href=fileURL;document.title=path.split('/').pop()+' · 편집';
+    recoveryBlocked=!data.version;$('raw').href=fileURL;document.title=path.split('/').pop()+' · Editor';
     const url=new URL(location.href);url.searchParams.set('path',path);history.replaceState(history.state,'',url);
     const basename=path.split('/').pop().toLowerCase(),extension=basename.includes('.')?basename.split('.').pop():'';
     const languages={python:'py pyw',javascript:'js mjs cjs jsx',typescript:'ts tsx',bash:'sh bash zsh',json:'json jsonl',yaml:'yaml yml',ini:'toml ini cfg',css:'css',xml:'xml html htm',c:'c h',cpp:'cc cpp hpp',java:'java',go:'go',rust:'rs',ruby:'rb',php:'php',sql:'sql',latex:'tex sty cls',markdown:'md markdown mdown',diff:'diff patch',r:'r',swift:'swift',kotlin:'kt'};
@@ -267,11 +267,11 @@ window.fbrowseEditor={root,get path(){return path;},session,get version(){return
     data.markdown=['md','markdown','mdown'].includes(extension);data.html=['html','htm'].includes(extension);previewReady=false;rendered=false;
     // The live textarea and savedText are deliberately untouched, preserving native undo.
     renderSource();await preparePreview();
-    if(recoveryBlocked){notice('이름은 변경되었지만 저장 기준을 확인할 수 없습니다. '+(binding.reason||'')+' · 수정 내용을 복사한 뒤 디스크에서 다시 불러오세요.');$('reload').hidden=false;}
-    else notice('이름을 변경했습니다. 수정 내용은 유지됩니다.');
+    if(recoveryBlocked){notice('Renamed, but the save baseline could not be verified. '+(binding.reason||'')+' · Copy your changes, then reload from disk.');$('reload').hidden=false;}
+    else notice('Renamed. Your changes are preserved.');
     mutationControls();notify('fbrowse-editor-state');return true;
   },
-  markUncertain(binding){if(!bindingMatches(binding))return false;recoveryBlocked=true;notice(binding.reason||'작업 결과를 확인할 수 없습니다. 수정 내용을 복사한 뒤 디스크에서 다시 불러오세요.');$('reload').hidden=false;mutationControls();return true;},
+  markUncertain(binding){if(!bindingMatches(binding))return false;recoveryBlocked=true;notice(binding.reason||'The operation result could not be verified. Copy your changes, then reload from disk.');$('reload').hidden=false;mutationControls();return true;},
   endMutation(binding){if(!mutationLock||binding.root!==root||binding.session!==session||binding.path!==mutationLock.path||binding.version!==mutationLock.version)return false;mutationLock=null;mutationControls();return true;}
 };
 function notify(type){if(parent!==window)parent.postMessage({type,root,path,session,dirty:isDirty()},location.origin);}
@@ -283,7 +283,7 @@ window.addEventListener('message',event=>{if(slideView&&!sourceMode&&event.sourc
 document.addEventListener('pointerdown',notifyFocus,true);
 document.addEventListener('focusin',notifyFocus,true);
 window.addEventListener('focus',notifyFocus);
-function updateDirty(){const dirty=isDirty();$('dirty').textContent=dirty?'수정됨':'';$('save').disabled=!data?.editable||saving||Boolean(mutationLock)||recoveryBlocked||!dirty;notify('fbrowse-editor-state');}
+function updateDirty(){const dirty=isDirty();$('dirty').textContent=dirty?'Modified':'';$('save').disabled=!data?.editable||saving||Boolean(mutationLock)||recoveryBlocked||!dirty;notify('fbrowse-editor-state');}
 function currentText(){return editor.value;}
 async function post(url,body){
   await tokenReady;
@@ -291,18 +291,18 @@ async function post(url,body){
   const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),15000);
   try{
     const response=await fetch(url,{method:'POST',keepalive:url==='/api/view-state',headers:{'Content-Type':'application/json','X-Fbrowse-Token':token},body:JSON.stringify(body),signal:controller.signal});
-    const result=await response.json();if(!response.ok)throw Error(result.error||'요청에 실패했습니다.');
-    if(result.root_id!==root||result.path!==path)throw Error('파일 응답이 일치하지 않습니다.');return result;
+    const result=await response.json();if(!response.ok)throw Error(result.error||'Request failed.');
+    if(result.root_id!==root||result.path!==path)throw Error('File response does not match.');return result;
   }finally{clearTimeout(timeout);}
 }
 async function save(){
   if(!data?.editable||saving||mutationLock||recoveryBlocked||!isDirty())return;
-  const text=currentText(),restoreFocus=sourceMode&&document.activeElement===$('save');saving=true;updateDirty();notice('저장 중…');
-  try{const result=await post('/api/save',{root,path,text,expected_version:data.version});data.version=result.version;savedText=text;$('reload').hidden=true;notice('저장했습니다.');notify('fbrowse-editor-saved');scheduleDiagnostics();}
-  catch(error){notice('저장하지 못했습니다: '+error.message+' · 수정 내용을 복사하거나 디스크에서 다시 불러오세요.');$('reload').hidden=false;}
+  const text=currentText(),restoreFocus=sourceMode&&document.activeElement===$('save');saving=true;updateDirty();notice('Saving…');
+  try{const result=await post('/api/save',{root,path,text,expected_version:data.version});data.version=result.version;savedText=text;$('reload').hidden=true;notice('Saved.');notify('fbrowse-editor-saved');scheduleDiagnostics();}
+  catch(error){notice('Could not save: '+error.message+' · Copy your changes or reload from disk.');$('reload').hidden=false;}
   finally{saving=false;updateDirty();if(restoreFocus&&sourceMode&&[document.body,$('save')].includes(document.activeElement))editor.focus({preventScroll:true});}
 }
-function reload(){if(mutationLock)return;if(isDirty()&&!confirm('저장하지 않은 변경사항을 버리고 디스크에서 다시 불러올까요?'))return;abandoned=true;cancelDiagnostics();updateDirty();location.reload();}
+function reload(){if(mutationLock)return;if(isDirty()&&!confirm('Discard unsaved changes and reload from disk?'))return;abandoned=true;cancelDiagnostics();updateDirty();location.reload();}
 $('save').onclick=save;$('reload').onclick=reload;
 function followMarkdownLink(event){
   const link=event.target.closest?.('a[href]'),destination=link&&markdownLinks.get(link);
@@ -389,7 +389,7 @@ editor.addEventListener('input',()=>{if(!data)return;data.text=currentText();upd
 function renderSource(){
   if(!data)return;data.text=currentText();const text=data.text,code=$('code');code.textContent=text;highlight(code,data.language);
   lineStarts=[0];for(let index=text.indexOf('\n');index!==-1;index=text.indexOf('\n',index+1))lineStarts.push(index+1);
-  const count=lineStarts.length;$('info').textContent=(data.language||'텍스트')+' · '+data.encoding+' · '+count.toLocaleString()+'줄'+(data.editable?'':' · 읽기 전용');
+  const count=lineStarts.length;$('info').textContent=(data.language||'Text')+' · '+data.encoding+' · '+count.toLocaleString('en')+(count===1?' line':' lines')+(data.editable?'':' · Read Only');
   $('lines').hidden=count>20000;
   if(count<=20000&&$('lines').children.length!==count){const fragment=document.createDocumentFragment();for(let index=0;index<count;index++){const label=document.createElement('span');label.textContent=index+1;fragment.append(label);}$('lines').replaceChildren(fragment);}
   syncEditorSize();scheduleLineNumbers();applyDiagnosticMarkers();cacheDiagnosticRanges();
@@ -400,17 +400,17 @@ $('raw').href=fileURL;
 function syncNotice(){const node=$('notice');node.hidden=!node.textContent||(node.dataset.sourceOnly==='true'&&previewReady&&!sourceMode);}
 function notice(text,{sourceOnly=false}={}){$('notice').textContent=text;$('notice').dataset.sourceOnly=String(sourceOnly);syncNotice();}
 const libraries=new Map();
-function library(name){if(!libraries.has(name))libraries.set(name,new Promise((resolve,reject)=>{const script=document.createElement('script'),timer=setTimeout(()=>reject(Error('뷰어 구성 요소 응답 시간이 초과되었습니다.')),10000);script.src='/_text_assets/'+name+'.js';script.onload=()=>{clearTimeout(timer);resolve();};script.onerror=()=>{clearTimeout(timer);reject(Error('뷰어 구성 요소를 준비하지 못했습니다'));};document.head.append(script);}));return libraries.get(name);}
+function library(name){if(!libraries.has(name))libraries.set(name,new Promise((resolve,reject)=>{const script=document.createElement('script'),timer=setTimeout(()=>reject(Error('Viewer component timed out.')),10000);script.src='/_text_assets/'+name+'.js';script.onload=()=>{clearTimeout(timer);resolve();};script.onerror=()=>{clearTimeout(timer);reject(Error('Could not load the viewer component'));};document.head.append(script);}));return libraries.get(name);}
 async function mathLibraries(){
-  const script=src=>new Promise((resolve,reject)=>{const node=document.createElement('script');node.src=src;node.onload=resolve;node.onerror=()=>reject(Error('수식 구성 요소를 준비하지 못했습니다'));document.head.append(node);});
-  const style=new Promise((resolve,reject)=>{const node=document.createElement('link');node.rel='stylesheet';node.href='/_math_assets/katex.min.css';node.onload=resolve;node.onerror=()=>reject(Error('수식 스타일을 준비하지 못했습니다'));document.head.append(node);});
+  const script=src=>new Promise((resolve,reject)=>{const node=document.createElement('script');node.src=src;node.onload=resolve;node.onerror=()=>reject(Error('Could not load the math component'));document.head.append(node);});
+  const style=new Promise((resolve,reject)=>{const node=document.createElement('link');node.rel='stylesheet';node.href='/_math_assets/katex.min.css';node.onload=resolve;node.onerror=()=>reject(Error('Could not load the math styles'));document.head.append(node);});
   await Promise.all([script('/_app_assets/markdown-math.js'),script('/_math_assets/katex.min.js'),style]);
 }
 function showMode(){
   syncNotice();
   const preview=previewReady&&!sourceMode;$('markdown').hidden=!(preview&&data.markdown);$('htmlPreview').hidden=!(preview&&data.html);$('htmlViewport').hidden=!(preview&&data.html);$('previewWidth').hidden=!preview;$('source').hidden=preview;$('wrap').hidden=preview;
   slideMode.hidden=!(preview&&data.html&&marpDocument);if(preview&&data.html&&slideView)$('previewWidth').hidden=true;
-  $('mode').textContent=preview?'원문 보기':'미리보기';$('mode').setAttribute('aria-pressed',String(sourceMode));
+  $('mode').textContent=preview?'Source':'Preview';$('mode').setAttribute('aria-pressed',String(sourceMode));
   if(!preview){syncEditorSize();scheduleLineNumbers();}scheduleDiagnosticGeometry();
 }
 function highlight(node,language){
@@ -494,13 +494,13 @@ function renderMarkdown(mathReady){
     const language=[...code.classList].find(c=>c.startsWith('language-'))?.slice(9);
     const text=code.textContent,pre=code.parentElement,block=document.createElement('div'),tools=document.createElement('div'),label=document.createElement('span'),copy=document.createElement('button');
     block.className='markdown-code-block';tools.className='code-block-tools';label.className='code-block-language';label.textContent=language||'text';label.title=label.textContent;
-    copy.type='button';copy.className='code-block-copy';copy.textContent='복사';copy.setAttribute('aria-label',label.textContent+' 코드 블록 복사');copy.setAttribute('aria-live','polite');
+    copy.type='button';copy.className='code-block-copy';copy.textContent='Copy';copy.setAttribute('aria-label',label.textContent+' code block: Copy');copy.setAttribute('aria-live','polite');
     let busy=false,reset;
-    copy.onclick=async()=>{if(busy)return;busy=true;clearTimeout(reset);try{await copyCodeText(text);copy.textContent='복사됨';copy.title='코드를 복사했습니다.';}catch{copy.textContent='복사 실패';copy.title='코드를 선택한 뒤 Ctrl+C로 복사해 주세요.';}finally{busy=false;reset=setTimeout(()=>{if(copy.isConnected){copy.textContent='복사';copy.title='';}},1500);}};
+    copy.onclick=async()=>{if(busy)return;busy=true;clearTimeout(reset);try{await copyCodeText(text);copy.textContent='Copied';copy.title='Code copied.';}catch{copy.textContent='Copy failed';copy.title='Select the code and press Ctrl+C to copy.';}finally{busy=false;reset=setTimeout(()=>{if(copy.isConnected){copy.textContent='Copy';copy.title='';}},1500);}};
     pre.before(block);tools.append(label,copy);block.append(tools,pre);
     highlight(code,language);
   }
-  if(math&&fbrowseMath.render(article,math,katex))notice('일부 수식을 렌더링하지 못해 수식 원문으로 표시합니다.');
+  if(math&&fbrowseMath.render(article,math,katex))notice('Some formulas could not be rendered and are shown as source.');
   rendered=true;
 }
 function applyMarkdownAnchor(){
@@ -515,7 +515,7 @@ function applyMarkdownAnchor(){
 function renderHTML(){
   const doc=new DOMParser().parseFromString(currentText(),'text/html');
   marpDocument=Boolean(doc.querySelector('svg[data-marpit-svg],.marpit>section'));if(!marpDocument)slideView=false;
-  slideMode.textContent=slideView?'스크롤 보기':'슬라이드 보기';slideMode.setAttribute('aria-pressed',String(slideView));document.body.toggleAttribute('data-slide-view',slideView);
+  slideMode.textContent=slideView?'Scroll View':'Slide View';slideMode.setAttribute('aria-pressed',String(slideView));document.body.toggleAttribute('data-slide-view',slideView);
   const frame=$('htmlPreview');
   // Executable slides have an opaque origin: never combine scripts and same-origin.
   frame.setAttribute('sandbox',slideView?'allow-scripts':'allow-same-origin');frame.toggleAttribute('allowfullscreen',slideView);
@@ -531,7 +531,7 @@ function renderHTML(){
   }
   $('htmlPreview').srcdoc='<!doctype html>'+doc.documentElement.outerHTML;rendered=true;
 }
-function renderPreview(){data.text=currentText();if(data.html)renderHTML();else if(data.text.length>300000){$('markdown').textContent=data.text;$('markdown').style.whiteSpace='pre-wrap';notice('큰 파일은 전체 원문으로 표시합니다. Markdown 서식은 30만 자 이하에서 적용합니다.');}else{$('markdown').style.whiteSpace='';renderMarkdown(mathReady);}}
+function renderPreview(){data.text=currentText();if(data.html)renderHTML();else if(data.text.length>300000){$('markdown').textContent=data.text;$('markdown').style.whiteSpace='pre-wrap';notice('Large files are shown as source. Markdown formatting is available for up to 300,000 characters.');}else{$('markdown').style.whiteSpace='';renderMarkdown(mathReady);}}
 let mathLoading=null;
 async function preparePreview(){
   configurePreviewWidth(data.markdown);
@@ -539,21 +539,21 @@ async function preparePreview(){
   try{
     if(data.html)previewReady=true;
     else if(data.markdown&&data.text.length<=300000){
-      if(!mathLoading)mathLoading=Promise.race([mathLibraries(),new Promise((_,reject)=>setTimeout(()=>reject(Error('수식 구성 요소 응답 시간이 초과되었습니다.')),10000))]).then(()=>true,error=>{notice(error.message+' · 일반 Markdown으로 표시합니다.');return false;});
+      if(!mathLoading)mathLoading=Promise.race([mathLibraries(),new Promise((_,reject)=>setTimeout(()=>reject(Error('Math component timed out.')),10000))]).then(()=>true,error=>{notice(error.message+' · Showing plain Markdown.');return false;});
       [mathReady]=await Promise.all([mathLoading,library('marked'),library('purify')]);previewReady=true;
     }
     if(!(data.markdown||data.html))sourceMode=true;
     $('mode').hidden=!previewReady;if(previewReady&&!sourceMode)renderPreview();showMode();await highlighting;
-  }catch(error){previewReady=false;sourceMode=true;$('mode').hidden=true;showMode();notice(error.message+' · 원문은 그대로 읽을 수 있습니다.');}
+  }catch(error){previewReady=false;sourceMode=true;$('mode').hidden=true;showMode();notice(error.message+' · Source is still available.');}
 }
 $('htmlPreview').addEventListener('load',()=>{try{const previewWindow=$('htmlPreview').contentWindow;for(const type of ['pointerdown','focusin','focus'])previewWindow.addEventListener(type,notifyFocus,true);for(const type of ['pointermove','pointerdown'])previewWindow.addEventListener(type,notifyPreviewPointer,{passive:true});previewWindow.addEventListener('keydown',event=>{if(event.key==='Escape')document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='s'){event.preventDefault();save();}},true);}catch{}});
 $('mode').onclick=()=>{
   if(!previewReady||mutationLock)return;sourceMode=!sourceMode;if(!sourceMode)renderPreview();showMode();
   if(sourceMode)editor.focus({preventScroll:true});
-  const tab=sourceMode?'source':'preview';tabWrite=tabWrite.catch(()=>{}).then(()=>post('/api/view-state',{root,path,tab})).catch(error=>notice('보기 설정을 저장하지 못했습니다: '+error.message));
+  const tab=sourceMode?'source':'preview';tabWrite=tabWrite.catch(()=>{}).then(()=>post('/api/view-state',{root,path,tab})).catch(error=>notice('Could not save view preferences: '+error.message));
 };
 $('wrap').onclick=()=>{const wrap=$('source').classList.toggle('wrap');editor.wrap=wrap?'soft':'off';$('wrap').setAttribute('aria-pressed',String(wrap));syncEditorSize();scheduleLineNumbers();};
-$('copy').onclick=async()=>{if(!data)return;try{await navigator.clipboard.writeText(currentText());$('copy').textContent='복사됨';setTimeout(()=>$('copy').textContent='복사',1200);}catch{notice('복사하려면 원문을 선택하고 Ctrl+C를 누르세요.');}};
+$('copy').onclick=async()=>{if(!data)return;try{await navigator.clipboard.writeText(currentText());$('copy').textContent='Copied';setTimeout(()=>$('copy').textContent='Copy',1200);}catch{notice('Select the source and press Ctrl+C to copy.');}};
 (async()=>{
   try{
     const [response]=await Promise.all([fetch('/api/editor?'+new URLSearchParams({root,path}),{cache:'no-store'}),tokenReady]);data=await response.json();
@@ -563,16 +563,16 @@ $('copy').onclick=async()=>{if(!data)return;try{await navigator.clipboard.writeT
       if(!legacy.ok)throw Error(text.error||reason);
       const html=/\.(?:html?|xhtml)$/i.test(path);data={...text,root_id:root,path,html,editable:false,reason,tab:text.markdown||html?'preview':'source'};
     }
-    if(data.root_id!==root||data.path!==path)throw Error('파일 응답이 일치하지 않습니다.');
+    if(data.root_id!==root||data.path!==path)throw Error('File response does not match.');
     // Initialize once: tab switches and saves must preserve native textarea undo history.
-    document.title=path.split('/').pop()+' · 편집';editor.value=data.text;savedText=data.text;editor.readOnly=!data.editable;editor.setAttribute('aria-label',data.editable?'파일 원문 편집':'파일 원문 (읽기 전용)');
+    document.title=path.split('/').pop()+' · Editor';editor.value=data.text;savedText=data.text;editor.readOnly=!data.editable;editor.setAttribute('aria-label',data.editable?'Edit file source':'File source (read only)');
     sourceMode=initialSource||data.tab==='source'||!(data.markdown||data.html);renderSource();updateDirty();scheduleDiagnostics();
     // A newly created file starts editable without changing its stored mode preference.
     if(initialSource)editor.focus({preventScroll:true});
-    if(!data.editable&&data.reason)notice('읽기 전용: '+data.reason);
+    if(!data.editable&&data.reason)notice('Read Only: '+data.reason);
     await preparePreview();
     applyMarkdownAnchor();
-    if(data.text.length>300000)notice([data.reason,data.html?'큰 HTML 파일의 원문은 문법 색상 없이 표시합니다.':'큰 파일은 전체 원문으로 표시합니다. 문법 색상과 Markdown 서식은 30만 자 이하에서 적용합니다.'].filter(Boolean).join(' · '),{sourceOnly:data.html});
-  }catch(error){$('info').textContent=data?.text!==undefined?'원문 보기':'미리보기 불가';notice(error.message+(data?.text!==undefined?' · 원문은 그대로 읽을 수 있습니다.':''));}
+    if(data.text.length>300000)notice([data.reason,data.html?'Large HTML source is shown without syntax highlighting.':'Large files are shown as source. Syntax highlighting and Markdown formatting are available for up to 300,000 characters.'].filter(Boolean).join(' · '),{sourceOnly:data.html});
+  }catch(error){$('info').textContent=data?.text!==undefined?'Source':'Preview unavailable';notice(error.message+(data?.text!==undefined?' · Source is still available.':''));}
 })();
 </script></body></html>

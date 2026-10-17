@@ -62,7 +62,7 @@ async function until(check, label) { for (let i = 0; i < 180; i++) { if (await c
     for (const r of rects) assert(painted.some(p => p.severity === severity && Math.abs(p.x-r.x)<2 && Math.abs(p.width-r.width)<3 && Math.abs(p.y-r.bottom)<5), 'wavy ' + severity + ' follows actual glyph range ' + JSON.stringify({ r, painted }));
     assert(painted.filter(p => p.severity === severity).every(p => p.background.includes('svg') && p.background.includes(severity === 'error' ? 'cf222e' : '9a6700') && p.repeat === 'repeat-x'), 'correct red/yellow repeating wave asset');
   }
-  await code.locator('#diagnosticsStatus').filter({ hasText: /오류 0 · 경고 0/ }).waitFor();
+  await code.locator('#diagnosticsStatus').filter({ hasText: /Errors: 0 · Warnings: 0/ }).waitFor();
   const identity = await tab('decoration.py').getAttribute('data-tab');
   await page.evaluate(id => { const f = document.querySelector('iframe[data-tab="'+id+'"]'); window.decorationIdentity = [f, f.contentWindow, f.contentDocument, f.contentDocument.querySelector('#editor')]; }, identity);
   console.log('Decoration: physical hover through textarea, overlapping real Ruff errors/warnings, Unicode and native editing');
@@ -114,7 +114,7 @@ async function until(check, label) { for (let i = 0; i < 180; i++) { if (await c
   const begin = multiline.indexOf('(' , multiline.indexOf('\n')), end = multiline.lastIndexOf(')')+1;
   await assertWave(begin, end, 'warning'); await hoverOffset(multiline.indexOf('두번째'), ['B018']);
   const tex = await open('decoration.tex'); code = tex;
-  await code.locator('#diagnosticsStatus').filter({ hasText: /오류 0 · 경고 0/ }).waitFor();
+  await code.locator('#diagnosticsStatus').filter({ hasText: /Errors: 0 · Warnings: 0/ }).waitFor();
   const texText = '한글😀\tHello world...\n'; issues = await replace(texText); const dots = issues.find(x => x.code === '11'); assert(dots && dots.severity === 'warning');
   await assertWave(texText.indexOf('...'), texText.indexOf('...')+3, 'warning'); await hoverOffset(texText.indexOf('...'), ['11']);
   const unclosed = '\\begin{document}\n$x\n\\end{document}\n';

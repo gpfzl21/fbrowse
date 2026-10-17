@@ -23,12 +23,12 @@ const {fixture,dragTab,groupPoint,gate}=require('./workspace-test-helper.cjs');
   await page.evaluate(()=>{window.identities=state.tabs.map(t=>({frame:t.frame,doc:t.frame.contentDocument,editor:t.frame.contentDocument.querySelector('#editor'),session:t.frame.contentWindow.fbrowseEditor?.session}));});
   const identities=()=>page.evaluate(()=>identities.every(i=>i.frame.isConnected&&i.frame.contentDocument===i.doc&&i.doc.querySelector('#editor')===i.editor&&i.frame.contentWindow.fbrowseEditor?.session===i.session));
   const menu=async(file,label)=>{await tab(file).locator('.tab-activate').click({button:'right'});return page.getByRole('menuitem',{name:label,exact:true});};
-  const others='다른 탭 모두 닫기 (모든 분할)',all='모든 탭 닫기 (모든 분할)';
+  const others='Close Other Tabs (All Groups)',all='Close All Tabs (All Groups)';
   for(const label of [others,all]){
     const before=await model(),button=await menu('same.txt',label);
     assert.equal(await model(),before,'opening an inactive tab menu does not activate it');
     let dialogs=0;
-    const dismiss=dialog=>{dialogs++;assert(dialog.message().includes(label===others?'2개':'3개'));dialog.dismiss();};page.on('dialog',dismiss);
+    const dismiss=dialog=>{dialogs++;assert(dialog.message().includes(label===others?'2 files':'3 files'));dialog.dismiss();};page.on('dialog',dismiss);
     await button.click();page.off('dialog',dismiss);
     assert.equal(dialogs,1,'one whole-set confirmation');assert.equal(await model(),before,'cancel is atomic');assert(await identities());
     for(const file of Object.keys(drafts))assert.equal(await (await frame(file)).locator('#editor').inputValue(),drafts[file]);
@@ -43,7 +43,7 @@ const {fixture,dragTab,groupPoint,gate}=require('./workspace-test-helper.cjs');
   assert.equal(await model(),before);await page.keyboard.press('Escape');
   // The busy tab can itself be kept; only closing targets are guarded.
   assert(await (await menu('sample.py',others)).isEnabled());await page.keyboard.press('Escape');
-  release.release();await code.locator('#notice').filter({hasText:'저장했습니다.'}).waitFor();await page.unroute('**/api/save');
+  release.release();await code.locator('#notice').filter({hasText:'Saved.'}).waitFor();await page.unroute('**/api/save');
   // Model the filesystem lock too, including a lock acquired after opening the menu.
   const button=await menu('same.txt',others);before=await model();
   await page.evaluate(()=>state.tabs.find(t=>t.entry.path==='README.md').fsBusy=true);

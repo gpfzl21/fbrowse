@@ -103,7 +103,7 @@ const assert=require('node:assert/strict');
       assert.equal(await row.evaluate(node=>node.tagName),'DIV');
     }
     await checkIcon(page.locator('#folderEntries [data-name="empty"]'),'folder','.folder-icon');
-    await page.locator('#folderEntries [data-name="empty"]').click();await page.locator('#folderEntries .note').filter({hasText:'빈 폴더'}).waitFor();
+    await page.locator('#folderEntries [data-name="empty"]').click();await page.locator('#folderEntries .note').filter({hasText:'This folder is empty'}).waitFor();
     await page.locator('#cancelFolder').click();await page.locator('#closeRoots').click();await page.locator('#home').click();
     assert.deepEqual(externalRequests,[]);
     console.log('PASS: inline SVG icon types/fallback, special names, folder states, search, picker, accessibility, compact light/dark narrow sidebar; screenshots /tmp/fbrowse-icons-{light,dark}.png');
@@ -134,7 +134,7 @@ const assert=require('node:assert/strict');
         await page.locator('#folderUp').click();await page.locator('#folderEntries button[data-name="papers"]').click();await page.locator('#folderEntries [data-name="same.txt"]').waitFor();
       }
       await page.locator('#folderLabel').fill(name);await page.locator('#chooseFolder').click();
-      await page.locator('#rootMessage').filter({hasText:'저장했습니다.'}).waitFor();
+      await page.locator('#rootMessage').filter({hasText:'Saved.'}).waitFor();
       await page.locator('#closeRoots').click();
     }
     await register('논문',ready.papers);await register('실험결과',ready.results);
@@ -186,21 +186,21 @@ const assert=require('node:assert/strict');
     }
     await page.locator('#manageRoots').click();
     const record=page.locator('.root-record').filter({hasText:'논문'});
-    await record.getByRole('button',{name:'수정',exact:true}).click();
+    await record.getByRole('button',{name:'Edit',exact:true}).click();
     await page.locator('#rootLabel').fill('참고 논문');await page.locator('#rootDirectory').fill(ready.project);
-    await page.locator('#saveRoot').click();await page.locator('#rootMessage').filter({hasText:'저장했습니다.'}).waitFor();
+    await page.locator('#saveRoot').click();await page.locator('#rootMessage').filter({hasText:'Saved.'}).waitFor();
     await page.locator('#closeRoots').click();await switchRoot(papers);await openText('project');
     fs.renameSync(ready.results,ready.results+'-offline');
-    await page.locator('#refresh').click();await page.locator('#rootSelect option').filter({hasText:'연결 안 됨'}).waitFor({state:'attached'});
-    await page.locator('#rootSelect').selectOption(results);await page.locator('#status').filter({hasText:'연결 안 됨'}).waitFor({state:'attached'});
+    await page.locator('#refresh').click();await page.locator('#rootSelect option').filter({hasText:'Disconnected'}).waitFor({state:'attached'});
+    await page.locator('#rootSelect').selectOption(results);await page.locator('#status').filter({hasText:'Disconnected'}).waitFor({state:'attached'});
     await page.locator('#manageRoots').click();
     await page.locator('#browseFolder').click();
-    await page.locator('#folderError').filter({hasText:'프로젝트 폴더를 표시합니다'}).waitFor();
+    await page.locator('#folderError').filter({hasText:'Showing the project folder'}).waitFor();
     assert.equal(await page.locator('#folderLocation').inputValue(),ready.project);
     await page.locator('#cancelFolder').click();await page.locator('#closeRoots').click();
     await switchRoot('project');await openText('project');
-    await page.locator('#manageRoots').click();await page.locator('.root-record').filter({hasText:'참고 논문'}).getByRole('button',{name:'연결 제거'}).click();
-    await page.locator('#rootMessage').filter({hasText:'저장했습니다.'}).waitFor();await page.locator('#closeRoots').click();
+    await page.locator('#manageRoots').click();await page.locator('.root-record').filter({hasText:'참고 논문'}).getByRole('button',{name:'Disconnect'}).click();
+    await page.locator('#rootMessage').filter({hasText:'Saved.'}).waitFor();await page.locator('#closeRoots').click();
     assert.equal(await page.locator(`#rootSelect option[value="${papers}"]`).count(),0);
     assert.ok(fs.existsSync(ready.project+'/same.txt'));
     // Check actual highlighted glyph positions against the original logical line numbers.
@@ -275,7 +275,7 @@ const assert=require('node:assert/strict');
     await page.route('**/_math_assets/katex.min.js',route=>route.abort());
     await page.goto(ready.url+'_preview?root=project&path=math.md');
     await page.locator('#markdown h1').waitFor();
-    await page.locator('#notice').filter({hasText:'일반 Markdown으로 표시합니다'}).waitFor();
+    await page.locator('#notice').filter({hasText:'Showing plain Markdown'}).waitFor();
     assert.equal(await page.locator('#code').textContent(),fs.readFileSync(ready.project+'/math.md','utf8'));
     await page.unroute('**/_math_assets/katex.min.js');
     // Code-block controls copy only the displayed code, including whitespace and Unicode.
@@ -287,10 +287,10 @@ const assert=require('node:assert/strict');
     const blocks=page.locator('#markdown .markdown-code-block');await blocks.last().waitFor();
     assert.equal(await blocks.count(),snippets.length);assert.equal(await page.locator('#markdown>p code').count(),1);
     for(const [index,[language,text]] of snippets.entries()){
-      const block=blocks.nth(index),button=block.getByRole('button',{name:(language||'text')+' 코드 블록 복사',exact:true});
+      const block=blocks.nth(index),button=block.getByRole('button',{name:(language||'text')+' code block: Copy',exact:true});
       assert.equal(await block.locator('.code-block-language').textContent(),language||'text');
       assert.equal(await block.locator('pre code').textContent(),text+'\n');
-      await button.click();await button.filter({hasText:'복사됨'}).waitFor();
+      await button.click();await button.filter({hasText:'Copied'}).waitFor();
       assert.equal(await page.evaluate(()=>navigator.clipboard.readText()),text+'\n');
       const tools=await block.locator('.code-block-tools').boundingBox(),pre=await block.locator('pre').boundingBox();
       assert.ok(tools.y+tools.height<=pre.y+1,'controls never cover code');
@@ -314,7 +314,7 @@ const assert=require('node:assert/strict');
       await page.waitForFunction(()=>window.hljs&&data&&document.querySelector('#code').textContent===data.text);
       if(formatted&&file.endsWith('.py'))await page.locator('#code .hljs-comment').waitFor();
       else if(formatted)await page.locator('#markdown h1').waitFor();
-      else {await page.locator('#notice').filter({hasText:'30만 자 이하'}).waitFor();assert.equal(await page.locator('#code span').count(),0);assert.ok(await page.locator('#markdown').isHidden());}
+      else {await page.locator('#notice').filter({hasText:'300,000 characters'}).waitFor();assert.equal(await page.locator('#code span').count(),0);assert.ok(await page.locator('#markdown').isHidden());}
       assert.equal(await page.locator('#code').textContent(),fs.readFileSync(ready.project+'/'+file,'utf8'));
     }
     for(const [file,count] of [['gutter-limit.txt',20000],['many-lines.txt',20001]]){
