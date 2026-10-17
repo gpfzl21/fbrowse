@@ -143,7 +143,7 @@ test('filesystem HTTP contract and mutation safety', { timeout: 120_000 }, async
     assert.equal(await fs.readFile(path.join(root,result.value.path),'utf8'),'SAVED');
   }));
   await t.test('explicit-root info, all action responses and old create API remain compatible', () => fixture(async ({ root, request, info, action, app }) => {
-    assert.equal(app.info.version, '0.13.0');
+    assert.equal(app.info.version, '0.14.0');
     const made = await action('mkdir', '', { name: '文書 folder' });
     assert.equal(made.status, 201); assert.equal(made.value.entry.kind, 'directory');
     const created = await request('/api/create', { root: 'project', parent: made.value.path, name: '새 파일.txt' });
@@ -225,7 +225,7 @@ test('filesystem HTTP contract and mutation safety', { timeout: 120_000 }, async
       return original(target);
     }, async () => {
       const result = await action('delete', 'tree', { confirmed: true });
-      assert.equal(result.status, 500); assert.match(result.value.error, /Deletion stopped after removing 1 entries/);
+      assert.equal(result.status, 500); assert.equal(result.value.partial, true); assert.match(result.value.error, /Deletion stopped after removing 1 entries/);
     });
     assert.equal((await request('/api/search?q=tree')).value.total, 1);
     assert.equal((await request('/api/git/status')).value.entries.length, 1);
@@ -281,3 +281,18 @@ test('filesystem HTTP contract and mutation safety', { timeout: 120_000 }, async
     assert.equal(rejected.status, 409); assert.equal(await fs.readFile(path.join(root, binding.path), 'utf8'), 'EXTERNAL');
   }));
 });
+
+// Sequential bulk clients must never rebind a confirmed target to another root.
+test('pinned delete identities reject root/version drift and permit honest independent outcomes', () => fixture(async ({ root, external, request, info }) => {
+  await fs.writeFile(path.join(root, 'a.txt'), 'A');await fs.writeFile(path.join(root, 'b.txt'), 'B');
+  const a=(await info('a.txt')).value,b=(await info('b.txt')).value;
+  const deletion=(selected,rootPath=root)=>request('/api/fs',{action:'delete',root:'project',path:selected.path,expected_version:selected.version,root_path:rootPath,confirmed:true});
+  assert.equal((await deletion(a,external)).status,409);
+  assert.equal((await deletion(a,'relative')).status,400);
+  assert.equal(await fs.readFile(path.join(root,'a.txt'),'utf8'),'A');
+  await fs.writeFile(path.join(root,'b.txt'),'REPLACED');
+  assert.equal((await deletion(a)).status,200);
+  const rejected=await deletion(b);assert.equal(rejected.status,409);assert.equal(rejected.value.partial,undefined);
+  assert.equal(await fs.readFile(path.join(root,'b.txt'),'utf8'),'REPLACED');
+  await assert.rejects(fs.stat(path.join(root,'a.txt')),{code:'ENOENT'});
+}));

@@ -74,7 +74,7 @@ test('editor and save API in temporary roots', async t => {
       assert.equal(await fs.readFile(path.join(root, name), 'utf8'), '둘😀\n');
       assert.equal((await get(name)).value.version, result.value.version);
     }
-    assert.equal(app.info.version, '0.13.0');
+    assert.equal(app.info.version, '0.14.0');
     await assert.rejects(fs.stat(path.join(root, 'HACKED')), { code: 'ENOENT' });
   }));
 

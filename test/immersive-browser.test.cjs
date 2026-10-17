@@ -7,7 +7,7 @@ const screenshot = (page, name) => page.screenshot({ path: '/tmp/fbrowse-immersi
 
 async function firstGestures() {
   await fixture(async ({ ready, page, row, tab, open, requests }) => {
-    const parts = ['padding', 'caret', 'size', 'badge', 'icon', 'filename', 'searchpath'];
+    const parts = ['caret', 'size', 'badge', 'icon', 'filename', 'searchpath'];
     const targets = ['center', 'left', 'right', 'top', 'bottom', 'strip'];
     const cancellations = ['Escape', 'outside', 'pointercancel', 'lostcapture', 'blur'];
     const files = ['qa-empty.txt', 'qa-cancel.txt', 'qa-click.txt', ...cancellations.map(kind => 'qa-cancel-' + kind + '.txt'), ...parts.flatMap(part => targets.map(target => 'qa-' + part + '-' + target + '.txt'))];
@@ -47,7 +47,11 @@ async function firstGestures() {
     async function move(point) { await page.mouse.move(point.x, point.y, { steps: 12 }); await page.mouse.move(point.x + 1, point.y + 1); await page.mouse.move(point.x, point.y); }
     const empty = await page.locator('#viewer .preview').boundingBox(), emptyPoint = { x: empty.x + empty.width / 2, y: empty.y + empty.height / 2 };
     const initial = await model(), initialRequests = requests.length;
-    await begin('qa-cancel.txt', 'padding'); await move(emptyPoint); await page.keyboard.press('Escape'); await page.mouse.up(); await clean();
+    // Row padding now starts marquee selection; content keeps file docking.
+    await row('qa-cancel.txt').scrollIntoViewIfNeeded();const padding=await row('qa-cancel.txt').boundingBox();
+    await page.mouse.move(padding.x+2,padding.y+padding.height/2);await page.mouse.down();await page.mouse.move(padding.x+40,padding.y+padding.height/2+12,{steps:5});
+    await page.locator('.tree-marquee').waitFor();assert(await ghost.isHidden());await page.keyboard.press('Escape');await page.mouse.up();await clean();assert.equal(await model(),initial);
+    await begin('qa-cancel.txt', 'filename'); await move(emptyPoint); await page.keyboard.press('Escape'); await page.mouse.up(); await clean();
     assert.equal(await model(), initial); assert.equal(requests.slice(initialRequests).filter(r => /\/(?:api\/entry|_preview)/.test(r.url)).length, 0);
     await begin('qa-empty.txt', 'size'); await move(emptyPoint); await page.mouse.up(); await clean(); await tab('qa-empty.txt').waitFor();
     await tab('qa-empty.txt').locator('.tab-close').click(); assert.equal(await page.locator('.file-tab').count(), 0);
@@ -76,7 +80,7 @@ async function firstGestures() {
       const dropped = await groupRect(page, file);
       assert.equal(dropped.id === base.id, ['center', 'strip'].includes(target), 'actual docking destination ' + part + '/' + target);
       if (target === 'strip') assert.deepEqual(await page.locator('.pane-tabs .file-tab').evaluateAll(ns => ns.map(n => n.dataset.path)), [file, 'sample.py']);
-      if (part === 'padding' && target === 'right') await screenshot(page, 'first-row-drop');
+      if (part === 'icon' && target === 'right') await screenshot(page, 'first-row-drop');
       await tab(file).locator('.tab-close').click(); assert.equal(await page.locator('.pane-tabs').count(), 1);
       console.log('PASS: first focused-iframe gesture ' + part + ' -> ' + target);
     }
@@ -88,7 +92,7 @@ async function firstGestures() {
     const copied = page.waitForResponse(r => new URL(r.url()).pathname === '/api/fs-info'); await row('qa-click.txt').focus(); await page.keyboard.press('Control+c'); assert.equal((await copied).status(), 200);
     await page.locator('#clipboardStatus').filter({ hasText: /복사됨/ }).waitFor();
     for (const file of ['nested', 'outside-link.txt', 'broken-link.txt']) {
-      const before = await model(); await row(file).scrollIntoViewIfNeeded(); const r = await row(file).boundingBox();
+      const before = await model(); await row(file).scrollIntoViewIfNeeded(); const r = await row(file).locator('.icon').boundingBox();
       await page.mouse.move(r.x + 2, r.y + r.height / 2); await page.mouse.down(); await page.mouse.move(r.x + 9, r.y + r.height / 2);
       assert.equal(await ghost.isVisible(),file==='nested','available folders support tree moves; blocked links stay inert '+file); await move(await groupPoint(page, 'sample.py', 'right')()); assert(await page.locator('#workspaceDrop').isHidden(),'directories cannot dock');await page.mouse.up(); await clean(); assert.equal(await model(), before);
     }
