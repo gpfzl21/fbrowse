@@ -21,6 +21,7 @@ html[data-fbrowse-expanded]>body>#previewHeader{display:none}
 #diagnosticDecorations{position:fixed;z-index:3;overflow:hidden;pointer-events:none;contain:strict}.diagnostic-underline{position:absolute;height:3px;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='3'%3E%3Cpath d='M-1 2L1 0L4 3L7 0' fill='none' stroke='%239a6700' stroke-width='1'/%3E%3C/svg%3E");background-repeat:repeat-x}.diagnostic-underline[data-severity="error"]{z-index:1;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='3'%3E%3Cpath d='M-1 2L1 0L4 3L7 0' fill='none' stroke='%23cf222e' stroke-width='1'/%3E%3C/svg%3E")}
 #diagnosticTooltip{position:fixed;z-index:11;pointer-events:none;max-width:min(440px,calc(100vw - 16px));max-height:min(40vh,240px);overflow:hidden;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);box-shadow:0 4px 16px #0003;white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;line-height:1.5}
 @media(prefers-color-scheme:dark){.diagnostic-underline{filter:brightness(1.6)}}
+#webLinkMenu{position:fixed;z-index:1000;min-width:210px;padding:5px;border:1px solid var(--line);border-radius:6px;background:var(--bg);box-shadow:0 4px 16px #0003}#webLinkMenu[hidden]{display:none}#webLinkMenu button{display:block;width:100%;border:0;text-align:left;padding:8px;background:transparent;color:var(--text)}#webLinkMenu button:hover,#webLinkMenu button:focus{background:var(--soft)}
 </style></head><body data-preview-width="readable">
 <header id="previewHeader"><span id="info">텍스트를 불러오는 중…</span><button id="mode" hidden aria-pressed="false">원문 보기</button><button id="previewWidth" hidden aria-label="미리보기 전체 너비" aria-pressed="false" title="읽기 너비 (최대 1000px) · 전체 너비로 전환">전체 너비</button><button id="wrap" aria-pressed="true" title="긴 줄을 화면 너비에 맞춰 자동 줄바꿈">자동 줄바꿈</button><span id="diagnosticsControls" hidden><button id="diagnosticsEnabled" aria-pressed="true" title="실시간 검사 끄기">검사 켜짐</button><button id="diagnosticsToggle" aria-expanded="false" aria-controls="diagnosticsPanel">문제</button><span id="diagnosticsStatus" role="status" aria-live="polite"></span><button id="diagnosticsRetry" title="현재 파일 다시 검사">재검사</button></span><span id="dirty" role="status"></span><button id="save" disabled title="저장 · Ctrl/Cmd+S">저장</button><button id="reload" hidden>디스크에서 다시 불러오기</button><button id="copy">복사</button><a id="raw" target="_blank" rel="noopener">원본 ↗</a><section id="diagnosticsPanel" aria-label="현재 파일 문제" hidden><ul id="diagnosticsList"></ul></section></header>
 <p id="notice" hidden role="status"></p><div class="source-shell wrap" id="source"><pre class="gutter" id="lines" aria-hidden="true"></pre><div class="source-area"><pre class="source" aria-hidden="true"><code id="code"></code><span id="sourceEnd" aria-hidden="true">&#8203;</span></pre><textarea id="editor" aria-label="파일 원문 편집" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="soft" readonly></textarea></div></div><article id="markdown" hidden></article><div id="htmlViewport" hidden><iframe id="htmlPreview" title="HTML 미리보기" sandbox="allow-same-origin" hidden></iframe></div>
@@ -301,10 +302,38 @@ function followMarkdownLink(event){
     if(destination.kind==='file'&&parent!==window&&typeof parent.fbrowseOpenMarkdownFile==='function'){
       event.preventDefault();parent.fbrowseOpenMarkdownFile(window,{...destination,background:event.button===1||event.ctrlKey||event.metaKey}).catch(error=>notice(error.message));
     }else if(destination.kind==='web'&&parent!==window&&typeof parent.fbrowseOpenExternal==='function'){
-      event.preventDefault();if(!parent.fbrowseOpenExternal(window,destination.href,event.button===1||event.ctrlKey||event.metaKey))notice('웹 링크를 열 수 없습니다. 링크를 다시 확인해 주세요.');
+      if(parent.fbrowseOpenExternal(window,destination.href,event.button===1||event.ctrlKey||event.metaKey))event.preventDefault();
     }
   }catch(error){if(event.defaultPrevented)notice(error.message);}
 }
+// Use a single fbrowse-owned menu when the Orca bridge is active. The host's
+// native menu must not also issue its own open request for the same selection.
+const webLinkMenu=document.createElement('div');webLinkMenu.id='webLinkMenu';webLinkMenu.hidden=true;webLinkMenu.setAttribute('role','menu');document.body.append(webLinkMenu);
+let webMenuLink=null;
+function closeWebLinkMenu(restore=false){webLinkMenu.hidden=true;if(restore)webMenuLink?.focus();}
+for(const [label,action] of [['Orca 브라우저에서 열기','open'],['백그라운드 탭에서 열기','background'],['링크 복사','copy']]){
+  const item=document.createElement('button');item.type='button';item.textContent=label;item.setAttribute('role','menuitem');
+  item.onclick=()=>{const link=webMenuLink;closeWebLinkMenu();if(!link)return;
+    if(action==='copy'){Promise.resolve().then(()=>navigator.clipboard.writeText(link.href)).catch(()=>notice('링크를 복사하지 못했습니다.'));return;}
+    parent.fbrowseOpenExternal(window,link.href,action==='background');
+  };webLinkMenu.append(item);
+}
+document.addEventListener('contextmenu',event=>{
+  const link=event.target.closest?.('a[href]');
+  if(markdownLinks.get(link)?.kind!=='web'||parent===window||parent.fbrowseExternalBrowser?.()!=='orca')return;
+  event.preventDefault();event.stopPropagation();webMenuLink=link;webLinkMenu.hidden=false;
+  webLinkMenu.style.left=Math.max(4,Math.min(event.clientX,innerWidth-webLinkMenu.offsetWidth-4))+'px';
+  webLinkMenu.style.top=Math.max(4,Math.min(event.clientY,innerHeight-webLinkMenu.offsetHeight-4))+'px';webLinkMenu.firstElementChild.focus();
+});
+document.addEventListener('pointerdown',event=>{if(!webLinkMenu.contains(event.target))closeWebLinkMenu();},true);
+document.addEventListener('scroll',()=>closeWebLinkMenu(),true);window.addEventListener('blur',()=>closeWebLinkMenu());
+webLinkMenu.addEventListener('keydown',event=>{
+  const items=[...webLinkMenu.children],index=items.indexOf(document.activeElement);
+  if(event.key==='Escape'){event.preventDefault();closeWebLinkMenu(true);}
+  else if(['ArrowDown','ArrowUp','Home','End'].includes(event.key)){event.preventDefault();items[event.key==='Home'?0:event.key==='End'?items.length-1:(index+(event.key==='ArrowDown'?1:items.length-1))%items.length].focus();}
+  else if(event.key==='Tab')closeWebLinkMenu();
+});
+window.addEventListener('message',event=>{if(event.origin===location.origin&&event.source===parent&&event.data?.type==='fbrowse-external-error'&&typeof event.data.message==='string')notice(event.data.message);});
 document.addEventListener('click',followMarkdownLink);document.addEventListener('auxclick',followMarkdownLink);
 window.addEventListener('beforeunload',event=>{if(isDirty()&&parent===window){event.preventDefault();event.returnValue='';}});
 document.addEventListener('keydown',event=>{if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='s'){event.preventDefault();save();}});
