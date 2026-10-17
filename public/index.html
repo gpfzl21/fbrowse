@@ -33,6 +33,7 @@ main{display:flex;min-height:0;flex:1;gap:0;padding:8px}aside{width:330px;min-wi
 #viewer:fullscreen{width:100%;height:100%;max-width:none;max-height:none;margin:0;background:var(--panel)}#expandedFullscreen{position:absolute;top:14px;right:54px;z-index:20;height:32px;font-size:12px;box-shadow:0 2px 10px #0003}#fullscreenNotice{position:absolute;top:54px;right:14px;z-index:20;max-width:calc(100% - 28px);padding:8px 12px;background:var(--panel);border:1px solid var(--line);border-radius:6px;font-size:12px}#fullscreenPreview svg{width:18px;height:18px}
 #exitExpanded,#expandedFullscreen{transition:opacity .15s}.viewer.is-expanded:not([data-controls-visible])>#exitExpanded,.viewer.is-expanded:not([data-controls-visible])>#expandedFullscreen{opacity:0;pointer-events:none}@media(prefers-reduced-motion:reduce){#exitExpanded,#expandedFullscreen{transition:none}}
 .row[data-draggable-file="true"] .filename,.row[data-draggable-file="true"] .icon{touch-action:none;user-select:none;cursor:grab}.is-drag-source{opacity:.45}.workspace-drag-ghost{position:fixed;z-index:3000;display:flex;align-items:center;gap:8px;max-width:min(380px,75vw);padding:8px 11px;border:1px solid var(--accent);border-radius:7px;background:var(--panel);color:var(--text);box-shadow:0 5px 18px #0003;pointer-events:none;user-select:none;font-size:12px}.workspace-drag-ghost .drag-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.workspace-drag-ghost small{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px}.workspace.is-empty-drop .pane-tabs{display:none!important}.workspace-insertion{position:absolute;z-index:15;width:3px;background:var(--accent);pointer-events:none;border-radius:2px;box-shadow:0 0 0 1px var(--panel)}.workspace-insertion::before,.workspace-insertion::after{content:'';position:absolute;left:-3px;width:9px;height:3px;background:var(--accent)}.workspace-insertion::before{top:0}.workspace-insertion::after{bottom:0}
+.row.is-move-target,#rootPath.is-move-target,#listLabel.is-move-target{background:var(--selected);outline:2px solid var(--accent);outline-offset:-2px}.row{transition:background-color .12s,opacity .12s}#entries.is-move-root{box-shadow:inset 0 0 0 2px var(--accent)}body.is-tree-drop-invalid,body.is-tree-drop-invalid *{cursor:not-allowed!important}.row.is-move-complete{animation:tree-moved .7s ease-out}.workspace-drag-ghost{animation:drag-appear .12s ease-out}.workspace-drag-ghost[data-drop="move"]{border-style:solid;box-shadow:0 5px 18px #0003,0 0 0 2px var(--selected)}.workspace-drag-ghost[data-drop="invalid"]{opacity:.7}@keyframes drag-appear{from{opacity:0}to{opacity:1}}@keyframes tree-moved{from{background:var(--selected);box-shadow:inset 0 0 0 2px var(--accent)}to{box-shadow:inset 0 0 0 0 transparent}}@media(prefers-reduced-motion:reduce){.row,.workspace-drag-ghost{animation:none!important;transition:none!important}}
 </style></head><body>
 <main><aside id="fileSidebar" aria-label="파일 탐색"><div class="side-controls">
 <div class="side-brand"><strong class="root" id="rootName">프로젝트 파일</strong><button class="plain" id="home" title="검색을 닫고 프로젝트 루트 보기" aria-label="처음으로">⌂</button><button class="plain" id="refresh" title="목록과 선택한 파일 새로고침" aria-label="새로고침">↻</button></div>
@@ -302,6 +303,8 @@ function repaintGitMarkers(){for(const button of entries.querySelectorAll('butto
 function row(entry,result=false){
   const button=make('button','row'+(result?' search-result':'')+(state.selected?.path===entry.path&&state.selected?.root_id===entry.root_id?' active':''));
   button.type='button';button.dataset.path=entry.path;button.dataset.root=entry.root_id;button.dataset.kind=entry.kind;button.dataset.rootPath=state.roots.find(root=>root.id===entry.root_id)?.path||'';
+  button.dataset.symlink=String(Boolean(entry.symlink));
+  if(tabDrag?.source==='tree'&&tabDrag.file.root===entry.root_id&&tabDrag.file.path===entry.path)button.classList.add('is-drag-source');
   button.title=rootLabel(entry.root_id)+' · '+(state.roots.find(r=>r.id===entry.root_id)?.path||'')+'/'+entry.path;
   if(entry.symlink)button.title+='\n↗ '+(entry.link_target||'심볼릭 링크')+(entry.available===false?' · '+(entry.unavailable_reason||'접근 불가'):'');
   button.dataset.baseTitle=button.title;if(entry.available===false)button.setAttribute('aria-disabled','true');
@@ -313,7 +316,7 @@ function row(entry,result=false){
   else line.append(make('span','size',entry.available===false?'—':bytes(entry.size||0)));
   if(result)button.append(line,make('span','result-path',rootLabel(entry.root_id)+' · '+entry.path));
   button.dataset.treeSelected=String(treeSelection?.root===entry.root_id&&treeSelection.path===entry.path);button.dataset.fileClipboard=String(fileClipboard?.root===entry.root_id&&fileClipboard.path===entry.path);
-  if(entry.kind==='file'&&entry.available!==false){button.dataset.draggableFile='true';button.addEventListener('pointerdown',event=>{
+  if(entry.available!==false){button.dataset.draggableFile='true';button.addEventListener('pointerdown',event=>{
     const control=event.target.closest('a,button,input,select,textarea,summary,[contenteditable]:not([contenteditable="false"]),[role="button"],[role="link"]');
     if(!control||control===button)beginPointerFileDrag(entry,event);
   });}
@@ -524,6 +527,7 @@ $('showDiff').onclick=()=>{if(state.diff)selectDiff(state.diff.change,state.diff
 function treeFocusSnapshot(){const focused=document.activeElement;return entries.contains(focused)?{root:focused.dataset.root,path:focused.dataset.path}:null;}
 function restoreTreeFocus(saved){if(!saved)return;const row=[...entries.querySelectorAll('.row')].find(node=>node.dataset.root===saved.root&&node.dataset.path===saved.path);if(!row&&saved.path!==undefined)selectTreeTarget(fileTarget(null));(row||entries).focus({preventScroll:true});}
 function drawTree(){
+  retainTreeDragCapture();
   const focus=treeFocusSnapshot();entries.replaceChildren();let files=0;
   function branch(path,container){
     const data=state.cache.get(nodeKey(state.root,path));
@@ -533,12 +537,12 @@ function drawTree(){
     if(!visible.length)container.append(make('div','note','표시할 파일이 없습니다'));
     for(const entry of visible){
       container.append(row(entry));if(entry.kind!=='directory')files++;
-      if(entry.kind==='directory'&&state.expanded.has(nodeKey(entry.root_id,entry.path))){const children=make('div','children');container.append(children);branch(entry.path,children);}
+      if(entry.kind==='directory'&&state.expanded.has(nodeKey(entry.root_id,entry.path))){const children=make('div','children');children.dataset.path=entry.path;container.append(children);branch(entry.path,children);}
     }
   }
   const root=state.roots.find(r=>r.id===state.root);
   if(!root?.connected){note('연결 안 됨 · 서버 경로를 확인한 뒤 새로고침하세요.');$('status').textContent='연결 안 됨';return;}
-  branch('',entries);restoreTreeFocus(focus);$('listLabel').textContent='폴더';$('status').textContent=`표시된 파일 ${files}개`;
+  branch('',entries);restoreTreeFocus(focus);$('listLabel').textContent='폴더';$('status').textContent=`표시된 파일 ${files}개`;if(tabDrag?.lastPoint)showTreeMove(tabDrag.lastPoint);
 }
 async function toggle(path,root){
   const key=nodeKey(root,path),generation=state.generation;
@@ -856,6 +860,53 @@ $('groupMenu').addEventListener('keydown',event=>{const buttons=[...$('groupMenu
 document.addEventListener('pointerdown',event=>{if(!$('groupMenu').contains(event.target))closeGroupMenu();},true);
 window.addEventListener('blur',()=>closeGroupMenu());
 let tabDrag=null,pointerTabDrag=null,suppressTabClickUntil=0,dragGhost=null,dropExpansionRevision=0;
+let treeMoveFrame=0,treeHoverTimer=null,treeHoverKey=null;
+function retainTreeDragCapture(){
+  const drag=pointerTabDrag;if(drag?.source!=='tree'||!drag.started||drag.handle===entries)return;
+  // Auto-expansion redraws rows; retain capture on the stable navigation node.
+  drag.handle=entries;entries.setPointerCapture(drag.pointer);
+}
+function treeMoveTarget(point){
+  const drag=pointerTabDrag;if(drag?.source!=='tree'||state.sidebarMode!=='files')return null;
+  const hit=document.elementFromPoint(point.clientX,point.clientY),inside=hit&&entries.contains(hit),rootHit=hit?.closest('#rootPath,#listLabel');
+  if(!inside&&!rootHit)return null;
+  const row=inside?hit.closest('.row'):null,parent=row?(row.dataset.kind==='directory'?row.dataset.path:row.dataset.path.split('/').slice(0,-1).join('/')):(hit.closest('.children')?.dataset.path||'');
+  const file=drag.file,valid=sameRoot(file)&&file.root===state.root&&!fsOperation&&!newFileBusy&&
+    row?.getAttribute('aria-disabled')!=='true'&&!(row?.dataset.kind==='directory'&&row.dataset.symlink==='true')&&
+    parent!==file.path&&!parent.startsWith(file.path+'/')&&parent!==file.path.split('/').slice(0,-1).join('/');
+  const folder=row?.dataset.kind==='directory'?row:[...entries.querySelectorAll('.row[data-kind="directory"]')].find(node=>node.dataset.path===parent);
+  return {root:file.root,rootPath:file.rootPath,parent,valid,element:folder||rootHit||$('listLabel')};
+}
+function clearTreeMove(){
+  for(const node of document.querySelectorAll('.is-move-target'))node.classList.remove('is-move-target');
+  entries.classList.remove('is-move-root');document.body.classList.remove('is-tree-drop-invalid');
+}
+function showTreeMove(point){
+  clearTreeMove();const target=treeMoveTarget(point),drag=pointerTabDrag;
+  if(dragGhost&&drag?.source==='tree'){
+    dragGhost.dataset.drop=target?(target.valid?'move':'invalid'):'';
+    dragGhost.querySelector('small').textContent=rootLabel(drag.file.root)+' ['+drag.file.root+']'+(target?(target.valid?' → '+(target.parent||'/'):' · 이동할 수 없음'):'');updateDragGhost(point);
+  }
+  if(target?.valid){target.element.classList.add('is-move-target');entries.classList.toggle('is-move-root',!target.parent);}
+  else if(target)document.body.classList.add('is-tree-drop-invalid');
+  const hover=target?.valid&&target.parent?nodeKey(target.root,target.parent):null;
+  if(hover!==treeHoverKey){
+    clearTimeout(treeHoverTimer);treeHoverKey=hover;
+    if(hover&&!state.expanded.has(hover)&&!input.value.trim())treeHoverTimer=setTimeout(()=>{
+      if(pointerTabDrag===drag&&treeHoverKey===hover&&state.root===target.root)void toggle(target.parent,target.root);
+    },550);
+  }
+  return target;
+}
+function animateTreeMove(time){
+  const drag=pointerTabDrag;if(drag?.source!=='tree'||!drag.started)return;
+  const point=drag.lastPoint,box=entries.getBoundingClientRect(),elapsed=Math.min(32,time-(drag.scrollTime||time));drag.scrollTime=time;
+  if(point&&point.clientX>=box.left&&point.clientX<=box.right&&point.clientY>=box.top&&point.clientY<=box.bottom){
+    const edge=40,speed=point.clientY<box.top+edge?-14*(1-(point.clientY-box.top)/edge):point.clientY>box.bottom-edge?14*(1-(box.bottom-point.clientY)/edge):0;
+    if(speed){entries.scrollTop+=speed*elapsed/16;showTreeMove(point);}
+  }
+  treeMoveFrame=requestAnimationFrame(animateTreeMove);
+}
 // A fresh pointer gesture is independent of the generated click after the previous drag.
 document.addEventListener('pointerdown',()=>{suppressTabClickUntil=0;},true);
 function beginPointerTabDrag(tab,event){
@@ -863,8 +914,8 @@ function beginPointerTabDrag(tab,event){
 }
 function beginPointerFileDrag(entry,event){
   const root=state.roots.find(root=>root.id===entry.root_id);
-  if(entry.kind!=='file'||entry.available===false||!root?.connected||root.path!==event.currentTarget.dataset.rootPath)return;
-  beginPointerDrag({id:state.tabs.find(tab=>tab.entry.root_id===entry.root_id&&tab.entry.path===entry.path)?.id,entry:{...entry},source:'tree',file:Object.freeze({root:entry.root_id,path:entry.path,rootPath:root.path})},event);
+  if(entry.available===false||!root?.connected||root.path!==event.currentTarget.dataset.rootPath||fsOperation||newFileBusy)return;
+  beginPointerDrag({id:state.tabs.find(tab=>tab.entry.root_id===entry.root_id&&tab.entry.path===entry.path)?.id,entry:{...entry},source:'tree',file:Object.freeze({root:entry.root_id,path:entry.path,kind:entry.kind,rootPath:root.path})},event);
 }
 function beginPointerDrag(source,event){
   if(event.button!==0||event.isPrimary===false||state.previewExpanded||pointerTabDrag)return;
@@ -877,6 +928,10 @@ function updateDragGhost(event){
 }
 function startPointerDrag(drag,event){
   drag.started=true;tabDrag=drag;drag.sourceNode=drag.source==='tab'?drag.handle.closest('.file-tab'):drag.handle;drag.sourceNode?.classList.add('is-drag-source');
+  if(drag.source==='tree'){
+    drag.moveInfo=fsRequest('/api/fs-info?'+new URLSearchParams({root:drag.file.root,path:drag.file.path})).catch(error=>({error}));
+    treeMoveFrame=requestAnimationFrame(animateTreeMove);
+  }
   document.body.classList.add('is-tab-dragging');if(!state.tabs.length&&$('workspace').hidden&&state.viewerMode==='file'){drag.emptyWorkspace=true;$('workspace').classList.add('is-empty-drop');$('workspace').hidden=false;}$('workspaceDragCover').hidden=false;
   dragGhost=make('div','workspace-drag-ghost');dragGhost.dataset.source=drag.source;dragGhost.setAttribute('aria-hidden','true');
   dragGhost.append(icon(drag.entry),make('span','drag-name',drag.entry.name||drag.entry.path.split('/').at(-1)),make('small','',rootLabel(drag.entry.root_id)+' ['+drag.entry.root_id+']'));
@@ -923,30 +978,34 @@ async function applyFileDrop(file,target){
 }
 function finishPointerTabDrag(event,cancel=false){
   const drag=pointerTabDrag;if(!drag||event?.pointerId!==undefined&&event.pointerId!==drag.pointer)return;
-  const target=!cancel&&drag.started&&event?dropTarget(event):null;pointerTabDrag=null;
+  const treeTarget=!cancel&&drag.started&&event?treeMoveTarget(event):null;
+  const target=!treeTarget&&!cancel&&drag.started&&event?dropTarget(event):null;pointerTabDrag=null;
   if(drag.started){suppressTabClickUntil=performance.now()+400;event?.preventDefault();}else if(!cancel&&event)drag.handle.focus({preventScroll:true});
   if(drag.handle.hasPointerCapture(drag.pointer))drag.handle.releasePointerCapture(drag.pointer);
-  endTabDrag();if(target){if(drag.source==='tree')void applyFileDrop(drag.file,target);else applyTabDrop(drag.id,target);}
+  endTabDrag();if(treeTarget?.valid)void applyTreeMove(drag,treeTarget);else if(target){if(drag.source==='tree')void applyFileDrop(drag.file,target);else applyTabDrop(drag.id,target);}
 }
 document.addEventListener('pointermove',event=>{
   const drag=pointerTabDrag;if(!drag||drag.pointer!==event.pointerId)return;
   if(!drag.started&&Math.hypot(event.clientX-drag.x,event.clientY-drag.y)<6)return;
   event.preventDefault();if(!drag.started)startPointerDrag(drag,event);
+  drag.lastPoint={clientX:event.clientX,clientY:event.clientY};
   updateDragGhost(event);
   const target=dropTarget(event);if(target?.strip){const strip=state.groups.get(target.group).strip,box=strip.getBoundingClientRect();if(event.clientX<box.left+26)strip.scrollLeft-=18;else if(event.clientX>box.right-26)strip.scrollLeft+=18;}
-  showTabDrop(event);
+  showTabDrop(event);showTreeMove(event);
 },true);
 document.addEventListener('pointerup',event=>finishPointerTabDrag(event),true);
 document.addEventListener('pointercancel',event=>finishPointerTabDrag(event,true),true);
-document.addEventListener('lostpointercapture',event=>finishPointerTabDrag(event,true),true);
+document.addEventListener('lostpointercapture',event=>{if(event.target===pointerTabDrag?.handle)finishPointerTabDrag(event,true);},true);
 window.addEventListener('blur',()=>{if(pointerTabDrag)finishPointerTabDrag(null,true);else endTabDrag();});
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&workspaceDrag){event.preventDefault();event.stopImmediatePropagation();finishWorkspaceResize();return;}if(event.key==='Escape'&&(pointerTabDrag||tabDrag)){event.preventDefault();event.stopImmediatePropagation();finishPointerTabDrag(null,true);endTabDrag();}},true);
 function endTabDrag(){
+  cancelAnimationFrame(treeMoveFrame);clearTimeout(treeHoverTimer);treeHoverKey=null;clearTreeMove();for(const node of entries.querySelectorAll('.is-drag-source'))node.classList.remove('is-drag-source');
   tabDrag?.sourceNode?.classList.remove('is-drag-source');if(tabDrag?.emptyWorkspace&&!state.tabs.length)$('workspace').hidden=true;$('workspace').classList.remove('is-empty-drop');tabDrag=null;dragGhost?.remove();dragGhost=null;document.body.classList.remove('is-tab-dragging');
   $('workspaceDragCover').hidden=true;$('workspaceDrop').hidden=true;$('workspaceInsertion').hidden=true;
   for(const node of [$('workspaceDrop'),$('workspaceInsertion')]){node.removeAttribute('style');delete node.dataset.group;delete node.dataset.before;delete node.dataset.edge;} $('workspaceDrop').textContent='';
 }
 function dropTarget(event){
+  if(tabDrag?.entry.kind==='directory')return null;
   if(state.previewExpanded)return null;const box=$('workspace').getBoundingClientRect(),x=event.clientX-box.left,y=event.clientY-box.top;
   if(!state.tabs.length&&tabDrag?.source==='tree'&&state.viewerMode==='file'&&x>=0&&y>=0&&x<box.width&&y<box.height)return {edge:null,group:state.activeGroup,rect:{left:0,top:0,width:box.width,height:box.height},strip:false};
   const group=[...state.groups.values()].find(group=>{const r=group.rect;return r&&x>=r.left&&x<r.left+r.width&&y>=r.top&&y<r.top+r.height;});if(!group||$('workspace').hidden)return null;
@@ -1057,7 +1116,7 @@ function handlePreviewEscape(event){
   event.preventDefault();event.stopPropagation();closeExpandedPreview();return true;
 }
 function select(entry,keepDiff=false,initialTab,placement){
-  if(fsOperation&&['rename','delete'].includes(fsOperation.action)&&affectedPath(entry.root_id,entry.path,fsOperation.target)){$('status').textContent='파일 작업이 끝난 뒤 열어주세요.';return;}
+  if(fsOperation&&['rename','move','delete'].includes(fsOperation.action)&&affectedPath(entry.root_id,entry.path,fsOperation.target)){$('status').textContent='파일 작업이 끝난 뒤 열어주세요.';return;}
   if(entry.available===false)return;
   const existing=state.tabs.find(tab=>nodeKey(tab.entry.root_id,tab.entry.path)===nodeKey(entry.root_id,entry.path));if(existing){if(placement?.activate!==false)activateTab(existing.id);return existing;}
   if(placement&&!state.groups.has(placement.group))return;
@@ -1243,6 +1302,41 @@ async function retargetFsTabs(target,data,frozen){
   if(state.diff?.root===target.root&&affectedPath(target.root,state.diff.path,target)){state.diffController?.abort();state.diffGeneration++;state.diff=null;$('viewerTabs').hidden=true;}
   const active=state.tabs.find(tab=>tab.id===state.activeTab);if(active&&frozen.some(item=>item.tab===active)){state.selected=active.entry;state.editor=active.editor;$('open').href=previewURL(active.entry);$('viewer').setAttribute('aria-label',rootLabel(active.entry.root_id)+' · '+active.entry.path+' 미리보기');if(state.root===active.entry.root_id)history.replaceState(null,'','/?'+new URLSearchParams({root:active.entry.root_id,path:active.entry.path}));}
   renderWorkspace();
+}
+async function applyTreeMove(drag,destination){
+  if(fsOperation||newFileBusy||!sameRoot(drag.file)||!sameRoot(destination))return;
+  const target={...drag.file,object:true},next=[destination.parent,target.path.split('/').pop()].filter(Boolean).join('/');
+  const revision=state.workspaceRevision,query=input.value;let frozen=[],sent=false,completed=false,message;
+  fsOperation={action:'move',target};$('newFile').disabled=true;$('status').textContent='이동 중… '+target.path+' → '+(destination.parent||'/');
+  try{
+    const info=await drag.moveInfo;if(info.error)throw info.error;
+    if(info.root_id!==target.root||info.path!==target.path||!info.version)throw Error('이동할 파일 정보가 일치하지 않습니다. 다시 선택하세요.');
+    target.kind=info.kind;
+    const roots=await fsRequest('/api/info');
+    if(!roots.roots?.some(root=>root.id===target.root&&root.path===target.rootPath&&root.connected)||!sameRoot(target))throw Error('루트 연결 경로가 변경되었습니다. 다시 선택하세요.');
+    frozen=await freezeFsEditors(target);
+    const editors=frozen.filter(item=>item.editor?.editable&&item.binding.version).map(item=>({path:item.binding.path,version:item.binding.version}));
+    if(editors.length>64)throw Error('영향받는 편집 탭을 일부 닫은 뒤 이동하세요. 한 번에 최대 64개를 유지할 수 있습니다.');
+    sent=true;const data=await fsRequest('/api/fs',{action:'move',root:target.root,root_path:target.rootPath,path:target.path,parent:destination.parent,expected_version:info.version,editors});completed=true;
+    if(data.root_id!==target.root||data.old_path!==target.path||data.path!==next||data.entry?.root_id!==target.root||data.entry?.path!==next||!sameRoot(target))throw Error('이동 결과의 경로가 일치하지 않습니다. 대상 폴더를 확인하세요.');
+    await retargetFsTabs(target,data,frozen);
+    const reveal=state.root===target.root&&state.workspaceRevision===revision&&input.value===query;
+    if(reveal){
+      input.value='';type.value='all';const parts=next.split('/');for(let i=0;i<parts.length;i++)state.expanded.add(nodeKey(target.root,parts.slice(0,i).join('/')));
+      selectTreeTarget({...target,path:next});
+    }
+    await refreshFsTree(target,next);
+    if(reveal&&state.root===target.root)for(const row of entries.querySelectorAll('.row'))if(row.dataset.path===next){row.classList.add('is-move-complete');row.scrollIntoView({block:'nearest'});}
+    message='이동 완료: '+target.path+' → '+next;
+  }catch(error){
+    const unknown=completed||(sent&&error.outcomeUnknown);
+    if(unknown)for(const item of frozen)item.editor?.markUncertain({...item.binding,path:item.editor.path,version:item.editor.version,reason:'Move result or editor binding is uncertain. Keep your draft, inspect the destination, and reload before saving.'});
+    message='이동하지 못했습니다: '+(error.name==='AbortError'?'응답 시간이 초과되었습니다.':error.message)+(unknown?' 이동이 완료되었을 수 있으니 대상 폴더를 확인하세요.':'');
+    if(unknown)await refreshFsTree(target).catch(()=>{});
+  }finally{
+    for(const item of frozen){try{if(item.tab.frame.isConnected)item.editor?.endMutation(item.binding);}catch{}finally{item.tab.fsBusy=false;}}
+    fsOperation=null;$('newFile').disabled=false;renderWorkspaceTabs();$('status').textContent=message;
+  }
 }
 async function runFsOperation(){
   const snapshot=fsDialogTarget;if(!snapshot||fsOperation||$('fsSubmit').disabled)return;const {action,target,info}=snapshot,name=$('fsName').value;

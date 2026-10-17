@@ -106,9 +106,11 @@ const { createHash } = require('node:crypto');
   await row('same.txt').click({button:'right'});assert(await page.locator('#treeMenu').isVisible());await page.keyboard.press('Escape');
   for(const file of ['nested','outside-link.txt']) {
     const before=await model(),loc=row(file).locator('.icon');await loc.scrollIntoViewIfNeeded();const r=await loc.boundingBox(),p=await groupPoint(page,'same.txt','right')();
-    await page.mouse.move(r.x+r.width/2,r.y+r.height/2);await page.mouse.down();await move(p.x,p.y);assert(await ghost.isHidden(),'unsupported source no ghost '+file);await page.mouse.up();await clean('unsupported '+file);assert.equal(await model(),before,'unsupported source no layout '+file);
+    await page.mouse.move(r.x+r.width/2,r.y+r.height/2);await page.mouse.down();await move(p.x,p.y);
+    assert.equal(await ghost.isVisible(),file==='nested','only available directories can start a tree move '+file);assert(await drop.isHidden(),'directory cannot dock into the workspace');
+    await page.mouse.up();await clean('unsupported '+file);assert.equal(await model(),before,'unsupported source no layout '+file);
   }
-  // File integrity: drag is open/move-tab only, with no filesystem mutation endpoint.
+  // Workspace drops only open/move tabs; filesystem moves require a tree destination.
   const mutation=requests.filter(r=>r.method==='POST'&&/\/api\/(?:fs|filesystem|files|copy|move|rename|duplicate|delete|create|editor\/save)/.test(new URL(r.url).pathname));assert.deepEqual(mutation,[],'drag never posts filesystem mutations');
   for(const [file,hash] of originals)assert.equal(createHash('sha256').update(await fs.readFile(file)).digest('hex'),hash,'drag preserves bytes '+file);
   assert.equal(browser.contexts().flatMap(c=>c.pages()).length,1,'no browser tabs opened');

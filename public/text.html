@@ -323,7 +323,66 @@ window.addEventListener('message',event=>{if(event.origin===location.origin&&eve
 document.addEventListener('click',followMarkdownLink);document.addEventListener('auxclick',followMarkdownLink);
 window.addEventListener('beforeunload',event=>{if(isDirty()&&parent===window){event.preventDefault();event.returnValue='';}});
 document.addEventListener('keydown',event=>{if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='s'){event.preventDefault();save();}});
+// Track only generated delimiters. Native edits and execCommand keep the
+// textarea's undo history; paste, IME and manually written closers stay native.
+let generatedPairs=[],pairEdit=null,pendingPairEdit=null,pairComposition=null;
+editor.addEventListener('beforeinput',event=>{
+  if(event.inputType.startsWith('history')){generatedPairs=[];pendingPairEdit=null;return;}
+  let start=editor.selectionStart,end=editor.selectionEnd;
+  if(pairComposition){start=pairComposition.start;end=pairComposition.end;}
+  pendingPairEdit={start,end,length:editor.value.length,type:event.inputType};
+});
+editor.addEventListener('compositionstart',()=>{pairComposition={start:editor.selectionStart,end:editor.selectionEnd};pendingPairEdit=null;});
+editor.addEventListener('compositionend',()=>{pairComposition=null;});
+editor.addEventListener('input',()=>{
+  const edit=pairEdit||pendingPairEdit;pendingPairEdit=null;
+  if(!edit){generatedPairs=[];return;}
+  const delta=editor.value.length-edit.length;let {start,end}=edit;
+  if(pairComposition)pairComposition.end=end+delta;
+  if(start===end&&delta<0){if(/Forward$/.test(edit.type||''))end-=delta;else start+=delta;}
+  generatedPairs=generatedPairs.filter(pair=>{
+    if(end<=pair.start){pair.start+=delta;pair.end+=delta;return true;}
+    if(start>=pair.start+pair.open.length&&end<=pair.end){pair.end+=delta;return true;}
+    return start>=pair.end+pair.close.length;
+  });
+});
+function replacePairedText(start,end,text,selectionStart,selectionEnd=selectionStart){
+  editor.setSelectionRange(start,end);pairEdit={start,end,length:editor.value.length};
+  try{document.execCommand('insertText',false,text);}finally{pairEdit=null;}
+  editor.setSelectionRange(selectionStart,selectionEnd);
+}
+function completePair(event){
+  if(event.defaultPrevented||event.isComposing||event.keyCode===229||diagnosticsComposing||event.ctrlKey||event.metaKey||event.altKey||editor.readOnly||mutationLock)return;
+  const key=event.key;if(key!=='Backspace'&&!['(',')','[',']','{','}','"',"'",'`','$'].includes(key))return;
+  const text=editor.value,start=editor.selectionStart,end=editor.selectionEnd;
+  const empty=generatedPairs.findLast(pair=>pair.start+pair.open.length===start&&pair.end===start);
+  if(key==='Backspace'&&start===end&&empty){
+    event.preventDefault();replacePairedText(empty.start,empty.end+empty.close.length,'',empty.start);return;
+  }
+  // A second dollar inside an empty inline pair creates a display-math pair.
+  if(key==='$'&&start===end&&empty?.open==='$'){
+    event.preventDefault();const at=empty.start;
+    replacePairedText(at,empty.end+1,'$$$$',at+2);generatedPairs.push({start:at,end:at+2,open:'$$',close:'$$'});return;
+  }
+  const closing=generatedPairs.findLast(pair=>start>=pair.end&&start<pair.end+pair.close.length&&text[start]===key);
+  if(start===end&&closing){event.preventDefault();editor.setSelectionRange(start+1,start+1);return;}
+  const pairs={'(':')','[':']','{':'}','"':'"',"'":"'",'`':'`'};
+  if(['markdown','latex'].includes(data?.language))pairs.$='$';
+  const close=pairs[key];if(!close)return;
+  // Avoid escaped delimiters, apostrophes and insertion in the middle of a word.
+  let slashes=0;for(let i=start-1;i>=0&&text[i]==='\\';i--)slashes++;
+  if(slashes%2)return;
+  if(start===end){
+    if(text[start]&&!/[\s)\]}>,;:]/.test(text[start]))return;
+    if(key===close&&/[\p{L}\p{N}_$]/u.test(text[start-1]||''))return;
+  }
+  event.preventDefault();const selected=text.slice(start,end);
+  replacePairedText(start,end,key+selected+close,start+1,start+1+selected.length);
+  generatedPairs.push({start,end:start+1+selected.length,open:key,close});
+  if(generatedPairs.length>128)generatedPairs.shift();
+}
 editor.addEventListener('keydown',event=>{
+  completePair(event);
   if(event.key==='Tab'&&!event.ctrlKey&&!event.metaKey&&!event.altKey&&!editor.readOnly){event.preventDefault();document.execCommand('insertText',false,'\t');}
 });
 editor.addEventListener('input',()=>{if(!data)return;data.text=currentText();updateDirty();cancelAnimationFrame(renderFrame);renderFrame=requestAnimationFrame(renderSource);scheduleDiagnostics();});

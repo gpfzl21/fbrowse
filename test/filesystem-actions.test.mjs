@@ -14,6 +14,57 @@ import { readEditor, saveEditor, setEditorView } from '../lib/editor.mjs';
 import { withFilesystemLock, withFilesystemLocks } from '../lib/editor-locks.mjs';
 
 const run = promisify(execFile);
+
+test('move uses anchored parents, preserves editor baselines and never overwrites', async t => {
+  await t.test('moves files to another folder and back to root without changing inode or bytes', () => fixture(async ({root,action}) => {
+    await fs.mkdir(path.join(root,'destination'));
+    await fs.writeFile(path.join(root,'한글 file.txt'),'SAVED\r\n',{mode:0o640});
+    const before=await fs.stat(path.join(root,'한글 file.txt'));
+    const moved=await action('move','한글 file.txt',{parent:'destination',root_path:root});
+    assert.equal(moved.old_path,'한글 file.txt');assert.equal(moved.path,'destination/한글 file.txt');
+    const after=await fs.stat(path.join(root,moved.path));assert.equal(after.ino,before.ino);assert.equal(after.mode,before.mode);
+    assert.equal(await fs.readFile(path.join(root,moved.path),'utf8'),'SAVED\r\n');
+    await assert.rejects(fs.stat(path.join(root,'한글 file.txt')),{code:'ENOENT'});
+    assert.equal((await action('move',moved.path,{parent:'',root_path:root})).path,'한글 file.txt');
+  }));
+  await t.test('folder move keeps hidden descendants and proves new versions for unsaved child editors', () => fixture(async ({root,get,action}) => {
+    await fs.mkdir(path.join(root,'source/nested'),{recursive:true});await fs.mkdir(path.join(root,'destination'));
+    await fs.writeFile(path.join(root,'source/nested/code.py'),'value = 1\n');
+    await fs.writeFile(path.join(root,'source/.hidden'),'HIDDEN');
+    const before=await readEditor(root,'source/nested/code.py');
+    const moved=await action('move','source',{parent:'destination',root_path:root,editors:[{path:before.path,version:before.version}]});
+    assert.equal(moved.path,'destination/source');assert.ok(moved.editors[0].version);
+    assert.equal(await fs.readFile(path.join(root,'destination/source/.hidden'),'utf8'),'HIDDEN');
+    await saveEditor(get,moved.editors[0].path,before.text+'# DRAFT\n',moved.editors[0].version);
+    assert.equal(await fs.readFile(path.join(root,'destination/source/nested/code.py'),'utf8'),'value = 1\n# DRAFT\n');
+  }));
+  await t.test('collisions, descendants, stale sources, mapping changes and linked parents preserve originals', () => fixture(async ({root,outside,get,info,action}) => {
+    await fs.mkdir(path.join(root,'source/child'),{recursive:true});await fs.mkdir(path.join(root,'destination'));
+    await fs.writeFile(path.join(root,'source.txt'),'SOURCE');await fs.writeFile(path.join(root,'destination/source.txt'),'KEEP');
+    await assert.rejects(action('move','source.txt',{parent:'destination',root_path:root}),{status:409});
+    for(const parent of ['source','source/child','../outside','/tmp','node_modules'])await assert.rejects(action('move','source',{parent,root_path:root}));
+    await fs.symlink(outside,path.join(root,'linked'));
+    await assert.rejects(action('move','source.txt',{parent:'linked',root_path:root}),{status:403});
+    await assert.rejects(action('move','source.txt',{parent:'destination',root_path:outside}),{status:409});
+    const stale=(await info('source.txt')).version;await fs.writeFile(path.join(root,'source.txt'),'CHANGED');
+    await assert.rejects(filesystemAction(get,{action:'move',root:'project',root_path:root,path:'source.txt',parent:'destination',expected_version:stale}),{status:409});
+    assert.equal(await fs.readFile(path.join(root,'source.txt'),'utf8'),'CHANGED');assert.equal(await fs.readFile(path.join(root,'destination/source.txt'),'utf8'),'KEEP');
+    assert.deepEqual(await fs.readdir(outside),[]);
+  }));
+  await t.test('a replaced destination parent cannot redirect a move to an outside directory', () => fixture(async ({root,outside,action}) => {
+    await fs.mkdir(path.join(root,'destination'));await fs.writeFile(path.join(root,'source.txt'),'KEEP SOURCE');
+    let switched=false;
+    await patch(fsPromises,'open',original=>async (...args)=>{
+      const handle=await original(...args);
+      if(!switched&&String(args[0]).startsWith('/proc/self/fd/')&&String(args[0]).endsWith('/destination')){
+        switched=true;await fs.rename(path.join(root,'destination'),path.join(root,'detached'));await fs.symlink(outside,path.join(root,'destination'));
+      }
+      return handle;
+    },async()=>{await assert.rejects(action('move','source.txt',{parent:'destination',root_path:root}));});
+    assert.equal(switched,true);assert.equal(await fs.readFile(path.join(root,'source.txt'),'utf8'),'KEEP SOURCE');assert.deepEqual(await fs.readdir(outside),[]);
+  }));
+});
+
 async function fixture(callback, showHidden = false) {
   const base = await fs.mkdtemp(path.join(os.tmpdir(), 'fbrowse-fs-actions-'));
   const keys = ['HOME', 'XDG_CONFIG_HOME', 'XDG_STATE_HOME', 'XDG_CACHE_HOME'];

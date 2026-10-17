@@ -129,8 +129,21 @@ test('copy HTTP mid-operation mapping and cleanup safety', { timeout: 120_000 },
 });
 
 test('filesystem HTTP contract and mutation safety', { timeout: 120_000 }, async t => {
+  await t.test('move authenticates, pins the root, rejects unsupported options and returns a relocated entry', () => fixture(async ({root,request,info}) => {
+    await fs.mkdir(path.join(root,'destination'));await fs.writeFile(path.join(root,'source.txt'),'SAVED');
+    const payload={action:'move',root:'project',root_path:root,path:'source.txt',parent:'destination',expected_version:(await info('source.txt')).value.version};
+    assert.equal((await request('/api/fs',payload,{'X-Fbrowse-Token':'wrong'})).status,403);
+    for(const extra of [{parent:undefined},{root_path:undefined},{name:'other.txt'},{overwrite:true},{editors:[{path:'elsewhere.txt',version:payload.expected_version}]}])
+      assert.equal((await request('/api/fs',{...payload,...extra})).status,400);
+    assert.equal((await request('/api/fs',{...payload,root_path:root+'-replaced'})).status,409);
+    assert.equal((await request('/api/fs',{...payload,parent:'../outside'})).status,403);
+    const result=await request('/api/fs',payload);assert.equal(result.status,200,JSON.stringify(result.value));
+    assert.equal(result.value.old_path,'source.txt');assert.equal(result.value.path,'destination/source.txt');assert.equal(result.value.entry.root_id,'project');
+    assert.equal((await request('/api/entry?root=project&path=destination%2Fsource.txt')).value.entry.path,result.value.path);
+    assert.equal(await fs.readFile(path.join(root,result.value.path),'utf8'),'SAVED');
+  }));
   await t.test('explicit-root info, all action responses and old create API remain compatible', () => fixture(async ({ root, request, info, action, app }) => {
-    assert.equal(app.info.version, '0.12.0');
+    assert.equal(app.info.version, '0.13.0');
     const made = await action('mkdir', '', { name: '文書 folder' });
     assert.equal(made.status, 201); assert.equal(made.value.entry.kind, 'directory');
     const created = await request('/api/create', { root: 'project', parent: made.value.path, name: '새 파일.txt' });

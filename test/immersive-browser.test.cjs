@@ -90,7 +90,7 @@ async function firstGestures() {
     for (const file of ['nested', 'outside-link.txt', 'broken-link.txt']) {
       const before = await model(); await row(file).scrollIntoViewIfNeeded(); const r = await row(file).boundingBox();
       await page.mouse.move(r.x + 2, r.y + r.height / 2); await page.mouse.down(); await page.mouse.move(r.x + 9, r.y + r.height / 2);
-      assert(await ghost.isHidden(), 'directory/blocked source never docks ' + file); await move(await groupPoint(page, 'sample.py', 'right')()); await page.mouse.up(); await clean(); assert.equal(await model(), before);
+      assert.equal(await ghost.isVisible(),file==='nested','available folders support tree moves; blocked links stay inert '+file); await move(await groupPoint(page, 'sample.py', 'right')()); assert(await page.locator('#workspaceDrop').isHidden(),'directories cannot dock');await page.mouse.up(); await clean(); assert.equal(await model(), before);
     }
     for (const [file, hash] of hashes) assert.equal(createHash('sha256').update(await fs.readFile(ready.project + '/' + file)).digest('hex'), hash);
     assert.equal(requests.filter(r => r.method === 'POST' && /\/api\/(?:fs$|save$|create)/.test(new URL(r.url).pathname)).length, 0, 'drag/copy metadata never mutates document files');
